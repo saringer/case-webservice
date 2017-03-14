@@ -38,6 +38,8 @@ public class ContactForm extends FormLayout {
         save.setStyleName(ValoTheme.BUTTON_PRIMARY);
         save.setClickShortcut(KeyCode.ENTER);
 
+        delete.setStyleName(ValoTheme.BUTTON_DANGER);
+
         binder.bindInstanceFields(this);
 
         save.addClickListener(e -> this.save());

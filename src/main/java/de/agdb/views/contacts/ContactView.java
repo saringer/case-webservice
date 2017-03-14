@@ -52,7 +52,7 @@ public class ContactView extends CssLayout implements View {
 
         HorizontalLayout toolbar = new HorizontalLayout(filtering, addContactBtn, addEmailContactsBtn);
 
-        grid.setColumns("firstName", "lastName", "email");
+        grid.setColumns("firstName", "lastName", "email", "status");
 
         HorizontalLayout main = new HorizontalLayout(grid, form);
         main.setSizeFull();
