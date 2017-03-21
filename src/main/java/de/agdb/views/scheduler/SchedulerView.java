@@ -1,4 +1,4 @@
-package de.agdb.views;
+package de.agdb.views.scheduler;
 
 
 import com.vaadin.navigator.View;
@@ -7,11 +7,11 @@ import com.vaadin.ui.*;
 
 
 
-public class UserSettingsView extends VerticalLayout implements View {
-    public static final String VIEW_NAME = "Settings";
+public class SchedulerView extends VerticalLayout implements View {
+    public static final String VIEW_NAME = "Scheduler";
 
 
-    public UserSettingsView() {
+    public SchedulerView() {
         setSizeFull();
         //addStyleName("login-screen");
 

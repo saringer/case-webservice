@@ -144,7 +144,7 @@ public class ContactService {
     public synchronized void save(Contacts entry) {
         if (entry == null) {
             LOGGER.log(Level.SEVERE,
-                    "Contact is null");
+                    "Contact is empty/null");
             return;
         }
         if (entry.getId() == null) {

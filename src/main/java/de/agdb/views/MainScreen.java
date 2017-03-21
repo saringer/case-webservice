@@ -1,12 +1,17 @@
 package de.agdb.views;
 
 import de.agdb.AppUI;
+import de.agdb.views.categories.CategoriesView;
 import de.agdb.views.contacts.ContactView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import de.agdb.views.scheduler.SchedulerView;
+import de.agdb.views.userProfile.ProfileView;
+
+import java.io.IOException;
 
 /**
  * Content of the UI when the user is logged in.
@@ -54,9 +59,17 @@ public class MainScreen extends HorizontalLayout {
 
 
         menu = new Menu(navigator);
+        menu.addView(new SchedulerView(), SchedulerView.VIEW_NAME, SchedulerView.VIEW_NAME, FontAwesome.USER);
+        try {
+            menu.addView(new ProfileView(), ProfileView.VIEW_NAME, ProfileView.VIEW_NAME,  FontAwesome.USER_PLUS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        menu.addView(new CategoriesView(), CategoriesView.VIEW_NAME, CategoriesView.VIEW_NAME, FontAwesome.CHAIN);
         menu.addView(new ContactView(), ContactView.VIEW_NAME, ContactView.VIEW_NAME, FontAwesome.EDIT);
-        menu.addView(new SchedulerView(), "Scheduler", "Scheduler", FontAwesome.CHAIN);
-        menu.addView(new UserSettingsView(), UserSettingsView.VIEW_NAME, UserSettingsView.VIEW_NAME, FontAwesome.USER);
+
+
+
 
         addComponent(menu);
         addComponent(viewContainer);
