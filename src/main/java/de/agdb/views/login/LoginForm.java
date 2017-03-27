@@ -35,6 +35,7 @@ public class LoginForm extends CssLayout {
     private void buildUI() {
         addStyleName("login-screen");
 
+
         // login form, centered in the available part of the screen
         Component loginForm = buildLoginForm();
 
@@ -45,19 +46,21 @@ public class LoginForm extends CssLayout {
         centeringLayout.setComponentAlignment(loginForm,
                 Alignment.MIDDLE_CENTER);
 
-        // information text about logging in
-        CssLayout loginInformation = buildLoginInformation();
+
+
 
         addComponent(centeringLayout);
-       // addComponent(loginInformation);
+
     }
 
     private Component buildLoginForm() {
+
         FormLayout loginForm = new FormLayout();
 
         loginForm.addStyleName("login-form");
         loginForm.setSizeUndefined();
         loginForm.setMargin(false);
+
 
         loginForm.addComponent(username = new TextField("Username"));
         username.setWidth(15, Unit.EM);
@@ -93,15 +96,7 @@ public class LoginForm extends CssLayout {
     }
 
 
-    private CssLayout buildLoginInformation() {
-        CssLayout loginInformation = new CssLayout();
-        loginInformation.setStyleName("login-information");
-        Label loginInfoText = new Label(
-                "<h1>Welcome</h1>"
-                        + "With this application you can receive custom notifications for weather events");
-        loginInformation.addComponent(loginInfoText);
-        return loginInformation;
-    }
+
 
 
     public TextField getTxtLogin() {

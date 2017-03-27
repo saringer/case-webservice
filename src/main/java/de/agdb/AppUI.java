@@ -7,12 +7,15 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringViewDisplay;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.auth.AccessControl;
 import de.agdb.auth.BasicAccessControl;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import de.agdb.views.login.LoginForm;
@@ -33,6 +36,11 @@ public class AppUI extends UI {
     private static final long serialVersionUID = 1L;
     private ApplicationContext applicationContext;
     private AccessControl accessControl = new BasicAccessControl();
+
+    // we can use either constructor autowiring or field autowiring
+    @Autowired
+    private SpringViewProvider viewProvider;
+
 
     @Override
     protected void init(VaadinRequest request) {
@@ -63,7 +71,8 @@ public class AppUI extends UI {
 
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
-        setContent(new MainScreen(AppUI.this));
+        setContent(new MainScreen(AppUI.this, viewProvider));
+
         //getNavigator().navigateTo(getNavigator().getState());
     }
 

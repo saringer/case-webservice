@@ -892,6 +892,8 @@
  * @group tree
  */
 
+/** Expander button visual - expanded */
+
 /**
  *
  *
@@ -981,7 +983,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "8.0.0";
+	content: "8.1.0.alpha2";
 }
 
 .v-widget {
@@ -1716,6 +1718,10 @@ div.v-layout.v-horizontal.v-widget {
 	filter: alpha(opacity=50) ;
 }
 
+.main_theme .v-draggable {
+	user-select: none !important;
+}
+
 .main_theme .v-tooltip {
 	background-color: rgba(50, 50, 50, 0.9);
 	-webkit-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
@@ -2218,12 +2224,12 @@ div.v-layout.v-horizontal.v-widget {
 	background: transparent;
 }
 
-.main_theme .v-button-borderless:active {
+.main_theme .v-button-borderless:active:not(.v-disabled) {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
 }
 
-.main_theme .v-button-borderless:active:after {
+.main_theme .v-button-borderless:active:not(.v-disabled):after {
 	background: transparent;
 }
 
@@ -2243,12 +2249,12 @@ div.v-layout.v-horizontal.v-widget {
 	background: transparent;
 }
 
-.main_theme .v-button-borderless-colored:active {
+.main_theme .v-button-borderless-colored:active:not(.v-disabled) {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
 }
 
-.main_theme .v-button-borderless-colored:active:after {
+.main_theme .v-button-borderless-colored:active:not(.v-disabled):after {
 	background: transparent;
 }
 
@@ -2287,12 +2293,12 @@ div.v-layout.v-horizontal.v-widget {
 	background: transparent;
 }
 
-.main_theme .v-button-link:active {
+.main_theme .v-button-link:active:not(.v-disabled) {
 	opacity: 0.7;
 	filter: alpha(opacity=70) ;
 }
 
-.main_theme .v-button-link:active:after {
+.main_theme .v-button-link:active:not(.v-disabled):after {
 	background: transparent;
 }
 
@@ -3816,7 +3822,16 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 0;
 }
 
+.main_theme .v-csslayout-v-component-group .v-widget ~ .v-widget.v-upload:not(:last-child) .v-button {
+	border-radius: 0;
+}
+
 .main_theme .v-csslayout-v-component-group .v-widget:last-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.main_theme .v-csslayout-v-component-group .v-widget.v-upload:last-child .v-button {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
@@ -3826,11 +3841,24 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 0;
 }
 
+.main_theme .v-csslayout-v-component-group .v-widget.v-upload:first-child .v-button, .main_theme .v-csslayout-v-component-group .v-caption:first-child + .v-widget.v-upload .v-button {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
 .main_theme .v-csslayout-v-component-group .v-widget ~ .v-widget.first.first {
 	border-radius: 4px 0 0 4px;
 }
 
+.main_theme .v-csslayout-v-component-group .v-widget ~ .v-widget.first.first.v-upload .v-button {
+	border-radius: 4px 0 0 4px;
+}
+
 .main_theme .v-csslayout-v-component-group .v-widget ~ .v-widget.last.last {
+	border-radius: 0 4px 4px 0;
+}
+
+.main_theme .v-csslayout-v-component-group .v-widget ~ .v-widget.last.last.v-upload .v-button {
 	border-radius: 0 4px 4px 0;
 }
 
@@ -8493,6 +8521,94 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 1px;
 }
 
+.main_theme .v-tree-grid-expander {
+	display: inline-block;
+	width: 10px;
+	padding-right: 10px;
+}
+
+.main_theme .v-tree-grid-expander::before {
+	display: inline-block;
+	padding-right: 4px;
+	font-family: FontAwesome;
+}
+
+.main_theme .v-tree-grid-expander.expanded::before {
+	content: "\f0d7";
+}
+
+.main_theme .v-tree-grid-expander.collapsed::before {
+	content: "\f0da";
+}
+
+.main_theme .v-tree-grid-node.depth-0 {
+	padding-left: 0px;
+}
+
+.main_theme .v-tree-grid-node.depth-1 {
+	padding-left: 20px;
+}
+
+.main_theme .v-tree-grid-node.depth-2 {
+	padding-left: 40px;
+}
+
+.main_theme .v-tree-grid-node.depth-3 {
+	padding-left: 60px;
+}
+
+.main_theme .v-tree-grid-node.depth-4 {
+	padding-left: 80px;
+}
+
+.main_theme .v-tree-grid-node.depth-5 {
+	padding-left: 100px;
+}
+
+.main_theme .v-tree-grid-node.depth-6 {
+	padding-left: 120px;
+}
+
+.main_theme .v-tree-grid-node.depth-7 {
+	padding-left: 140px;
+}
+
+.main_theme .v-tree-grid-node.depth-8 {
+	padding-left: 160px;
+}
+
+.main_theme .v-tree-grid-node.depth-9 {
+	padding-left: 180px;
+}
+
+.main_theme .v-tree-grid-node.depth-10 {
+	padding-left: 200px;
+}
+
+.main_theme .v-tree-grid-node.depth-11 {
+	padding-left: 220px;
+}
+
+.main_theme .v-tree-grid-node.depth-12 {
+	padding-left: 240px;
+}
+
+.main_theme .v-tree-grid-node.depth-13 {
+	padding-left: 260px;
+}
+
+.main_theme .v-tree-grid-node.depth-14 {
+	padding-left: 280px;
+}
+
+.main_theme .v-tree-grid-node.depth-15 {
+	padding-left: 300px;
+}
+
+.main_theme .v-tree-grid-cell-content {
+	display: inline-block;
+}
+
 .main_theme .v-table {
 	position: relative;
 	background: #fafafa;
@@ -12413,7 +12529,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .main_theme .login-screen {
-	background: #3b3f42;
+	background: #1e5799;
 	background-image: url(img/archetype-login-bg.jpg);
 	background-size: cover;
 	background-position: 50% 50%;
@@ -12433,26 +12549,6 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-animation: valo-animate-in-fade 1s backwards;
 	-moz-animation: valo-animate-in-fade 1s backwards;
 	animation: valo-animate-in-fade 1s backwards;
-}
-
-.main_theme .login-screen .login-information {
-	display: inline-block;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 300px;
-	height: 100%;
-	background: #60a0ea;
-	background-color: rgba(96, 160, 234, 0.7);
-	padding: 21px 21px 21px 21px;
-	color: #f2f6fa;
-	-webkit-animation: valo-animate-in-fade 1s 1s backwards;
-	-moz-animation: valo-animate-in-fade 1s 1s backwards;
-	animation: valo-animate-in-fade 1s 1s backwards;
-}
-
-.main_theme .login-screen .login-information h1 {
-	color: inherit;
 }
 
 .main_theme .login-screen .centering-layout {
@@ -12641,4 +12737,38 @@ div.v-layout.v-horizontal.v-widget {
 
 .main_theme .v-window-subWindowsStyle .v-window-header {
 	color: black;
+}
+
+.main_theme .category {
+	cursor: pointer;
+	background-color: #60a0ea;
+	margin: 2em;
+	padding: 1em;
+	text-align: center;
+	align-content: center;
+}
+
+.main_theme .category .v-label {
+	color: white;
+	text-align: center;
+}
+
+.main_theme .generalCategory {
+	cursor: pointer;
+	background-color: grey;
+	margin: 2em;
+	padding: 1em;
+	text-align: center;
+	align-content: center;
+}
+
+.main_theme .generalCategory .v-label {
+	color: white;
+	text-align: center;
+}
+
+.main_theme .categoriesWrapper {
+	overflow: auto;
+	border-color: #474747;
+	border-bottom-style: solid;
 }

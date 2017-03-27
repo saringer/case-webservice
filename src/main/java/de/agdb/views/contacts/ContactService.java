@@ -1,6 +1,14 @@
 package de.agdb.views.contacts;
 
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
+import de.agdb.entities.Categories;
 import de.agdb.entities.Contacts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,13 +20,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * An in memory dummy "database" for the example purposes. In a typical Java app
- * this class would be replaced by e.g. EJB or a Spring based service class.
- * <p>
- * In demos/tutorials/examples, get a reference to this service class with
- * {@link ContactService#getInstance()}.
- */
+
 public class ContactService {
 
     private static ContactService instance;
@@ -27,7 +29,12 @@ public class ContactService {
     private final HashMap<Long, Contacts> contacts = new HashMap<>();
     private long nextId = 0;
 
-    private ContactService() {
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+
+    public ContactService() {
+
     }
 
     /**
@@ -162,7 +169,7 @@ public class ContactService {
      * Sample Data
      */
     public void ensureTestData() {
-        if (findAll().isEmpty()) {
+       if (findAll().isEmpty()) {
             final String[] names = new String[] { "Gabrielle Patel", "Brian Robinson", "Eduardo Haugen",
                     "Koen Johansen", "Alejandro Macdonald", "Angel Karlsson", "Yahir Gustavsson", "Haiden Svensson",
                     "Emily Stewart", "Corinne Davis", "Ryann Davis", "Yurem Jackson", "Kelly Gustavsson",
@@ -177,12 +184,17 @@ public class ContactService {
                 c.setFirstName(split[0]);
                 c.setLastName(split[1]);
                 c.setEmail(split[0].toLowerCase() + "@" + split[1].toLowerCase() + ".com");
-                c.setStatus(ContactStatus.values()[r.nextInt(ContactStatus.values().length)]);
+                //c.setStatus(ContactStatus.values()[r.nextInt(ContactStatus.values().length)]);
+                c.setStatus("No Status");
                 int daysOld = 0 - r.nextInt(365 * 15 + 365 * 60);
                 c.setBirthDate(LocalDate.now().plusDays(daysOld));
                 save(c);
             }
         }
+
+        //List<Categories> categories = jdbcTemp.queryForList(sql, Categories.class);
+
+
     }
 
 }

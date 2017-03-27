@@ -63,7 +63,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
   // login screen - for small screens, see below
   .login-screen {
-    background: $editor-background-color;
+   // background: $editor-background-color;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,2989d8+90 */
+    background: #1e5799; /* Old browsers */
+
 
     @if $login-background-image {
       background-image: url(#{$login-background-image});
@@ -80,25 +83,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       padding: $v-layout-margin;
       @include valo-animate-in-fade($duration: 1s);
     }
-
-    .login-information {
-      display: inline-block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: $login-info-width;
-      height: 100%;
-      background: $v-selection-color; // For IE8
-      background-color: rgba($v-selection-color, $login-info-opacity);
-      padding: $v-layout-margin;
-      color: valo-font-color($v-selection-color, 0.9);
-      @include animation(valo-animate-in-fade 1s 1s backwards);
-
-      h1 {
-        color: inherit;
-      }
-    }
-
 
 
     .centering-layout {
@@ -336,6 +320,40 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
   .v-window-subWindowsStyle .v-window-header {
     color: black;
+  }
+
+  .category {
+    cursor: pointer;
+    background-color: #60a0ea;
+    margin: 2em;
+    padding: 1em;
+    text-align: center;
+    align-content: center;
+    .v-label {
+      color:white;
+      text-align: center;
+    }
+
+  }
+  .generalCategory {
+    cursor: pointer;
+    background-color: grey;
+    margin: 2em;
+    padding: 1em;
+    text-align: center;
+    align-content: center;
+    .v-label {
+      color:white;
+      text-align: center;
+    }
+
+  }
+  .categoriesWrapper {
+
+    overflow: auto;
+
+    border-color: #474747;
+    border-bottom-style: solid;
   }
 
 

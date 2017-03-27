@@ -16,7 +16,8 @@ public class ContactForm extends FormLayout {
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
     private TextField email = new TextField("Email");
-    private NativeSelect<ContactStatus> status = new NativeSelect<>("Status");
+    //private NativeSelect<ContactStatus> status = new NativeSelect<>("Status");
+    private TextField status  = new TextField("Status");
     private DateField birthdate = new DateField("Birthday");
     private Button save = new Button("Save");
     private Button delete = new Button("Delete");
@@ -34,7 +35,7 @@ public class ContactForm extends FormLayout {
         HorizontalLayout buttons = new HorizontalLayout(save, delete, cancel);
         addComponents(firstName, lastName, email, status, birthdate, buttons);
 
-        status.setItems(ContactStatus.values());
+        //status.setItems(ContactStatus.values());
         save.setStyleName(ValoTheme.BUTTON_PRIMARY);
         save.setClickShortcut(KeyCode.ENTER);
 

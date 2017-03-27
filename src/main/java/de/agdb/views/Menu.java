@@ -130,6 +130,7 @@ public class Menu extends CssLayout {
 
             @Override
             public void buttonClick(ClickEvent event) {
+                //getUI().getNavigator().navigateTo(name);
                 navigator.navigateTo(name);
 
             }
