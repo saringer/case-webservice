@@ -152,7 +152,7 @@ public class ProfileView extends VerticalLayout implements View {
         imageBox.setStyleName("wrapperPreview");
         // A theme resource in the current theme ("mytheme")
 // Located in: VAADIN/themes/mytheme/img/themeimage.png
-        ThemeResource resource = new ThemeResource("img/cat.jpg");
+        ThemeResource resource = new ThemeResource("img/archetype-login-bg.jpg");
 
         Image image = new Image();
         image.setWidth("250px");
@@ -211,7 +211,7 @@ public class ProfileView extends VerticalLayout implements View {
         form.addComponent(footer);
 
 
-        section = new Label("Synchronized Email-Accounts");
+        section = new Label("Synchronize your Email-Accounts");
         section.addStyleName("h3");
         section.addStyleName("colored");
         form.addComponent(section);

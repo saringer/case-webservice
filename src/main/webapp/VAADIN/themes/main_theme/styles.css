@@ -12529,7 +12529,6 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .main_theme .login-screen {
-	background: #1e5799;
 	background-image: url(img/archetype-login-bg.jpg);
 	background-size: cover;
 	background-position: 50% 50%;
@@ -12549,13 +12548,15 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-animation: valo-animate-in-fade 1s backwards;
 	-moz-animation: valo-animate-in-fade 1s backwards;
 	animation: valo-animate-in-fade 1s backwards;
+	background-color: rgba(65, 105, 225, 0.4);
+	border-style: solid;
+	border-color: black;
 }
 
 .main_theme .login-screen .centering-layout {
 	display: inline-block;
 	width: 100%;
 	height: 100%;
-	padding-left: 300px;
 }
 
 .main_theme .login-screen .centering-layout .v-slot {

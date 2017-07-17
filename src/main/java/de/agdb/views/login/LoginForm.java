@@ -2,6 +2,7 @@ package de.agdb.views.login;
 
 
 
+import com.vaadin.shared.ui.ContentMode;
 import de.agdb.AppUI;
 import de.agdb.auth.AccessControl;
 import com.vaadin.event.ShortcutAction;
@@ -39,12 +40,18 @@ public class LoginForm extends CssLayout {
         // login form, centered in the available part of the screen
         Component loginForm = buildLoginForm();
 
+        // caption for the loginform
+        Label loginFormCaption = new Label(String.format("<font size = \"5\" color=\"white\"> CaSe - Categorical Scheduler" )
+                , ContentMode.HTML);
+
+
         // layout to center login form when there is sufficient screen space
         VerticalLayout centeringLayout = new VerticalLayout();
         centeringLayout.setStyleName("centering-layout");
+        centeringLayout.addComponent(loginFormCaption);
         centeringLayout.addComponent(loginForm);
-        centeringLayout.setComponentAlignment(loginForm,
-                Alignment.MIDDLE_CENTER);
+        centeringLayout.setComponentAlignment(loginFormCaption, Alignment.MIDDLE_CENTER);
+        centeringLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
 
 
@@ -59,8 +66,9 @@ public class LoginForm extends CssLayout {
 
         loginForm.addStyleName("login-form");
         loginForm.setSizeUndefined();
-        loginForm.setMargin(false);
+        loginForm.setMargin(true);
 
+        
 
         loginForm.addComponent(username = new TextField("Username"));
         username.setWidth(15, Unit.EM);

@@ -64,8 +64,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   // login screen - for small screens, see below
   .login-screen {
    // background: $editor-background-color;
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,2989d8+90 */
-    background: #1e5799; /* Old browsers */
+
+    //background: #1e5799; /* Old browsers */
 
 
     @if $login-background-image {
@@ -82,6 +82,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       border: none;
       padding: $v-layout-margin;
       @include valo-animate-in-fade($duration: 1s);
+      background-color: rgba(65,105,225,0.4);
+      border-style: solid;
+      border-color: black;
+
     }
 
 
@@ -89,7 +93,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       display: inline-block;
       width: 100%;
       height: 100%;
-      padding-left: $login-info-width;
 
       .v-slot {
         height: 100%;
