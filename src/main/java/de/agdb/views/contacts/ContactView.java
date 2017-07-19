@@ -1,10 +1,8 @@
 package de.agdb.views.contacts;
 
+
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.event.dnd.DragSourceExtension;
-import com.vaadin.event.dnd.DragStartEvent;
-import com.vaadin.event.dnd.DragStartListener;
-import com.vaadin.event.dnd.DropTargetExtension;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -61,6 +59,9 @@ public class ContactView extends VerticalLayout implements View {
 
         setSizeFull();
         final VerticalLayout layout = new VerticalLayout();
+        Button test = new Button();
+
+
         filterText.setPlaceholder("filter by name...");
         filterText.addValueChangeListener(e -> updateList());
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
@@ -136,26 +137,7 @@ public class ContactView extends VerticalLayout implements View {
             });
 
 
-            DragSourceExtension<Button> dragSource = new DragSourceExtension<>(button);
-            // set the allowed effect
-            dragSource.setEffectAllowed(EffectAllowed.MOVE);
-            // set the text to transfer
-            dragSource.setDataTransferText("Item wurde gedropt");
-            dragSource.addDragStartListener(new DragStartListener<Button>() {
-                @Override
-                public void dragStart(DragStartEvent<Button> dragStartEvent) {
-                            placeHolder = contact;
-                }
-            });
 
-
-            dragSource.addDragStartListener(event ->
-                    event.getComponent().addStyleName("dragged")
-            );
-
-            dragSource.addDragEndListener(event ->
-                    event.getComponent().removeStyleName("dragged")
-            );
 
             return button;
         }, new ComponentRenderer());
@@ -217,24 +199,6 @@ public class ContactView extends VerticalLayout implements View {
             String statusTitle = categories.get(counter).getTitle();
 
             // make the layout accept drops
-            DropTargetExtension<CssLayout> dropTarget = new DropTargetExtension<>(category);
-            // the drop effect must match the allowed effect in the drag source for a successful drop
-            dropTarget.setDropEffect(DropEffect.MOVE);
-            // catch the drops
-            dropTarget.addDropListener(event -> {
-                // if the drag source is in the same UI as the target
-                Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
-                if (dragSource.isPresent() && dragSource.get() instanceof Button) {
-                    // get possible transfer data
-                    String message = event.getDataTransferText();
-                    placeHolder.setStatus(statusTitle);
-                    service.save(placeHolder);
-                    filterText.setValue("No Status");
-                    updateList();
-                    // handle possible server side drag data, if the drag source was in the same UI
-                    //event.getDragData().ifPresent(data -> handleMyDragData((MyObject) data));
-                }
-            });
 
 
             category.addComponent(new Label(categories.get(counter).getTitle()));

@@ -1,15 +1,8 @@
-package de.agdb.views.userProfile;
+package de.agdb.views.profile;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
-import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.googleapis.auth.oauth2.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.util.Lists;
-import com.google.api.client.util.store.DataStoreFactory;
-import com.google.api.services.people.v1.model.Name;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
@@ -25,24 +18,18 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.people.v1.People;
-import com.google.api.services.people.v1.PeopleScopes;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
-import de.agdb.views.categories.CategoriesView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.*;
-
-import static com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp.browse;
 
 @UIScope
 @SpringView(name = ProfileView.VIEW_NAME)

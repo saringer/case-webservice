@@ -15,13 +15,17 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import de.agdb.views.contacts.ContactView;
 import de.agdb.views.scheduler.SchedulerView;
-import de.agdb.views.userProfile.ProfileView;
+import de.agdb.views.profile.ProfileView;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
 
 /**
  * Content of the UI when the user is logged in.
+ */
+
+/**
+ * @SpringViewDisplay: Stereotype annotation for a bean (implementing either ViewDisplay, SingleComponentContainer
+ * or ComponentContainer) that should act as a view display for Vaadin Navigator.
+ There should only be one bean annotated as the view display in the scope of a UI.
  */
 @SpringViewDisplay
 
@@ -29,6 +33,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
 
     Menu menu;
     CssLayout viewContainer;
+
 
     private SpringViewProvider viewProvider;
 
@@ -75,8 +80,13 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         navigator.addViewChangeListener(viewChangeListener);
         navigator.addProvider(viewProvider);
 
+
+        // Add all the views of the application to the view navigator via the Menu class
         menu = new Menu(navigator);
-        menu.addView(new SchedulerView(), SchedulerView.VIEW_NAME, SchedulerView.VIEW_NAME, FontAwesome.USER);
+        /*
+        "" Empty view name will be the initially loaded view
+         */
+        menu.addView(new SchedulerView(), SchedulerView.VIEW_NAME, "Schedule", FontAwesome.USER);
 
         menu.addView(new ProfileView(), ProfileView.VIEW_NAME, ProfileView.VIEW_NAME, FontAwesome.USER_PLUS);
 
@@ -89,6 +99,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         addComponent(viewContainer);
 
         setExpandRatio(viewContainer, 1);
+
 
     }
 

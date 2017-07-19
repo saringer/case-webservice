@@ -36,13 +36,15 @@ public class Menu extends CssLayout {
         setPrimaryStyleName(ValoTheme.MENU_ROOT);
         menuPart = new CssLayout();
         menuPart.addStyleName(ValoTheme.MENU_PART);
+        menuPart.setWidth(219, Unit.PIXELS);
 
         // header of the menu
         final HorizontalLayout top = new HorizontalLayout();
         top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
         top.addStyleName(ValoTheme.MENU_TITLE);
         top.setSpacing(true);
-        Label title = new Label("Crysis Scheduler");
+        top.setHeight(70, Unit.PIXELS);
+        Label title = new Label("DASHBOARD");
         title.addStyleName(ValoTheme.LABEL_H3);
         title.setSizeUndefined();
         //Image image = new Image(null, new ThemeResource("img/table-logo.png"));

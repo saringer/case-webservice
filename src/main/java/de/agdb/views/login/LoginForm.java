@@ -1,14 +1,15 @@
 package de.agdb.views.login;
 
 
-
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import de.agdb.AppUI;
 import de.agdb.auth.AccessControl;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.auth.BasicAccessControl;
 import org.springframework.context.ApplicationContext;
 
 import java.io.Serializable;
@@ -23,9 +24,14 @@ public class LoginForm extends CssLayout {
     private Button register;
     private LoginListener loginListener;
     private AccessControl accessControl;
+    private SpringViewProvider viewProvider;
+    private AppUI ui;
 
 
-    public LoginForm(AccessControl accessControl, LoginListener loginListener) {
+
+    public LoginForm(AccessControl accessControl, LoginListener loginListener, SpringViewProvider viewProvider, AppUI ui) {
+        this.viewProvider = viewProvider;
+        this.ui = ui;
         buildUI();
         this.loginListener = loginListener;
         this.accessControl = accessControl;
@@ -40,54 +46,49 @@ public class LoginForm extends CssLayout {
         // login form, centered in the available part of the screen
         Component loginForm = buildLoginForm();
 
-        // caption for the loginform
-        Label loginFormCaption = new Label(String.format("<font size = \"5\" color=\"white\"> CaSe - Categorical Scheduler" )
-                , ContentMode.HTML);
-
 
         // layout to center login form when there is sufficient screen space
         VerticalLayout centeringLayout = new VerticalLayout();
         centeringLayout.setStyleName("centering-layout");
-        centeringLayout.addComponent(loginFormCaption);
+
         centeringLayout.addComponent(loginForm);
-        centeringLayout.setComponentAlignment(loginFormCaption, Alignment.MIDDLE_CENTER);
+
         centeringLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
 
-
-
         addComponent(centeringLayout);
+
 
     }
 
     private Component buildLoginForm() {
 
+        VerticalLayout containerLayout = new VerticalLayout();
+        containerLayout.setSizeUndefined();
+        containerLayout.addStyleName("login-form");
+        containerLayout.setWidth(472, Unit.PIXELS);
+
+
+        Label loginFormCaption = new Label(String.format("<font size = \"5\" color=\"white\"> CaSe - Categorical Scheduler")
+                , ContentMode.HTML);
+        loginFormCaption.setWidth(null);
+
+
         FormLayout loginForm = new FormLayout();
 
-        loginForm.addStyleName("login-form");
+        //loginForm.addStyleName("login-form");
         loginForm.setSizeUndefined();
-        loginForm.setMargin(true);
+        // loginForm.setMargin(true);
 
-        
-
-        loginForm.addComponent(username = new TextField("Username"));
+        loginForm.addComponent(username = new TextField("Username:"));
         username.setWidth(15, Unit.EM);
 
-        loginForm.addComponent(password = new PasswordField("Password"));
+        loginForm.addComponent(password = new PasswordField("Password:"));
         password.setWidth(15, Unit.EM);
-        password.setDescription("Write anything");
 
         CssLayout buttons = new CssLayout();
         buttons.setStyleName("buttons");
-        loginForm.addComponent(buttons);
-
-        buttons.addComponent(login = new Button("Login"));
-        login.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-        login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        LoginButtonListener loginButtonListener = getLoginButtonListener();
-        login.addClickListener(loginButtonListener);
-
-        buttons.addComponent(forgotPassword = new Button("Forgot password?"));
+        loginForm.addComponent(forgotPassword = new Button("Forgot password?"));
         forgotPassword.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -95,16 +96,32 @@ public class LoginForm extends CssLayout {
             }
         });
         forgotPassword.addStyleName(ValoTheme.BUTTON_LINK);
+        loginForm.addComponent(buttons);
+        loginForm.setComponentAlignment(username, Alignment.MIDDLE_CENTER);
 
-        buttons.addComponent((register = new Button("Register")));
-        RegisterButtonListener registerButtonListener = getRegisterButtonListener();
-        register.addClickListener(registerButtonListener);
+        buttons.addComponent(login = new Button("Login"));
+        login.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+        login.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        LoginButtonListener loginButtonListener = getLoginButtonListener();
+        login.addClickListener(loginButtonListener);
+
+        buttons.addComponent((register = new Button("No account yet?")));
+        register.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+
+                UI.getCurrent().setContent(new RegisterForm(viewProvider, ui, accessControl));
+            }
+        });
         register.addStyleName(ValoTheme.BUTTON_LINK);
-        return loginForm;
+
+        containerLayout.addComponent(loginFormCaption);
+        containerLayout.addComponent(loginForm);
+
+        containerLayout.setComponentAlignment(loginFormCaption, Alignment.MIDDLE_CENTER);
+        containerLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        return containerLayout;
     }
-
-
-
 
 
     public TextField getTxtLogin() {
@@ -121,11 +138,6 @@ public class LoginForm extends CssLayout {
         return context.getBean(LoginButtonListener.class);
     }
 
-    public RegisterButtonListener getRegisterButtonListener() {
-        AppUI ui = (AppUI) UI.getCurrent();
-        ApplicationContext context = ui.getApplicationContext();
-        return context.getBean(RegisterButtonListener.class);
-    }
 
     private void showNotification(Notification notification) {
         // keep the notification visible a little while after moving the
@@ -153,6 +165,19 @@ public class LoginForm extends CssLayout {
     public interface LoginListener extends Serializable {
         void loginSuccessful();
     }
+
+    public SpringViewProvider getViewProvider() {
+        return this.viewProvider;
+    }
+
+    public AppUI getAppUI() {
+        return this.ui;
+    }
+
+    public AccessControl getAccessControl() {
+        return accessControl;
+    }
+
 
 
 }

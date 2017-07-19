@@ -1,5 +1,6 @@
 package de.agdb;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Responsive;
@@ -9,12 +10,14 @@ import com.vaadin.server.WrappedSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.auth.AccessControl;
 import de.agdb.auth.BasicAccessControl;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
+import de.agdb.views.scheduler.SchedulerView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -29,6 +32,7 @@ import javax.servlet.http.HttpSession;
 
 @SpringUI
 @Theme("main_theme")
+@PreserveOnRefresh
 public class AppUI extends UI {
     /**
      *
@@ -45,7 +49,6 @@ public class AppUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
-
         Responsive.makeResponsive(this);
 
         WrappedSession session = request.getWrappedSession();
@@ -54,16 +57,14 @@ public class AppUI extends UI {
         applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 
 
-        getPage().setTitle("CRYSIS");
+        getPage().setTitle("CaSe");
         if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
-
-
                 @Override
                 public void loginSuccessful() {
                     showMainView();
                 }
-            }));
+            }, viewProvider, AppUI.this));
         } else {
             showMainView();
         }
@@ -73,7 +74,7 @@ public class AppUI extends UI {
         addStyleName(ValoTheme.UI_WITH_MENU);
         setContent(new MainScreen(AppUI.this, viewProvider));
 
-        //getNavigator().navigateTo(getNavigator().getState());
+        getNavigator().navigateTo(SchedulerView.VIEW_NAME);
     }
 
     public ApplicationContext getApplicationContext() {
@@ -83,6 +84,6 @@ public class AppUI extends UI {
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = AppUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
+    public static class MyUIServlet extends SpringVaadinServlet {
     }
 }

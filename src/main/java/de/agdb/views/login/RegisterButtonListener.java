@@ -22,61 +22,36 @@ public class RegisterButtonListener implements Button.ClickListener {
 
     @Override
     public void buttonClick(Button.ClickEvent event) {
+
+
         try {
             Button source = event.getButton();
-            LoginForm parent = (LoginForm) source.getParent().getParent().getParent().getParent();
+            RegisterForm parent = (RegisterForm) source.getParent().getParent().getParent().getParent().getParent();
+            TextField userName = parent.getTxtUsername();
+            PasswordField password = parent.getTxtPassword();
 
 
-            // Create a sub-window and set the content
-            final Window subWindow = new Window("Registration");
-            subWindow.addStyleName("subWindowsStyle");
-            subWindow.setResizable(false);
+            if (!userName.isEmpty() && !password.isEmpty()) {
+                final String encodedPassword = passwordEncoder.encode(password.getValue());
 
-            VerticalLayout subContent = new VerticalLayout();
-            subWindow.setContent(subContent);
-            // Configure the windows layout; VerticalLayout by default
-            subContent.setMargin(true);
-            subContent.setSpacing(true);
-            subContent.setSizeUndefined();
+                jdbcTemp.update(
+                        "insert into users (name, password) values (?, ?)",
+                        userName.getValue(), encodedPassword);
 
-            final TextField newUserName = new TextField("User name");
-            final TextField newUserPassword = new TextField("Password");
-            Button create = new Button("create");
-            create.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent clickEvent) {
+            } else {
+                Notification note = new Notification("username and password must not be empty");
+                note.setStyleName(ValoTheme.NOTIFICATION_FAILURE);
+                note.show(Page.getCurrent());
 
 
-                    if (!newUserName.isEmpty() && !newUserPassword.isEmpty()) {
-                        final String encodedPassword = passwordEncoder.encode(newUserPassword.getValue());
+                // Open it in the UI
+                //UI.getCurrent().addWindow(subWindow);
 
-                        jdbcTemp.update(
-                                "insert into users (name, password) values (?, ?)",
-                                newUserName.getValue(), encodedPassword);
-                        subWindow.close();
-                    } else {
-                        Notification note = new Notification("username and password must not be empty");
-                        note.setStyleName(ValoTheme.NOTIFICATION_FAILURE);
-                        note.show(Page.getCurrent());
-                    }
-                }
-            });
-            subContent.addComponent(newUserName);
-            subContent.addComponent(newUserPassword);
 
-            subContent.addComponent(create);
-
-            // Center it in the browser window
-            subWindow.center();
-            // Set modal
-            subWindow.setModal(true);
-
-            // Open it in the UI
-            UI.getCurrent().addWindow(subWindow);
-
+            }
 
         } catch (AuthenticationException e) {
         }
-    }
 
+    }
 }

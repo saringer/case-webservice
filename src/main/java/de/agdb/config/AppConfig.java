@@ -28,11 +28,7 @@ public class AppConfig {
         return manager;
     }
 
-    @Bean
-    public ContactService contactService() {
-        ContactService service = new ContactService();
-        return service;
-    }
+
 
     @Bean
     public UserService userService() {
