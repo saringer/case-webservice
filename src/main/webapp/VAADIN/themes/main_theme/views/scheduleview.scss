@@ -1,5 +1,23 @@
 @mixin schedule-view {
 .solid-border {
   border: solid 1px black;
+  overflow: auto;
 }
+
+  .right-menu-style {
+   background-color: #741b47;
+   border: solid 1px black;
+   text-align: center;
+   color: white;
+    font-size: large;
+
+ }
+  .left-menu-style {
+    background-color: #2b78e4;
+    border: solid 1px black;
+    text-align: center;
+    color: white;
+
+  }
+
 }

@@ -5,10 +5,8 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.*;
@@ -17,11 +15,10 @@ import de.agdb.auth.AccessControl;
 import de.agdb.auth.BasicAccessControl;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
-import de.agdb.views.scheduler.SchedulerView;
+import de.agdb.views.scheduler.SchedulerMainView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import de.agdb.views.login.LoginForm;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -58,7 +55,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-        if (!accessControl.isUserSignedIn()) {
+        /*if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
                 @Override
                 public void loginSuccessful() {
@@ -67,14 +64,15 @@ public class AppUI extends UI {
             }, viewProvider, AppUI.this));
         } else {
             showMainView();
-        }
+        }*/
+        showMainView();
     }
 
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
         setContent(new MainScreen(AppUI.this, viewProvider));
 
-        getNavigator().navigateTo(SchedulerView.VIEW_NAME);
+        getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 
     public ApplicationContext getApplicationContext() {

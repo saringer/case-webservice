@@ -60,6 +60,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "views/registerview";
 @import "views/scheduleview";
 
+
 @mixin main_theme {
   @include valo;
   @include register-view;

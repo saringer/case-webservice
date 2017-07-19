@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.auth.AccessControl;
 import de.agdb.views.MainScreen;
-import de.agdb.views.scheduler.SchedulerView;
+import de.agdb.views.scheduler.SchedulerMainView;
 import org.springframework.context.ApplicationContext;
 
 
@@ -130,7 +130,7 @@ public class RegisterForm extends CssLayout {
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
         UI.getCurrent().setContent(new MainScreen(ui, viewProvider));
-        UI.getCurrent().getNavigator().navigateTo(SchedulerView.VIEW_NAME);
+        UI.getCurrent().getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 
 

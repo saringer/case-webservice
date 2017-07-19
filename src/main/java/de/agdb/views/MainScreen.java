@@ -14,7 +14,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import de.agdb.views.contacts.ContactView;
-import de.agdb.views.scheduler.SchedulerView;
+import de.agdb.views.scheduler.SchedulerMainView;
 import de.agdb.views.profile.ProfileView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -86,7 +86,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         /*
         "" Empty view name will be the initially loaded view
          */
-        menu.addView(new SchedulerView(), SchedulerView.VIEW_NAME, "Schedule", FontAwesome.USER);
+        menu.addView(new SchedulerMainView(), SchedulerMainView.VIEW_NAME, "Schedule", null);
 
         menu.addView(new ProfileView(), ProfileView.VIEW_NAME, ProfileView.VIEW_NAME, FontAwesome.USER_PLUS);
 
