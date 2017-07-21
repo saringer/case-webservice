@@ -1,7 +1,9 @@
 @mixin schedule-view {
+
+
 .solid-border {
   border: solid 1px black;
-  overflow: auto;
+
 }
 
   .right-menu-style {
@@ -19,5 +21,19 @@
     color: white;
 
   }
+
+  .nav-top-active {
+    background-color: #2b78e4;
+    border: 1px solid black;
+    color: white;
+    text-align: center;
+  }
+  .nav-top-inactive {
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    text-align: center;
+  }
+
 
 }

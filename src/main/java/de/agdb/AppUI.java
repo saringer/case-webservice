@@ -3,6 +3,7 @@ package de.agdb;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedSession;
@@ -30,6 +31,10 @@ import javax.servlet.http.HttpSession;
 @SpringUI
 @Theme("main_theme")
 @PreserveOnRefresh
+/*
+v7 Widgetset, deprecated
+ */
+//@Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
 public class AppUI extends UI {
     /**
      *

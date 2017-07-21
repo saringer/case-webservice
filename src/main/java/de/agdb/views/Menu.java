@@ -1,5 +1,6 @@
 package de.agdb.views;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
@@ -36,7 +37,7 @@ public class Menu extends CssLayout {
         setPrimaryStyleName(ValoTheme.MENU_ROOT);
         menuPart = new CssLayout();
         menuPart.addStyleName(ValoTheme.MENU_PART);
-        menuPart.setWidth(219, Unit.PIXELS);
+        //menuPart.setWidth(219, Unit.PIXELS);
 
         // header of the menu
         final HorizontalLayout top = new HorizontalLayout();
@@ -126,6 +127,27 @@ public class Menu extends CssLayout {
         createViewButton(name, caption, icon);
     }
 
+    /**
+     * Register a pre-created view instance in the navigation menu and in the
+     *
+     */
+    public void addSubView(View view, final String name, String caption) {
+        navigator.addView(name, view);
+        createSubViewButton(name, caption);
+    }
+
+    /**
+     * Register a view in the navigation menu and in the {@link Navigator} based
+     * on a view class.
+
+     */
+    public void addSubView(Class<? extends View> viewClass, final String name,
+                        String caption) {
+        navigator.addView(name, viewClass);
+        createSubViewButton(name, caption);
+    }
+
+
     private void createViewButton(final String name, String caption,
                                   Resource icon) {
         Button button = new Button(caption, new ClickListener() {
@@ -139,6 +161,22 @@ public class Menu extends CssLayout {
         });
         button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
         button.setIcon(icon);
+        menuItemsLayout.addComponent(button);
+        viewButtons.put(name, button);
+    }
+
+    private void createSubViewButton(final String name, String caption) {
+        Button button = new Button(caption, new ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                //getUI().getNavigator().navigateTo(name);
+                navigator.navigateTo(name);
+
+            }
+        });
+        button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+        button.setIcon(VaadinIcons.ARROW_RIGHT);
         menuItemsLayout.addComponent(button);
         viewButtons.put(name, button);
     }

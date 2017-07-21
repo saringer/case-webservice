@@ -14,8 +14,10 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import de.agdb.views.contacts.ContactView;
+import de.agdb.views.scheduler.CalendarTest;
 import de.agdb.views.scheduler.SchedulerMainView;
 import de.agdb.views.profile.ProfileView;
+import de.agdb.views.scheduler.create_schedule.GeneralView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -66,6 +68,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         menu.addComponent(menuLabel);*/
 
 
+
         viewContainer = new CssLayout();
         viewContainer.addStyleName("valo-content");
         viewContainer.addStyleName("overflow-auto");
@@ -83,22 +86,24 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
 
         // Add all the views of the application to the view navigator via the Menu class
         menu = new Menu(navigator);
+
         /*
         "" Empty view name will be the initially loaded view
          */
         menu.addView(new SchedulerMainView(), SchedulerMainView.VIEW_NAME, "Schedule", null);
-
+        menu.addSubView(new GeneralView(), GeneralView.VIEW_NAME, "Create Schedule");
         menu.addView(new ProfileView(), ProfileView.VIEW_NAME, ProfileView.VIEW_NAME, FontAwesome.USER_PLUS);
 
         menu.addView(new CategoriesView(), CategoriesView.VIEW_NAME, CategoriesView.VIEW_NAME, FontAwesome.CHAIN);
         menu.addView(new ContactView(), ContactView.VIEW_NAME, ContactView.VIEW_NAME, FontAwesome.EDIT);
         //menu.addView(new ServletView(), ServletView.VIEW_NAME, ServletView.VIEW_NAME, FontAwesome.ARROW_CIRCLE_UP);
-
+        menu.addView(new CalendarTest(),"Calendar","Calendar",null);
 
         addComponent(menu);
         addComponent(viewContainer);
 
         setExpandRatio(viewContainer, 1);
+        setSpacing(false);
 
 
     }

@@ -14,6 +14,7 @@ import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 
 import java.util.Date;
+import java.util.Locale;
 
 
 @UIScope
@@ -27,12 +28,13 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
     public SchedulerMainView() {
         setSizeFull();
-
         VerticalLayout centeringLayout = new VerticalLayout();
-        centeringLayout.setHeight("85%");
-        centeringLayout.setWidth("85%");
-        centeringLayout.setStyleName("solid-border");
-        centeringLayout.setMargin(false);
+        //centeringLayout.setHeight("80%");
+        //centeringLayout.setWidth("80%");
+        centeringLayout.setSizeFull();
+        //centeringLayout.setStyleName("solid-border");
+        centeringLayout.addStyleName("overflow-auto");
+        //centeringLayout.setMargin(false);
 
         cal = new Calendar();
         cal.setSizeFull();
@@ -40,28 +42,47 @@ public class SchedulerMainView extends VerticalLayout implements View {
         cal.setEndDate(new HelperClass().getCurrentDatePlusOneYear());
         // disable weekly-view
         cal.setHandler((CalendarComponentEvents.WeekClickHandler)null);
+        cal.setHandler(new CalendarComponentEvents.DateClickHandler() {
+            @Override
+            public void dateClick(CalendarComponentEvents.DateClickEvent dateClickEvent) {
+                UI.getCurrent().showNotification("TEst");
+            }
+        });
+        cal.setCaption("Test");
+        cal.setLocale(new Locale.Builder().setLanguage("en").setRegion("GB").build());
+
         // disable daily-view
-        cal.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-
-       // calendar.setEndDate(new HelperClass().getCurrentDatePlusOneYear());
-
+       // cal.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        cal.setStyleName("test");
 
 
 
-        centeringLayout.addComponent(cal);
+
+
+        // calendar.setEndDate(new HelperClass().getCurrentDatePlusOneYear());
+
+
+
+
+
 
         HorizontalLayout bottomNav = createBottomNav();
-        centeringLayout.addComponent(bottomNav);
-        centeringLayout.setExpandRatio(cal, 0.85f);
-        centeringLayout.setExpandRatio(bottomNav, 0.15f);
+        VerticalLayout label = new VerticalLayout();
+        label.setCaption("TestLayout");
+        label.setSizeFull();
+
+        centeringLayout.addComponent(cal);
+        centeringLayout.addComponent(label);
+
+        //centeringLayout.setExpandRatio(cal, 0.85f);
+        //centeringLayout.setExpandRatio(label, 0.15f);
 
 
         addComponent(centeringLayout);
 
         setComponentAlignment(centeringLayout, Alignment.MIDDLE_CENTER);
-        setStyleName("solid-border");
-
+        //setStyleName("solid-border");
+        addStyleName("overflow-auto");
 
 
     }
@@ -107,8 +128,10 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
         nav.addComponent(createSchedulesButton);
         nav.addComponent(manageSchedulesButton);
-        nav.setExpandRatio(createSchedulesButton, 0.5f);
-        nav.setExpandRatio(manageSchedulesButton, 0.5f);
+        nav.setMargin(false);
+        nav.setSpacing(false);
+        //nav.setExpandRatio(createSchedulesButton, 1);
+       // nav.setExpandRatio(manageSchedulesButton, 1);
         return nav;
     }
 

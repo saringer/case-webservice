@@ -9,8 +9,8 @@ import java.util.Date;
 public class HelperClass {
 
     public Date getCurrentDatePlusOneYear() {
-        // Date in two weeks up from now
-        int noOfDays = 14; //i.e two weeks
+        //
+        int noOfDays = 20; //i.e two weeks
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
