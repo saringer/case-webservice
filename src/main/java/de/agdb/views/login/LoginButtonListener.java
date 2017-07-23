@@ -2,7 +2,7 @@ package de.agdb.views.login;
 
 
 
-import de.agdb.auth.AuthManager;
+import de.agdb.backend.auth.AuthManager;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;

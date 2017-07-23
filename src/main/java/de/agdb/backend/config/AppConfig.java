@@ -1,10 +1,9 @@
-package de.agdb.config;
+package de.agdb.backend.config;
 
 
-import de.agdb.auth.AuthManager;
-import de.agdb.auth.UserService;
+import de.agdb.backend.auth.AuthManager;
+import de.agdb.backend.auth.UserService;
 import de.agdb.views.categories.DBService;
-import de.agdb.views.contacts.ContactService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 
-@ComponentScan(basePackages = {"de.agdb.*", "de.agdb.auth","de.agdb.views.categories", "de.agdb.views.contacts"})
+@ComponentScan(basePackages = {"de.agdb.*", "de.agdb.backend.auth","de.agdb.views.categories", "de.agdb.views.contacts"})
 public class AppConfig {
 
     @Bean

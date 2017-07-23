@@ -1,15 +1,10 @@
-package de.agdb.entities;
-
-import de.agdb.views.contacts.ContactStatus;
+package de.agdb.backend.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-/**
- * A entity object, like in any other Java application. In a typical real world
- * application this could for example be a JPA entity.
- */
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "contacts")

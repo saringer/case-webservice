@@ -8,7 +8,7 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.auth.AccessControl;
+import de.agdb.backend.auth.AccessControl;
 import de.agdb.views.MainScreen;
 import de.agdb.views.scheduler.SchedulerMainView;
 import org.springframework.context.ApplicationContext;

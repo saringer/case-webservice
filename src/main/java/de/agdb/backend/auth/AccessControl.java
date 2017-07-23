@@ -1,4 +1,4 @@
-package de.agdb.auth;
+package de.agdb.backend.auth;
 
 /**
  * Simple interface for authentication and authorization checks.

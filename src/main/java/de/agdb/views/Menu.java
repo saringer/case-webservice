@@ -127,24 +127,24 @@ public class Menu extends CssLayout {
         createViewButton(name, caption, icon);
     }
 
-    /**
-     * Register a pre-created view instance in the navigation menu and in the
-     *
-     */
+
     public void addSubView(View view, final String name, String caption) {
         navigator.addView(name, view);
         createSubViewButton(name, caption);
     }
 
-    /**
-     * Register a view in the navigation menu and in the {@link Navigator} based
-     * on a view class.
 
-     */
     public void addSubView(Class<? extends View> viewClass, final String name,
                         String caption) {
         navigator.addView(name, viewClass);
         createSubViewButton(name, caption);
+    }
+
+    public void addDetailsView(View view, final String name) {
+        navigator.addView(name, view);
+    }
+    public void addDetailsView(Class<? extends View> viewClass, final String name) {
+        navigator.addView(name, viewClass);
     }
 
 

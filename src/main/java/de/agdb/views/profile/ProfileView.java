@@ -24,8 +24,10 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.people.v1.People;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.vaadin.addon.calendar.Calendar;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -197,12 +199,25 @@ public class ProfileView extends VerticalLayout implements View {
         footer.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
         form.addComponent(footer);
 
+        section = new Label ("Calendar test");
+        section.addStyleNames("h3");
+        section.addStyleNames("colored");
+        form.addComponent(section);
+        Calendar cal = new Calendar();
+        cal.setWidth("100%");
+        form.addComponent(cal);
+
+        form.addComponent(createBottomNav());
 
         section = new Label("Synchronize your Email-Accounts");
         section.addStyleName("h3");
         section.addStyleName("colored");
         form.addComponent(section);
         form.addComponent(setUpGoogleButton());
+
+
+
+
 
     }
 
@@ -297,6 +312,48 @@ public class ProfileView extends VerticalLayout implements View {
 
         return new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
 
+    }
+
+    private HorizontalLayout createBottomNav() {
+
+
+        HorizontalLayout nav = new HorizontalLayout();
+        nav.setWidth("100%");
+
+
+        VerticalLayout createSchedulesButton = new VerticalLayout();
+        //createSchedulesButton.setSizeFull();
+        createSchedulesButton.setWidth("100%");
+        createSchedulesButton.addStyleName("left-menu-style");
+        //createSchedulesButton.addComponent(leftMenuIcon);
+        //createSchedulesButton.addComponent(leftMenuCaption);
+        Button buttonLeft = new Button("Create schedule");
+        buttonLeft.setSizeUndefined();
+        buttonLeft.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+        //buttonLeft.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
+        //buttonLeft.setIcon(VaadinIcons.CALENDAR_O);
+        buttonLeft.addStyleName(ValoTheme.BUTTON_LARGE);
+        createSchedulesButton.addComponent(buttonLeft);
+
+        VerticalLayout manageSchedulesButton = new VerticalLayout();
+        //manageSchedulesButton.setSizeFull();
+        manageSchedulesButton.setWidth("100%");
+        manageSchedulesButton.addStyleName("right-menu-style");
+        Button buttonRight = new Button("Manage schedules");
+        buttonRight.setSizeUndefined();
+        buttonRight.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+        //buttonRight.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
+        //buttonRight.setIcon(VaadinIcons.CALENDAR);
+        buttonRight.addStyleName(ValoTheme.BUTTON_LARGE);
+        manageSchedulesButton.addComponent(buttonRight);
+
+        nav.addComponent(createSchedulesButton);
+        nav.addComponent(manageSchedulesButton);
+        nav.setMargin(false);
+        nav.setSpacing(false);
+        //nav.setExpandRatio(createSchedulesButton, 1);
+        // nav.setExpandRatio(manageSchedulesButton, 1);
+        return nav;
     }
 
 

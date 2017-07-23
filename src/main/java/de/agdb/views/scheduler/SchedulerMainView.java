@@ -9,11 +9,15 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.components.calendar.handler.BasicDateClickHandler;
 import org.vaadin.addon.calendar.Calendar;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 
+import javax.xml.soap.Text;
+import java.text.Normalizer;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 
@@ -28,38 +32,10 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
     public SchedulerMainView() {
         setSizeFull();
-        VerticalLayout centeringLayout = new VerticalLayout();
-        //centeringLayout.setHeight("80%");
-        //centeringLayout.setWidth("80%");
-        centeringLayout.setSizeFull();
-        //centeringLayout.setStyleName("solid-border");
-        centeringLayout.addStyleName("overflow-auto");
-        //centeringLayout.setMargin(false);
-
-        cal = new Calendar();
-        cal.setSizeFull();
-        cal.setStartDate(new Date());
-        cal.setEndDate(new HelperClass().getCurrentDatePlusOneYear());
-        // disable weekly-view
-        cal.setHandler((CalendarComponentEvents.WeekClickHandler)null);
-        cal.setHandler(new CalendarComponentEvents.DateClickHandler() {
-            @Override
-            public void dateClick(CalendarComponentEvents.DateClickEvent dateClickEvent) {
-                UI.getCurrent().showNotification("TEst");
-            }
-        });
-        cal.setCaption("Test");
-        cal.setLocale(new Locale.Builder().setLanguage("en").setRegion("GB").build());
-
-        // disable daily-view
-       // cal.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-        cal.setStyleName("test");
-
-
-
-
-
-        // calendar.setEndDate(new HelperClass().getCurrentDatePlusOneYear());
+        VerticalLayout formWrapper = new VerticalLayout();
+        formWrapper.setSizeFull();
+        addComponent(formWrapper);
+        setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
 
 
@@ -67,22 +43,33 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
 
         HorizontalLayout bottomNav = createBottomNav();
-        VerticalLayout label = new VerticalLayout();
-        label.setCaption("TestLayout");
-        label.setSizeFull();
-
-        centeringLayout.addComponent(cal);
-        centeringLayout.addComponent(label);
-
-        //centeringLayout.setExpandRatio(cal, 0.85f);
-        //centeringLayout.setExpandRatio(label, 0.15f);
+        bottomNav.setWidth("100%");
 
 
-        addComponent(centeringLayout);
+       FormLayout form = new FormLayout();
+       form.setWidth("80%");
+       form.setHeight("80%");
+       form.setMargin(true);
+       form.addStyleNames("solid-border");
 
-        setComponentAlignment(centeringLayout, Alignment.MIDDLE_CENTER);
-        //setStyleName("solid-border");
-        addStyleName("overflow-auto");
+
+       form.addComponent(new CalendarComponent());
+       form.addComponent(bottomNav);
+
+//        form.setComponentAlignment(bottomNav, Alignment.TOP_CENTER);
+
+
+
+        formWrapper.setMargin(true);
+        formWrapper.setSpacing(true);
+        formWrapper.addComponent(form);
+        formWrapper.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
+
+
+
+
+
+
 
 
     }
@@ -93,36 +80,34 @@ public class SchedulerMainView extends VerticalLayout implements View {
     }
 
     private HorizontalLayout createBottomNav() {
-        Label leftMenuIcon = new Label();
-        leftMenuIcon.setIcon(VaadinIcons.CALENDAR_O);
-        leftMenuIcon.addStyleName(ValoTheme.LABEL_HUGE);
-        Label leftMenuCaption = new Label("Create schedule");
-        leftMenuCaption.addStyleName(ValoTheme.LABEL_H2);
+
 
         HorizontalLayout nav = new HorizontalLayout();
-        nav.setSizeFull();
+
 
         VerticalLayout createSchedulesButton = new VerticalLayout();
-        createSchedulesButton.setSizeFull();
+        //createSchedulesButton.setSizeFull();
+        createSchedulesButton.setWidth("100%");
         createSchedulesButton.addStyleName("left-menu-style");
         //createSchedulesButton.addComponent(leftMenuIcon);
         //createSchedulesButton.addComponent(leftMenuCaption);
         Button buttonLeft = new Button("Create schedule");
         buttonLeft.setSizeUndefined();
         buttonLeft.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        buttonLeft.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        buttonLeft.setIcon(VaadinIcons.CALENDAR_O);
+        //buttonLeft.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
+        //buttonLeft.setIcon(VaadinIcons.CALENDAR_O);
         buttonLeft.addStyleName(ValoTheme.BUTTON_LARGE);
         createSchedulesButton.addComponent(buttonLeft);
 
         VerticalLayout manageSchedulesButton = new VerticalLayout();
-        manageSchedulesButton.setSizeFull();
+        //manageSchedulesButton.setSizeFull();
+        manageSchedulesButton.setWidth("100%");
         manageSchedulesButton.addStyleName("right-menu-style");
         Button buttonRight = new Button("Manage schedules");
-        buttonRight.setSizeFull();
+        buttonRight.setSizeUndefined();
         buttonRight.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        buttonRight.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        buttonRight.setIcon(VaadinIcons.CALENDAR);
+        //buttonRight.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
+        //buttonRight.setIcon(VaadinIcons.CALENDAR);
         buttonRight.addStyleName(ValoTheme.BUTTON_LARGE);
         manageSchedulesButton.addComponent(buttonRight);
 

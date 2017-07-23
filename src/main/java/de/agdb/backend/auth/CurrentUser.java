@@ -1,4 +1,4 @@
-package de.agdb.auth;
+package de.agdb.backend.auth;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;

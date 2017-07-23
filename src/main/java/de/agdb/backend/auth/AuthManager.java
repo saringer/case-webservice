@@ -1,4 +1,4 @@
-package de.agdb.auth;
+package de.agdb.backend.auth;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;

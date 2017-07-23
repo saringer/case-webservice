@@ -7,28 +7,20 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.ValueChangeMode;
-import com.vaadin.shared.ui.dnd.DropEffect;
-import com.vaadin.shared.ui.dnd.EffectAllowed;
 
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ButtonRenderer;
-import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.ComponentRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.entities.Categories;
-import de.agdb.entities.Contacts;
-import de.agdb.views.categories.CategoriesView;
+import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.Contacts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.swing.text.html.CSS;
 import java.util.List;
-import java.util.Optional;
 
 
 @SpringView(name = ContactView.VIEW_NAME)

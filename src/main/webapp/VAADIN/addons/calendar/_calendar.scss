@@ -70,7 +70,7 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
   }
 
   .#{$primary-stylename}-week-numbers {
-    display: none;
+    //display: none;
   }
 
   .#{$primary-stylename}-month-sizedheight .#{$primary-stylename}-month-day {
@@ -186,7 +186,7 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
   .#{$primary-stylename}-month {
     outline: none;
     overflow: hidden;
-    border: 1px solid black;
+    //border: 1px solid black;
 
     td {
       vertical-align: top;
@@ -194,7 +194,7 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
   }
 
   .#{$primary-stylename}-week-number {
-    display: none;
+    //display: none;
     cursor: pointer;
     //width: 20px; // Same as VCalendar.MONTHLY_WEEKTOOLBARWIDTH
     text-align: center;
@@ -207,7 +207,7 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
   }
 
   .#{$primary-stylename}-month-day {
-    border: 1px solid black;
+    //border: 1px solid black;
     outline: none;
     box-sizing: border-box;
     line-height: 1.2;

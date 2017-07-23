@@ -1,4 +1,4 @@
-package de.agdb.auth;
+package de.agdb.backend.auth;
 
 public class BasicAccessControl implements AccessControl {
 

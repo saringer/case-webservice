@@ -33,12 +33,9 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
-import com.vaadin.v7.ui.Calendar;
+
+import com.vaadin.v7.ui.*;
 import com.vaadin.v7.ui.Calendar.TimeFormat;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.TextArea;
-import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents.DateClickEvent;
 import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents.EventClick;
 import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
@@ -51,6 +48,7 @@ import com.vaadin.v7.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.v7.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.v7.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.v7.ui.components.calendar.handler.BasicWeekClickHandler;
+
 
 /** Calendar component test application */
 @Theme("valo-test")

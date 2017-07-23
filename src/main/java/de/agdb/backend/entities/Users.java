@@ -1,4 +1,4 @@
-package de.agdb.entities;
+package de.agdb.backend.entities;
 
 
 import javax.persistence.*;

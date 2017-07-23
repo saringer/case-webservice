@@ -12,8 +12,8 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.auth.AccessControl;
-import de.agdb.auth.BasicAccessControl;
+import de.agdb.backend.auth.AccessControl;
+import de.agdb.backend.auth.BasicAccessControl;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
 import de.agdb.views.scheduler.SchedulerMainView;
@@ -27,10 +27,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 
-
 @SpringUI
 @Theme("main_theme")
-@PreserveOnRefresh
+//@PreserveOnRefresh
 /*
 v7 Widgetset, deprecated
  */
@@ -71,6 +70,7 @@ public class AppUI extends UI {
             showMainView();
         }*/
         showMainView();
+
     }
 
     protected void showMainView() {

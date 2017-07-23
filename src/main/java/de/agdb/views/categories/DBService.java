@@ -1,10 +1,8 @@
 package de.agdb.views.categories;
 
-import com.vaadin.ui.Grid;
-import de.agdb.entities.Categories;
+import de.agdb.backend.entities.Categories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

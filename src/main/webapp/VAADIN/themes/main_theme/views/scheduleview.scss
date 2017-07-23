@@ -11,7 +11,6 @@
    border: solid 1px black;
    text-align: center;
    color: white;
-    font-size: large;
 
  }
   .left-menu-style {
@@ -33,6 +32,22 @@
     border: 1px solid black;
     color: black;
     text-align: center;
+  }
+
+  .test {
+    display: inline-block;
+    margin-bottom: 10%;
+    margin-top: 10%;
+  }
+
+  .item-box {
+    background-color: rgba(0, 158, 15, 0.2);
+    color: blue;
+    text-align: center;
+    border: 1px solid black;
+    vertical-align: middle;
+   //align-items: center;
+
   }
 
 

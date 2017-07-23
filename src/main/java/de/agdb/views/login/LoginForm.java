@@ -4,12 +4,11 @@ package de.agdb.views.login;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import de.agdb.AppUI;
-import de.agdb.auth.AccessControl;
+import de.agdb.backend.auth.AccessControl;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.auth.BasicAccessControl;
 import org.springframework.context.ApplicationContext;
 
 import java.io.Serializable;

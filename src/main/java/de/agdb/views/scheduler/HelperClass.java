@@ -17,4 +17,8 @@ public class HelperClass {
         Date date = calendar.getTime();
         return date;
     }
+
+    public void setUpCalendar() {
+
+    }
 }
