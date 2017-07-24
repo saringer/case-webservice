@@ -50,7 +50,7 @@ public class SchedulerMainView extends VerticalLayout implements View {
        form.setWidth("80%");
        form.setHeight("80%");
        form.setMargin(true);
-       form.addStyleNames("solid-border");
+       //form.addStyleNames("solid-border");
 
 
        form.addComponent(new CalendarComponent());

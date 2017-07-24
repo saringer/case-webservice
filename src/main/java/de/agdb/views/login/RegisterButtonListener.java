@@ -40,7 +40,7 @@ public class RegisterButtonListener implements Button.ClickListener {
                 final String encodedPassword = passwordEncoder.encode(password.getValue());
 
                 jdbcTemp.update(
-                        "insert into users (name, password) values (?, ?)",
+                        "insert into users (username, password) values (?, ?)",
                         userName.getValue(), encodedPassword);
 
                 UI.getCurrent().setContent(new LoginForm(parent.getAccessControl(), new LoginForm.LoginListener() {

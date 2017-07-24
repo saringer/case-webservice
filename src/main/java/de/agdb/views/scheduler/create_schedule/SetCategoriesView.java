@@ -11,7 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringView(name = SetCategoriesView.VIEW_NAME)
 public class SetCategoriesView extends VerticalLayout implements View{
 
-    public static final String VIEW_NAME = "CategoriesView";
+    public static final String VIEW_NAME = "SetCategoriesView";
 
     public SetCategoriesView() {
 

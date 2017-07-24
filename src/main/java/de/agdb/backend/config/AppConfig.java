@@ -3,7 +3,7 @@ package de.agdb.backend.config;
 
 import de.agdb.backend.auth.AuthManager;
 import de.agdb.backend.auth.UserService;
-import de.agdb.views.categories.DBService;
+import de.agdb.views.categories.manage_categories.DBService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

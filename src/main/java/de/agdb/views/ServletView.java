@@ -3,16 +3,9 @@ package de.agdb.views;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinService;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import de.agdb.views.categories.CategoriesView;
-
-import java.io.File;
 
 @UIScope
 @SpringView(name = ServletView.VIEW_NAME)

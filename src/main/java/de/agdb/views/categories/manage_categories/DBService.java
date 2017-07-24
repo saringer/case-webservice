@@ -1,4 +1,4 @@
-package de.agdb.views.categories;
+package de.agdb.views.categories.manage_categories;
 
 import de.agdb.backend.entities.Categories;
 import org.springframework.beans.factory.annotation.Autowired;

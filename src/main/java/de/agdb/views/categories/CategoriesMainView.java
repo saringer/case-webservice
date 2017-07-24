@@ -1,23 +1,23 @@
-package de.agdb.views.contacts;
+package de.agdb.views.categories;
 
-import com.vaadin.client.ui.Icon;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.views.profile.ProfileView;
-import de.agdb.views.scheduler.CalendarComponent;
 
 @UIScope
-@SpringView(name = ContactsMainView.VIEW_NAME)
-public class ContactsMainView extends VerticalLayout implements View {
+@SpringView(name = CategoriesMainView.VIEW_NAME)
+public class CategoriesMainView extends VerticalLayout implements View {
 
-    public static final String VIEW_NAME = "ContactsView";
+    public static final String VIEW_NAME = "CategoriesView";
 
-    public ContactsMainView() {
+    public CategoriesMainView() {
         setSizeFull();
 
         VerticalLayout formWrapper = new VerticalLayout();
@@ -27,11 +27,6 @@ public class ContactsMainView extends VerticalLayout implements View {
 
 
         HorizontalLayout form = buildMainMenu();
-
-
-
-//        form.setComponentAlignment(bottomNav, Alignment.TOP_CENTER);
-
 
 
         formWrapper.setMargin(true);
@@ -64,10 +59,10 @@ public class ContactsMainView extends VerticalLayout implements View {
 
         Label icon = new Label();
         icon.setContentMode(ContentMode.HTML);
-        icon.setValue(VaadinIcons.AT.getHtml());
+        icon.setValue(VaadinIcons.LIST_OL.getHtml());
         icon.addStyleNames("tile-icon-font");
 
-        Label header = new Label("Synchronize contacts");
+        Label header = new Label("Manage categories");
         header.addStyleNames(ValoTheme.LABEL_HUGE);
 
 
@@ -95,10 +90,10 @@ public class ContactsMainView extends VerticalLayout implements View {
 
         icon = new Label();
         icon.setContentMode(ContentMode.HTML);
-        icon.setValue(VaadinIcons.GROUP.getHtml());
+        icon.setValue(VaadinIcons.TAGS.getHtml());
         icon.addStyleNames("tile-icon-font");
 
-        header = new Label("Manage contacts");
+        header = new Label("Assign categories");
         header.addStyleNames(ValoTheme.LABEL_HUGE);
 
 

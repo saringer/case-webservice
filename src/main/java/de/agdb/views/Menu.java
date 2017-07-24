@@ -176,7 +176,7 @@ public class Menu extends CssLayout {
             }
         });
         button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        button.setIcon(VaadinIcons.ARROW_RIGHT);
+        button.setIcon(VaadinIcons.LEVEL_LEFT);
         menuItemsLayout.addComponent(button);
         viewButtons.put(name, button);
     }

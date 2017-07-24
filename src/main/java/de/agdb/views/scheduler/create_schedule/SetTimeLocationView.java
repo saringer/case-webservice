@@ -171,15 +171,13 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("CategoriesView");
+                UI.getCurrent().getNavigator().navigateTo("SetCategoriesView");
             }
         });
         button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
 
-        Button b = new Button("Clear");
-        b.setWidth("15%");
-        b.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+
 
 
 

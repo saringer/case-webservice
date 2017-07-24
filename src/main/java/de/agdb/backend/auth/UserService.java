@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +25,7 @@ public class UserService implements UserDetailsService {
 
 
     public Users getUserbyName(String userName) {
-        String sql = "SELECT * FROM users WHERE name = ?";
+        String sql = "SELECT * FROM users WHERE USERNAME = ?";
 
         Users user = null;
         try {

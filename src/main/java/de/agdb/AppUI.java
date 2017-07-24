@@ -68,7 +68,7 @@ public class AppUI extends UI {
         } else {
             showMainView();
         }
-       // showMainView();
+//       showMainView();
 
     }
 

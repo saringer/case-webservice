@@ -1,4 +1,4 @@
-package de.agdb.views.categories;
+package de.agdb.views.categories.manage_categories;
 
 
 import com.vaadin.navigator.View;
