@@ -1,9 +1,6 @@
 package de.agdb;
 
-import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.annotations.Widgetset;
+import com.vaadin.annotations.*;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedSession;
@@ -25,15 +22,17 @@ import javax.servlet.annotation.WebServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import de.agdb.views.login.LoginForm;
 
 
 @SpringUI
 @Theme("main_theme")
-//@PreserveOnRefresh
+@PreserveOnRefresh
 /*
 v7 Widgetset, deprecated
  */
 //@Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
+@Push
 public class AppUI extends UI {
     /**
      *
@@ -59,7 +58,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-        /*if (!accessControl.isUserSignedIn()) {
+        if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
                 @Override
                 public void loginSuccessful() {
@@ -68,8 +67,8 @@ public class AppUI extends UI {
             }, viewProvider, AppUI.this));
         } else {
             showMainView();
-        }*/
-        showMainView();
+        }
+       // showMainView();
 
     }
 

@@ -1,18 +1,18 @@
 package de.agdb.views.scheduler.create_schedule;
 
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 @UIScope
-@SpringView(name = SetTimeLocationView.VIEW_NAME)
-public class SetTimeLocationView extends VerticalLayout implements View {
-    public static final String VIEW_NAME = "TimeLocationView";
+@SpringView(name = SetGeneralView.VIEW_NAME)
+public class SetGeneralView extends VerticalLayout implements View {
+    public static final String VIEW_NAME = "GeneralView";
 
-    public SetTimeLocationView() {
-
+    public SetGeneralView() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setWidth("80%");
@@ -22,14 +22,11 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
 
 
-        FormLayout content = new FormLayout();
+        FormLayout content = buildContent();
+        content.setSpacing(true);
+        content.setMargin(true);
         content.setHeight("80%");
-        content.setWidth("90%");
-        content.addStyleNames("overflow-auto");
-
-        content.addComponent(buildContent("sdsd"));
-        content.addComponent( buildContent("String"));
-
+        content.setWidth("70%");
 
 
 
@@ -52,66 +49,10 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
     }
 
-    private FormLayout buildContent(String header) {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setWidth("100%");
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
 
-        CssLayout wrapperLayout = new CssLayout();
-        wrapperLayout.setWidth("100%");
-
-
-        CssLayout itemLayout = new CssLayout();
-        itemLayout.setWidth("100%");
-
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        CssLayout buttonItem = new CssLayout();
-        Button plusButton = new Button("Plus");
-        plusButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                        itemLayout.addComponent(buildItem());
-
-            }
-        });
-        buttonItem.addComponent(plusButton);
-        buttonItem.setStyleName("item-box");
-        buttonItem.setHeight(52, Unit.PIXELS);
-        buttonItem.setWidth("33%");
-
-
-        wrapperLayout.addComponent(itemLayout);
-        wrapperLayout.addComponent(buttonItem);
-
-        formLayout.addComponent(new Label("Section Monday 232.21.2"));
-        formLayout.addComponent(wrapperLayout);
-
-
-
-
-        return formLayout;
     }
-
-    private CssLayout buildItem() {
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.addComponent(new Label("Time"));
-        cssLayout.setStyleName("item-box");
-        cssLayout.setHeight(52, Unit.PIXELS);
-        cssLayout.setWidth("33%");
-        return cssLayout;
-    }
-
 
     private HorizontalLayout createTopNavBar() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -124,7 +65,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         Label generalHeader = new Label("Step 1: General");
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
-        generalBar.setStyleName("nav-top-passed");
+        generalBar.setStyleName("nav-top-active");
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");
@@ -132,7 +73,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         Label dateHeader = new Label("Step 2: Set date(s)");
         dateHeader.setSizeUndefined();
         dateBar.addComponent(dateHeader);
-        dateBar.setStyleName("nav-top-passed");
+        dateBar.setStyleName("nav-top-inactive");
 
         CssLayout timeLocationBar = new CssLayout();
         timeLocationBar.setWidth("100%");
@@ -140,7 +81,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         Label timeLocationHeader = new Label("Step 3: Set time/location");
         timeLocationHeader.setSizeUndefined();
         timeLocationBar.addComponent(timeLocationHeader);
-        timeLocationBar.setStyleName("nav-top-active");
+        timeLocationBar.setStyleName("nav-top-inactive");
 
         CssLayout categoriesBar = new CssLayout();
         categoriesBar.setWidth("100%");
@@ -161,6 +102,49 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         return horizontalLayout;
     }
 
+    private FormLayout buildContent() {
+
+        Label section;
+
+        FormLayout form = new FormLayout();
+
+        section = new Label("Schedule title");
+        section.addStyleName("h3");
+        section.addStyleName("colored");
+        TextField scheduleTitle = new TextField();
+        scheduleTitle.setWidth("100%");
+        form.addComponent(section);
+        form.addComponent(scheduleTitle);
+
+        section = new Label("Recurrency");
+        section.addStyleName("h3");
+        section.addStyleName("colored");
+        HorizontalLayout recurrencyOptions = new HorizontalLayout();
+
+        NativeSelect<String> dropDownMenu = new NativeSelect();
+        dropDownMenu.setEmptySelectionAllowed(false);
+        dropDownMenu.setItems("weekly", "monthly");
+        recurrencyOptions.addComponent(dropDownMenu);
+        recurrencyOptions.addComponent(new Label("until"));
+        recurrencyOptions.addComponent(new DateField());
+        CheckBox activateRecurrency = new CheckBox("Make this a recurrying event", false);
+        form.addComponent(section);
+        form.addComponent(recurrencyOptions);
+        form.addComponent(activateRecurrency);
+
+        section = new Label("Description");
+        section.addStyleName("h3");
+        section.addStyleName("colored");
+        TextArea scheduleDescription = new TextArea();
+        scheduleDescription.setWidth("100%");
+        form.addComponent(section);
+        form.addComponent(scheduleDescription);
+
+
+        return form;
+
+    }
+
     public HorizontalLayout createBottomNav() {
         HorizontalLayout nav = new HorizontalLayout();
         nav.setWidth("100%");
@@ -171,7 +155,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("CategoriesView");
+                UI.getCurrent().getNavigator().navigateTo("DateView");
             }
         });
         button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
@@ -186,8 +170,10 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         nav.addComponent(button);
         //nav.addComponent(b);
         nav.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
-        // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
+       // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
         return nav;
 
     }
+
+
 }

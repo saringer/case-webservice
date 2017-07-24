@@ -1,24 +1,20 @@
 package de.agdb.views.scheduler.create_schedule;
 
-import com.vaadin.client.ui.FontIcon;
-import com.vaadin.client.ui.Icon;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
-import javax.swing.text.html.CSS;
-import javax.xml.soap.Text;
-
 @UIScope
-@SpringView(name = GeneralView.VIEW_NAME)
-public class GeneralView extends VerticalLayout implements View {
-    public static final String VIEW_NAME = "GeneralView";
+@SpringView(name = SetCategoriesView.VIEW_NAME)
+public class SetCategoriesView extends VerticalLayout implements View{
 
-    public GeneralView() {
+    public static final String VIEW_NAME = "CategoriesView";
+
+    public SetCategoriesView() {
+
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setWidth("80%");
@@ -28,11 +24,14 @@ public class GeneralView extends VerticalLayout implements View {
 
 
 
-        FormLayout content = buildContent();
-        content.setSpacing(true);
-        content.setMargin(true);
+        FormLayout content = new FormLayout();
         content.setHeight("80%");
-        content.setWidth("70%");
+        content.setWidth("90%");
+        content.addStyleNames("overflow-auto");
+
+       // content.addComponent(buildContent("sdsd"));
+       // content.addComponent( buildContent("String"));
+
 
 
 
@@ -55,11 +54,6 @@ public class GeneralView extends VerticalLayout implements View {
 
     }
 
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-
-    }
-
     private HorizontalLayout createTopNavBar() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth("100%");
@@ -71,7 +65,7 @@ public class GeneralView extends VerticalLayout implements View {
         Label generalHeader = new Label("Step 1: General");
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
-        generalBar.setStyleName("nav-top-active");
+        generalBar.setStyleName("nav-top-passed");
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");
@@ -79,7 +73,7 @@ public class GeneralView extends VerticalLayout implements View {
         Label dateHeader = new Label("Step 2: Set date(s)");
         dateHeader.setSizeUndefined();
         dateBar.addComponent(dateHeader);
-        dateBar.setStyleName("nav-top-inactive");
+        dateBar.setStyleName("nav-top-passed");
 
         CssLayout timeLocationBar = new CssLayout();
         timeLocationBar.setWidth("100%");
@@ -87,7 +81,7 @@ public class GeneralView extends VerticalLayout implements View {
         Label timeLocationHeader = new Label("Step 3: Set time/location");
         timeLocationHeader.setSizeUndefined();
         timeLocationBar.addComponent(timeLocationHeader);
-        timeLocationBar.setStyleName("nav-top-inactive");
+        timeLocationBar.setStyleName("nav-top-passed");
 
         CssLayout categoriesBar = new CssLayout();
         categoriesBar.setWidth("100%");
@@ -95,7 +89,7 @@ public class GeneralView extends VerticalLayout implements View {
         Label categoriesHeader = new Label("Step 4: Set categories");
         categoriesHeader.setSizeUndefined();
         categoriesBar.addComponent(categoriesHeader);
-        categoriesBar.setStyleName("nav-top-inactive");
+        categoriesBar.setStyleName("nav-top-active");
 
         horizontalLayout.addComponent(generalBar);
         horizontalLayout.addComponent(dateBar);
@@ -108,78 +102,46 @@ public class GeneralView extends VerticalLayout implements View {
         return horizontalLayout;
     }
 
-    private FormLayout buildContent() {
-
-        Label section;
-
-        FormLayout form = new FormLayout();
-
-        section = new Label("Schedule title");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        TextField scheduleTitle = new TextField();
-        scheduleTitle.setWidth("100%");
-        form.addComponent(section);
-        form.addComponent(scheduleTitle);
-
-        section = new Label("Recurrency");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        HorizontalLayout recurrencyOptions = new HorizontalLayout();
-
-        NativeSelect<String> dropDownMenu = new NativeSelect();
-        dropDownMenu.setEmptySelectionAllowed(false);
-        dropDownMenu.setItems("weekly", "monthly");
-        recurrencyOptions.addComponent(dropDownMenu);
-        recurrencyOptions.addComponent(new Label("until"));
-        recurrencyOptions.addComponent(new DateField());
-        CheckBox activateRecurrency = new CheckBox("Make this a recurrying event", false);
-        form.addComponent(section);
-        form.addComponent(recurrencyOptions);
-        form.addComponent(activateRecurrency);
-
-        section = new Label("Description");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        TextArea scheduleDescription = new TextArea();
-        scheduleDescription.setWidth("100%");
-        form.addComponent(section);
-        form.addComponent(scheduleDescription);
-
-
-        return form;
-
-    }
-
     public HorizontalLayout createBottomNav() {
         HorizontalLayout nav = new HorizontalLayout();
         nav.setWidth("100%");
         nav.setSpacing(false);
         nav.setMargin(false);
-        Button button = new Button("NEXT");
-        button.setWidth("15%");
-        button.addClickListener(new Button.ClickListener() {
+        Button createButton = new Button("CREATE SCHEDULE");
+        createButton.setWidth(167, Unit.PIXELS);
+        createButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("DateView");
+                String callBackUrl = Page.getCurrent().getLocation().toString();
+                if(callBackUrl.contains("#")) {
+                    callBackUrl = callBackUrl.substring(0, callBackUrl.indexOf("#"));
+                    UI.getCurrent().showNotification(callBackUrl);
+                }
+
             }
         });
-        button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        createButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+
+        Button backButton = new Button("BACK");
+        backButton.setWidth(167, Unit.PIXELS);
+        backButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                UI.getCurrent().getNavigator().navigateTo("TimeLocationView");
+            }
+        });
+        backButton.addStyleName("back-button");
 
 
-        Button b = new Button("Clear");
-        b.setWidth("15%");
-        b.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
 
-
-        nav.addComponent(button);
+        nav.addComponent(backButton);
+        nav.addComponent(createButton);
         //nav.addComponent(b);
-        nav.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
-       // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
+        nav.setComponentAlignment(backButton, Alignment.MIDDLE_LEFT);
+        nav.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+        // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
         return nav;
 
     }
-
-
 }

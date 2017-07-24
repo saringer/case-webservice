@@ -1,6 +1,10 @@
 package de.agdb.views.profile;
 
 
+import com.github.scribejava.apis.GoogleApi20;
+import com.github.scribejava.core.model.OAuth1AccessToken;
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.Token;
 import com.google.api.client.googleapis.auth.oauth2.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.vaadin.navigator.View;
@@ -28,6 +32,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.vaadin.addon.calendar.Calendar;
+import org.vaadin.addon.oauthpopup.OAuthListener;
+import org.vaadin.addon.oauthpopup.OAuthPopupButton;
+import org.vaadin.addon.oauthpopup.OAuthPopupConfig;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -36,7 +43,7 @@ import java.util.*;
 @UIScope
 @SpringView(name = ProfileView.VIEW_NAME)
 public class ProfileView extends VerticalLayout implements View {
-    public static final String VIEW_NAME = "Profile";
+    public static final String VIEW_NAME = "ProfileView";
     /**
      * File for storing user credentials.
      */
@@ -83,6 +90,7 @@ public class ProfileView extends VerticalLayout implements View {
     TextField website;
     TextArea shortbio;
     RichTextArea bio;
+    GoogleCredential credential;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -214,6 +222,8 @@ public class ProfileView extends VerticalLayout implements View {
         section.addStyleName("colored");
         form.addComponent(section);
         form.addComponent(setUpGoogleButton());
+
+        form.addComponent(testOauth());
 
 
 
@@ -353,8 +363,109 @@ public class ProfileView extends VerticalLayout implements View {
         nav.setSpacing(false);
         //nav.setExpandRatio(createSchedulesButton, 1);
         // nav.setExpandRatio(manageSchedulesButton, 1);
+
         return nav;
+
     }
+
+    public OAuthPopupButton testOauth() {
+
+        String callBackUrl = Page.getCurrent().getLocation().toString();
+        if(callBackUrl.contains("#")) {
+            callBackUrl = callBackUrl.substring(0, callBackUrl.indexOf("#"));
+            UI.getCurrent().showNotification(callBackUrl);
+        }
+
+        OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(clientId, clientSecret);
+        //config.setGrantType("authorization_code");
+        config.setScope("https://www.googleapis.com/auth/contacts.readonly");
+        //config.setCallbackUrl("urn:ietf:wg:oauth:2.0:oob");
+        config.setCallbackUrl(callBackUrl);
+
+
+
+        OAuthPopupButton twitter = new OAuthPopupButton(
+                GoogleApi20.instance(), config);
+        twitter.addOAuthListener(new OAuthListener() {
+
+            @Override
+            public void authSuccessful(Token token, boolean isOAuth20) {
+                // Do something useful with the OAuth token, like persist it
+                if (token instanceof OAuth2AccessToken) {
+                    ((OAuth2AccessToken) token).getAccessToken();
+                    ((OAuth2AccessToken) token).getRefreshToken();
+                    ((OAuth2AccessToken) token).getExpiresIn();
+                    storeContactsInDatabase(((OAuth2AccessToken) token).getAccessToken());
+
+
+                } else {
+                    ((OAuth1AccessToken) token).getToken();
+                    ((OAuth1AccessToken) token).getTokenSecret();
+                }
+            }
+
+            @Override
+            public void authDenied(String reason) {
+                Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
+            }
+        });
+        //layout.addComponent(twitter);
+        return twitter;
+
+    }
+
+    public void storeContactsInDatabase(String token) {
+        GoogleCredential credential = new GoogleCredential().setAccessToken(token);
+        /*Credential credential = null;
+        try {
+            credential = authorize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        People peopleService = new People.Builder(httpTransport, jsonFactory, credential)
+                .build();
+
+        ListConnectionsResponse contacts = null;
+        try {
+            contacts = peopleService.people().connections().
+                    list("people/me").
+                    setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers").
+                    execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Person> connections = contacts.getConnections();
+        for (int i = 0; i < connections.size(); i++) {
+
+            String name = "empty";
+            String email = "empty";
+            if (connections.get(i).getEmailAddresses() != null) {
+                email = connections.get(i).getEmailAddresses().get(0).getValue();
+                System.out.println(email);
+                if (connections.get(i).getNames() != null) {
+
+                    name =  connections.get(i).getNames().get(0).getDisplayName();
+                    System.out.println(name);
+
+                }
+
+            }
+
+
+
+
+
+
+            jdbcTemplate.update(
+                    "insert into contacts (first_name, email) values (?, ?)",
+                    name, email);
+
+
+        }
+    }
+
+
 
 
 }

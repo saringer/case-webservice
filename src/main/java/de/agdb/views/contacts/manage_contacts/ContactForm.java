@@ -1,4 +1,4 @@
-package de.agdb.views.contacts;
+package de.agdb.views.contacts.manage_contacts;
 
 import com.vaadin.data.Binder;
 import com.vaadin.event.ShortcutAction.KeyCode;

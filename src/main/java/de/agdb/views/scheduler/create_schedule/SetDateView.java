@@ -6,10 +6,9 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.views.scheduler.CalendarComponent;
-import org.vaadin.addon.calendar.Calendar;
 
 @UIScope
-@SpringView(name = GeneralView.VIEW_NAME)
+@SpringView(name = SetDateView.VIEW_NAME)
 public class SetDateView extends VerticalLayout implements View{
     public static final String VIEW_NAME = "DateView";
 
@@ -78,7 +77,7 @@ public class SetDateView extends VerticalLayout implements View{
         Label generalHeader = new Label("Step 1: General");
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
-        generalBar.setStyleName("nav-top-inactive");
+        generalBar.setStyleName("nav-top-passed");
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");

@@ -1,4 +1,4 @@
-package de.agdb.views.contacts;
+package de.agdb.views.contacts.manage_contacts;
 
 import de.agdb.backend.entities.Contacts;
 import org.springframework.beans.factory.annotation.Autowired;

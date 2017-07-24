@@ -34,6 +34,13 @@
     text-align: center;
   }
 
+  .nav-top-passed {
+    background-color: rgba(43, 120, 228, 0.2);
+    border: 1px solid black;
+    color: black;
+    text-align: center;
+  }
+
   .test {
     display: inline-block;
     margin-bottom: 10%;
@@ -48,6 +55,32 @@
     vertical-align: middle;
    //align-items: center;
 
+  }
+
+  .v-button .back-button {
+    background-color: #ffd966;
+    color: black;
+  }
+
+  .tile-left {
+    background-color: #2b78e4;
+    border: solid 1px black;
+    text-align: center;
+    color: white;
+
+
+  }
+
+  .tile-icon-font {
+    font-family: 'EntypoRegular';
+    font-size: 8em;
+  }
+
+  .right-tile {
+    background-color: #741b47;
+    border: solid 1px black;
+    text-align: center;
+    color: white;
   }
 
 
