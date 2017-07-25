@@ -59,12 +59,14 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "../valo/valo.scss";
 @import "views/registerview";
 @import "views/scheduleview";
+@import "views/contactsview";
 
 
 @mixin main_theme {
   @include valo;
   @include register-view;
   @include schedule-view;
+  @include contacts-view;
 
   // login screen - for small screens, see below
   .login-screen {

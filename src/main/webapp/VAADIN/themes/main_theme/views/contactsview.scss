@@ -1,0 +1,41 @@
+@mixin contacts-view {
+
+  .synccontacts-header {
+    background-color: #2b78e4;
+    color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    padding-left: 20px;
+
+
+
+
+  }
+
+  .v-label-headerLabel {
+    font-size: 24px;
+    line-height: normal;
+    color: white;
+
+
+  }
+
+  .synccontacts-itembox{
+      background-color: #999999;
+      border: 2px solid black;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .main-theme-red .v-button {
+    background-color: #cf2a27;
+    color: white;
+    margin: 1px;
+
+    border: 1px solid black;
+  }
+
+
+
+}
