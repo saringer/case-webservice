@@ -149,17 +149,6 @@ public class LoginForm extends CssLayout {
         return this.loginListener;
     }
 
-    private void login() {
-        if (accessControl.signIn(username.getValue(), password.getValue())) {
-            loginListener.loginSuccessful();
-        } else {
-            showNotification(new Notification("Login failed",
-                    "Please check your username and password and try again.",
-                    Notification.Type.HUMANIZED_MESSAGE));
-            username.focus();
-        }
-    }
-
 
     public interface LoginListener extends Serializable {
         void loginSuccessful();

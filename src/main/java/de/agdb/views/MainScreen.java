@@ -15,6 +15,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import de.agdb.views.contacts.ContactsMainView;
+import de.agdb.views.contacts.manage_contacts.ManageContactsViews;
 import de.agdb.views.contacts.synchronize_contacts.SynchronizeContactsView;
 import de.agdb.views.scheduler.CalendarTest;
 import de.agdb.views.scheduler.SchedulerMainView;
@@ -109,10 +110,11 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         // CONTACTS
         menu.addView(new ContactsMainView(), ContactsMainView.VIEW_NAME, "Contacts", null);
         menu.addSubView(new SynchronizeContactsView(), SynchronizeContactsView.VIEW_NAME, "Synchronize contacts");
+        menu.addSubView(new ManageContactsViews(), ManageContactsViews.VIEW_NAME, "Manage contacts");
 
 
         // PROFILE
-        menu.addView(new ProfileView(), ProfileView.VIEW_NAME, ProfileView.VIEW_NAME, null);
+        menu.addView(new ProfileView(), ProfileView.VIEW_NAME, "Profile", null);
 
 
         addComponent(menu);

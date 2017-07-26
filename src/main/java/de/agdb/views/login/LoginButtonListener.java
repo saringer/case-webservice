@@ -2,6 +2,7 @@ package de.agdb.views.login;
 
 
 
+import de.agdb.backend.auth.AccessControl;
 import de.agdb.backend.auth.AuthManager;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
@@ -34,10 +35,6 @@ public class LoginButtonListener implements Button.ClickListener {
                 UsernamePasswordAuthenticationToken request = new UsernamePasswordAuthenticationToken(username, password);
                 Authentication result = authManager.authenticate(request);
                 SecurityContextHolder.getContext().setAuthentication(result);
-            /*AppUI current = (AppUI) UI.getCurrent();
-            Navigator navigator = current.getNavigator();
-            navigator.navigateTo("user");*/
-
 
                 SecurityContext context = SecurityContextHolder.getContext();
                 Authentication authentication = context.getAuthentication();
@@ -45,7 +42,9 @@ public class LoginButtonListener implements Button.ClickListener {
                 if (authentication != null && authentication.isAuthenticated()) {
                     parent.getLoginListener().loginSuccessful();
 
+                    parent.getAccessControl().signIn(username, password);
                     String name = authentication.getName();
+
 
                /* Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
                 for (GrantedAuthority ga : authorities) {
@@ -60,8 +59,7 @@ public class LoginButtonListener implements Button.ClickListener {
                     showNotification(new Notification("Login failed",
                             "Please check your username and password and try again.",
                             Notification.Type.HUMANIZED_MESSAGE));
-               /* Navigator navigator = UI.getCurrent().getNavigator();
-                navigator.navigateTo("login");*/
+
                 }
             } else {
                 showNotification(new Notification("Login failed",
@@ -81,6 +79,7 @@ public class LoginButtonListener implements Button.ClickListener {
         notification.setDelayMsec(2000);
         notification.show(Page.getCurrent());
     }
+
 
 
 

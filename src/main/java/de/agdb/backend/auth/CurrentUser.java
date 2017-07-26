@@ -28,7 +28,7 @@ public final class CurrentUser {
      *
      * @throws IllegalStateException if the current session cannot be accessed.
      */
-    public static String get() {
+    public static String getUsername() {
         String currentUser = (String) getCurrentHttpSession().getAttribute(
                 CURRENT_USER_SESSION_ATTRIBUTE_KEY);
         if (currentUser == null) {

@@ -50,8 +50,8 @@ public class ContactsMainView extends VerticalLayout implements View {
         form.setMargin(false);
         //form.setWidth("60%");
         //form.setHeight("65%");
-        form.setWidth(1000, Unit.PIXELS);
-        form.setHeight(500, Unit.PIXELS);
+        form.setWidth(800, Unit.PIXELS);
+        form.setHeight(400, Unit.PIXELS);
 
         /*
         LEFT MENU TILE
@@ -80,7 +80,7 @@ public class ContactsMainView extends VerticalLayout implements View {
         wrapperLayout.setWidth("50%");
         wrapperLayout.setHeight("50%");
         wrapperLayout.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
-        wrapperLayout.setComponentAlignment(header, Alignment.MIDDLE_CENTER);
+        wrapperLayout.setComponentAlignment(header, Alignment.BOTTOM_CENTER);
 
         syncContactsTile.addComponent(wrapperLayout);
         syncContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
@@ -111,7 +111,7 @@ public class ContactsMainView extends VerticalLayout implements View {
         wrapperLayout.setWidth("50%");
         wrapperLayout.setHeight("50%");
         wrapperLayout.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
-        wrapperLayout.setComponentAlignment(header, Alignment.MIDDLE_CENTER);
+        wrapperLayout.setComponentAlignment(header, Alignment.BOTTOM_CENTER);
         manageContactsTile.addComponent(wrapperLayout);
         manageContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
 

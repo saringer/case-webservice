@@ -4,7 +4,7 @@ public class BasicAccessControl implements AccessControl {
 
     @Override
     public boolean signIn(String username, String password) {
-        if (username == null || username.isEmpty())
+        if (username == null || username.isEmpty() || password == null || password.isEmpty())
             return false;
 
         CurrentUser.set(username);
@@ -13,14 +13,14 @@ public class BasicAccessControl implements AccessControl {
 
     @Override
     public boolean isUserSignedIn() {
-        return !CurrentUser.get().isEmpty();
+        return !CurrentUser.getUsername().isEmpty();
     }
 
     @Override
     public boolean isUserInRole(String role) {
         if ("admin".equals(role)) {
             // Only the "admin" user is in the "admin" role
-            return getPrincipalName().equals("admin");
+            return getUsername().equals("admin");
         }
 
         // All users are in all non-admin roles
@@ -28,8 +28,8 @@ public class BasicAccessControl implements AccessControl {
     }
 
     @Override
-    public String getPrincipalName() {
-        return CurrentUser.get();
+    public String getUsername() {
+        return CurrentUser.getUsername();
     }
 
 }

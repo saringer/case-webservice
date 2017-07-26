@@ -9,9 +9,14 @@
 @import "../../../VAADIN/addons/calendar/calendar-addon.scss";
 
 
+/* Provided by materialicons-3.0.1.jar */
+@import "../../../VAADIN/addons/materialicons/materialicons.scss";
+
+
 /* Import and include this mixin into your project theme to include the addon themes */
 @mixin addons {
 	@include vaadin-icons;
 	@include calendar-addon;
+	@include materialicons;
 }
 

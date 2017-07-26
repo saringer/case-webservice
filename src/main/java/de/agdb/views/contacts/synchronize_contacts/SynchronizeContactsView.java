@@ -21,6 +21,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
@@ -32,6 +33,7 @@ import org.vaadin.addon.oauthpopup.OAuthListener;
 import org.vaadin.addon.oauthpopup.OAuthPopupButton;
 import org.vaadin.addon.oauthpopup.OAuthPopupConfig;
 
+import javax.annotation.PostConstruct;
 import javax.swing.text.html.CSS;
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +41,7 @@ import java.util.List;
 
 @UIScope
 @SpringView(name = SynchronizeContactsView.VIEW_NAME)
-public class SynchronizeContactsView extends VerticalLayout implements View {
+public class SynchronizeContactsView extends VerticalLayout implements View, Button.ClickListener {
 
     public static final String VIEW_NAME = "SynchronizeContactsView";
 
@@ -73,12 +75,13 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
     HttpTransport httpTransport = new NetHttpTransport();
     JacksonFactory jsonFactory = new JacksonFactory();
 
+    private Button googleButton ;
+
     @Autowired
     UsersRepository repository;
 
-
-    public SynchronizeContactsView() {
-
+    @PostConstruct
+    public void init() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setWidth("80%");
@@ -115,6 +118,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
     }
+
+
 
     private VerticalLayout buildContent() {
 
@@ -160,14 +165,18 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
         horizontalWrapper.addComponent(emailField);
         Label emailPrefix = new Label("@gmail.com");
         horizontalWrapper.addComponent(emailPrefix);
-        Button syncButton = new Button("Synchronize");
-        syncButton.setStyleName("red");
-        syncButton.setHeight(30,Unit.PIXELS);
-        horizontalWrapper.addComponent(syncButton);
+        googleButton = new Button("Synchronize");
+
+        googleButton.addClickListener(this);
+        googleButton.setStyleName("red");
+        googleButton.setHeight(30,Unit.PIXELS);
+        OAuthPopupButton button = testOauth();
+
+        horizontalWrapper.addComponent(button);
         horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         horizontalWrapper.setComponentAlignment(emailField, Alignment.MIDDLE_LEFT);
         horizontalWrapper.setComponentAlignment(emailPrefix, Alignment.MIDDLE_LEFT);
-        horizontalWrapper.setComponentAlignment(syncButton, Alignment.MIDDLE_LEFT);
+        //horizontalWrapper.setComponentAlignment(googleButton, Alignment.MIDDLE_LEFT);
         horizontalWrapper.setExpandRatio(emailField, 0.7f);
         horizontalWrapper.setExpandRatio(emailPrefix, 0.3f);
 
@@ -190,6 +199,9 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
     }
 
     public void storeContactsInDatabase(String token) {
+        AppUI app = (AppUI) UI.getCurrent();
+        String userName = app.getAccessControl().getUsername();
+
         GoogleCredential credential = new GoogleCredential().setAccessToken(token);
 
         People peopleService = new People.Builder(httpTransport, jsonFactory, credential)
@@ -222,9 +234,9 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
             }
 
 
-            jdbcTemplate.update(
-                    "insert into contacts (first_name, email) values (?, ?)",
-                    name, email);
+            Users user = repository.findByUsername(userName).get(0);
+            user.addContact(new Contact(name, "", email));
+            repository.save(user);
 
 
         }
@@ -238,13 +250,12 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
         OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(clientId, clientSecret);
         //config.setGrantType("authorization_code");
         config.setScope("https://www.googleapis.com/auth/contacts.readonly");
-        //config.setCallbackUrl("urn:ietf:wg:oauth:2.0:oob");
         config.setCallbackUrl(callBackUrl);
 
 
-        OAuthPopupButton twitter = new OAuthPopupButton(
+        OAuthPopupButton google = new OAuthPopupButton(
                 GoogleApi20.instance(), config);
-        twitter.addOAuthListener(new OAuthListener() {
+        google.addOAuthListener(new OAuthListener() {
 
             @Override
             public void authSuccessful(Token token, boolean isOAuth20) {
@@ -268,8 +279,10 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
             }
         });
         //layout.addComponent(twitter);
+        google.setCaption("Synchronize");
+        google.setIcon(VaadinIcons.REFRESH);
 
-        return twitter;
+        return google;
 
     }
 
@@ -280,5 +293,18 @@ public class SynchronizeContactsView extends VerticalLayout implements View {
             UI.getCurrent().showNotification(callBackUrl);
         }
         return callBackUrl;
+    }
+
+    @Override
+    public void buttonClick(Button.ClickEvent clickEvent) {
+        Button clickedButton = clickEvent.getButton();
+
+        if (clickedButton == googleButton) {
+            UI.getCurrent().showNotification(getCallbackURL());
+
+        }
+
+
+
     }
 }

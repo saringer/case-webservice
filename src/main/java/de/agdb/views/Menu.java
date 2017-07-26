@@ -14,6 +14,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.vaadin.alump.materialicons.MaterialIcons;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -176,7 +177,7 @@ public class Menu extends CssLayout {
             }
         });
         button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        button.setIcon(VaadinIcons.LEVEL_LEFT);
+        button.setIcon(MaterialIcons.SUBDIRECTORY_ARROW_RIGHT);
         menuItemsLayout.addComponent(button);
         viewButtons.put(name, button);
     }

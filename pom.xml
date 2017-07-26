@@ -164,6 +164,12 @@
 			<version>2.7.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.alump</groupId>
+			<artifactId>materialicons</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
 
 
 	</dependencies>

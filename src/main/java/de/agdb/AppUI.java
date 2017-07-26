@@ -59,7 +59,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-        /*if (!accessControl.isUserSignedIn()) {
+        if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
                 @Override
                 public void loginSuccessful() {
@@ -68,16 +68,20 @@ public class AppUI extends UI {
             }, viewProvider, AppUI.this));
         } else {
             showMainView();
-        }*/
-       showMainView();
+        }
+
+//       showMainView();
 
     }
 
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
         setContent(new MainScreen(AppUI.this, viewProvider));
-
         getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
+    }
+
+    public AccessControl getAccessControl() {
+        return accessControl;
     }
 
     public ApplicationContext getApplicationContext() {

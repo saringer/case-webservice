@@ -11,5 +11,5 @@ public interface AccessControl {
 
     public boolean isUserInRole(String role);
 
-    public String getPrincipalName();
+    public String getUsername();
 }
