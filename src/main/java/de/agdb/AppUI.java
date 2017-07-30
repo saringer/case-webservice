@@ -14,6 +14,7 @@ import de.agdb.backend.auth.BasicAccessControl;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
 import de.agdb.views.scheduler.SchedulerMainView;
+import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.GlobalWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -40,6 +41,7 @@ public class AppUI extends UI {
     private static final long serialVersionUID = 1L;
     private ApplicationContext applicationContext;
     private AccessControl accessControl = new BasicAccessControl();
+    private GlobalWrapper globalScheduleWrapper = new GlobalWrapper();
 
     // we can use either constructor autowiring or field autowiring
     @Autowired
@@ -88,6 +90,9 @@ public class AppUI extends UI {
         return applicationContext;
     }
 
+    public GlobalWrapper getGlobalScheduleWrapper() {
+        return globalScheduleWrapper;
+    }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = AppUI.class, productionMode = false)

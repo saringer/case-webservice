@@ -6,11 +6,14 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
 
 @UIScope
 @SpringView(name = SetGeneralView.VIEW_NAME)
 public class SetGeneralView extends VerticalLayout implements View {
     public static final String VIEW_NAME = "GeneralView";
+    private TextField scheduleTitle;
+    private TextArea scheduleDescription;
 
     public SetGeneralView() {
         setSizeFull();
@@ -111,7 +114,7 @@ public class SetGeneralView extends VerticalLayout implements View {
         section = new Label("Schedule title");
         section.addStyleName("h3");
         section.addStyleName("colored");
-        TextField scheduleTitle = new TextField();
+        scheduleTitle = new TextField();
         scheduleTitle.setWidth("100%");
         form.addComponent(section);
         form.addComponent(scheduleTitle);
@@ -135,7 +138,7 @@ public class SetGeneralView extends VerticalLayout implements View {
         section = new Label("Description");
         section.addStyleName("h3");
         section.addStyleName("colored");
-        TextArea scheduleDescription = new TextArea();
+        scheduleDescription = new TextArea();
         scheduleDescription.setWidth("100%");
         form.addComponent(section);
         form.addComponent(scheduleDescription);
@@ -155,7 +158,10 @@ public class SetGeneralView extends VerticalLayout implements View {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("DateView");
+                AppUI app = (AppUI) UI.getCurrent();
+                app.getGlobalScheduleWrapper().setTitle(scheduleTitle.getValue());
+
+                app.getNavigator().navigateTo("DateView");
             }
         });
         button.addStyleName(ValoTheme.BUTTON_FRIENDLY);

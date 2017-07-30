@@ -5,14 +5,19 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
 import de.agdb.views.scheduler.CalendarComponent;
+
+import javax.annotation.PostConstruct;
 
 @UIScope
 @SpringView(name = SetDateView.VIEW_NAME)
 public class SetDateView extends VerticalLayout implements View{
     public static final String VIEW_NAME = "DateView";
 
-    public SetDateView() {
+    @PostConstruct
+    void init() {
+
         setSizeFull();
 
         VerticalLayout formWrapper = new VerticalLayout();
@@ -48,7 +53,8 @@ public class SetDateView extends VerticalLayout implements View{
         button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
 
-        CalendarComponent calendar = new CalendarComponent();
+        CalendarComponent calendar = new CalendarComponent((AppUI) UI.getCurrent());
+        calendar.setSizeFull();
 
         formWrapper.addComponent(calendar);
         //centeringLayout.addComponent(new Label("sadsdd"));
@@ -57,7 +63,10 @@ public class SetDateView extends VerticalLayout implements View{
         formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
         formWrapper.setComponentAlignment(calendar, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(calendar ,1);
+
     }
+
+
 
     private VerticalLayout buildContent() {
         VerticalLayout verticalLayout = new VerticalLayout();

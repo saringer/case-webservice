@@ -3,9 +3,11 @@ package de.agdb.views.scheduler;
 import com.vaadin.ui.*;
 
 import com.vaadin.v7.ui.components.calendar.event.BasicEventProvider;
+import de.agdb.AppUI;
 import de.agdb.views.scheduler.create_schedule.calendar_meetings.Meeting;
 import de.agdb.views.scheduler.create_schedule.calendar_meetings.MeetingItem;
 
+import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
 import org.vaadin.addon.calendar.Calendar;
 import org.vaadin.addon.calendar.event.BasicItemProvider;
 import org.vaadin.addon.calendar.handler.BasicDateClickHandler;
@@ -14,6 +16,7 @@ import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 import java.text.DateFormatSymbols;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class CalendarComponent extends GridLayout {
 
@@ -35,6 +38,9 @@ public class CalendarComponent extends GridLayout {
 
     private Integer lastDay;
     private MeetingDataProvider eventProvider;
+    private AppUI app;
+
+
 
     public CalendarComponent() {
         setSizeFull();
@@ -42,6 +48,16 @@ public class CalendarComponent extends GridLayout {
         setMargin(true);
         setSpacing(true);
         initContent();
+    }
+
+    public CalendarComponent(AppUI app) {
+        this.app = app;
+        setSizeFull();
+        setHeight("500px");
+        setMargin(true);
+        setSpacing(true);
+        initContent();
+
     }
 
     private void initContent() {
@@ -218,17 +234,23 @@ public class CalendarComponent extends GridLayout {
 
     private void onCalendarRangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
 
-        Meeting meeting = new Meeting();
+        List<MeetingItem> meetingItemList = eventProvider.getItems(event.getStart(), event.getStart());
+        if (meetingItemList.size() == 0) {
+            app.getGlobalScheduleWrapper().addDay(new DayWrapper(event.getStart()));
 
-        meeting.setStart(event.getStart());
-        meeting.setEnd(event.getEnd());
-        meeting.setName("A Name");
-        meeting.setDetails("A Detail");
+            Meeting meeting = new Meeting();
 
-        // Random state
-        //meeting.setState(R.nextInt(2) == 1 ? Meeting.State.planned : Meeting.State.confirmed);
+            meeting.setStart(event.getStart());
+            meeting.setEnd(event.getStart());
+            meeting.setName("A Name");
+            meeting.setDetails("A Detail");
+            eventProvider.addItem(new MeetingItem(meeting));
+        }
+        else {
+            app.getGlobalScheduleWrapper().removeDay(event.getStart());
+            eventProvider.removeItem(meetingItemList.get(0));
+        }
 
-        eventProvider.addItem(new MeetingItem(meeting));
     }
 
     private final class MeetingDataProvider extends BasicItemProvider<MeetingItem> {
