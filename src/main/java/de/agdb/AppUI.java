@@ -59,7 +59,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-        if (!accessControl.isUserSignedIn()) {
+       /* if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
                 @Override
                 public void loginSuccessful() {
@@ -68,9 +68,9 @@ public class AppUI extends UI {
             }, viewProvider, AppUI.this));
         } else {
             showMainView();
-        }
+        }*/
 
-//       showMainView();
+       showMainView();
 
     }
 

@@ -8,16 +8,15 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Component;
 import de.agdb.AppUI;
 import de.agdb.views.categories.CategoriesMainView;
-import de.agdb.views.categories.manage_categories.CategoriesView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import de.agdb.views.categories.assign_categories.AssignCategoriesView;
+import de.agdb.views.categories.manage_categories.ManageCategoriesView;
 import de.agdb.views.contacts.ContactsMainView;
-import de.agdb.views.contacts.manage_contacts.ManageContactsViews;
+import de.agdb.views.contacts.manage_contacts.ManageContactsView;
 import de.agdb.views.contacts.synchronize_contacts.SynchronizeContactsView;
-import de.agdb.views.scheduler.CalendarTest;
 import de.agdb.views.scheduler.SchedulerMainView;
 import de.agdb.views.profile.ProfileView;
 import de.agdb.views.scheduler.create_schedule.SetCategoriesView;
@@ -105,12 +104,13 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
 
         // CATEGORIES
         menu.addView(new CategoriesMainView(), CategoriesMainView.VIEW_NAME, "Categories", null);
-
+        menu.addSubView(new ManageCategoriesView(), ManageCategoriesView.VIEW_NAME, "Manage categories");
+        menu.addSubView(new AssignCategoriesView(), AssignCategoriesView.VIEW_NAME, "Assign categories");
 
         // CONTACTS
         menu.addView(new ContactsMainView(), ContactsMainView.VIEW_NAME, "Contacts", null);
         menu.addSubView(new SynchronizeContactsView(), SynchronizeContactsView.VIEW_NAME, "Synchronize contacts");
-        menu.addSubView(new ManageContactsViews(), ManageContactsViews.VIEW_NAME, "Manage contacts");
+        menu.addSubView(new ManageContactsView(), ManageContactsView.VIEW_NAME, "Manage contacts");
 
 
         // PROFILE

@@ -45,8 +45,8 @@ public class CategoriesMainView extends VerticalLayout implements View {
         form.setMargin(false);
         //form.setWidth("60%");
         //form.setHeight("65%");
-        form.setWidth(1000, Unit.PIXELS);
-        form.setHeight(500, Unit.PIXELS);
+        form.setWidth(800, Unit.PIXELS);
+        form.setHeight(400, Unit.PIXELS);
 
         /*
         LEFT MENU TILE

@@ -9,7 +9,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.people.v1.People;
+import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
 import com.vaadin.icons.VaadinIcons;
@@ -75,7 +75,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
     HttpTransport httpTransport = new NetHttpTransport();
     JacksonFactory jsonFactory = new JacksonFactory();
 
-    private Button googleButton ;
+    private Button googleButton;
 
     @Autowired
     UsersRepository repository;
@@ -120,7 +120,6 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
     }
 
 
-
     private VerticalLayout buildContent() {
 
         VerticalLayout wrapperLayout = new VerticalLayout();
@@ -148,7 +147,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         googleLayout.setHeight(64, Unit.PIXELS);
         //googleLayout.addStyleNames("solid-border");
 
-        Embedded image = new Embedded(null,resource);
+        Embedded image = new Embedded(null, resource);
         image.setType(Embedded.TYPE_IMAGE);
 
         googleLayout.addComponent(image);
@@ -169,7 +168,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
         googleButton.addClickListener(this);
         googleButton.setStyleName("red");
-        googleButton.setHeight(30,Unit.PIXELS);
+        googleButton.setHeight(30, Unit.PIXELS);
         OAuthPopupButton button = testOauth();
 
         horizontalWrapper.addComponent(button);
@@ -181,7 +180,6 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         horizontalWrapper.setExpandRatio(emailPrefix, 0.3f);
 
         //horizontalWrapper.addComponent(new Button("sds"));
-
 
 
         googleLayout.addComponent(horizontalWrapper);
@@ -204,18 +202,27 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
         GoogleCredential credential = new GoogleCredential().setAccessToken(token);
 
-        People peopleService = new People.Builder(httpTransport, jsonFactory, credential)
+        PeopleService peopleService = new PeopleService.Builder(httpTransport, jsonFactory, credential)
                 .build();
 
         ListConnectionsResponse contacts = null;
         try {
             contacts = peopleService.people().connections().
-                    list("people/me").
-                    setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers").
+                    list("people/me").setPersonFields("names,emailAddresses").
+                   //setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers").
                     execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        /*// Request 10 connections.
+        ListConnectionsResponse response = service.people().connections()
+                .list("people/me")
+                .setPageSize(10)
+                .setPersonFields("names,emailAddresses")
+                .execute();*/
+
+
         List<Person> connections = contacts.getConnections();
         for (int i = 0; i < connections.size(); i++) {
 
@@ -223,13 +230,10 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
             String email = "empty";
             if (connections.get(i).getEmailAddresses() != null) {
                 email = connections.get(i).getEmailAddresses().get(0).getValue();
-                System.out.println(email);
-                if (connections.get(i).getNames() != null) {
+            }
+            if (connections.get(i).getNames() != null) {
 
-                    name = connections.get(i).getNames().get(0).getDisplayName();
-                    System.out.println(name);
-
-                }
+                name = connections.get(i).getNames().get(0).getDisplayName();
 
             }
 
@@ -305,6 +309,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         }
 
 
-
     }
+
+
+
 }

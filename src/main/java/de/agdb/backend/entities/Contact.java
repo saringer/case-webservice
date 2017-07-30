@@ -3,6 +3,7 @@ package de.agdb.backend.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Set;
 
 
@@ -138,8 +139,9 @@ public class Contact implements Serializable {
         this.firstName = firstName;
     }
 
-
-
+    public boolean compareEmailAddress(String email) {
+        return this.email.equals(email);
+    }
 
 
 
