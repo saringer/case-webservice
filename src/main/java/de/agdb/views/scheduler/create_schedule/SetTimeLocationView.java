@@ -1,15 +1,25 @@
 package de.agdb.views.scheduler.create_schedule;
 
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
+import de.agdb.AppUI;
+import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
+import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.GlobalWrapper;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @UIScope
 @SpringView(name = SetTimeLocationView.VIEW_NAME)
 public class SetTimeLocationView extends VerticalLayout implements View {
     public static final String VIEW_NAME = "TimeLocationView";
+    private FormLayout content;
 
     public SetTimeLocationView() {
 
@@ -21,16 +31,13 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
 
-
-        FormLayout content = new FormLayout();
+        content = new FormLayout();
         content.setHeight("80%");
         content.setWidth("90%");
         content.addStyleNames("overflow-auto");
 
-        content.addComponent(buildContent("sdsd"));
-        content.addComponent( buildContent("String"));
-
-
+        // content.addComponent(buildContent("sdsd"));
+        // content.addComponent( buildContent("String"));
 
 
         HorizontalLayout topNavBar = createTopNavBar();
@@ -52,7 +59,9 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
     }
 
-    private FormLayout buildContent(String header) {
+    private FormLayout buildContent(DayWrapper day) {
+        String header = day.getDay().toString();
+
         FormLayout formLayout = new FormLayout();
         formLayout.setWidth("100%");
 
@@ -64,40 +73,52 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         itemLayout.setWidth("100%");
 
 
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
-        itemLayout.addComponent(buildItem());
-        itemLayout.addComponent(buildItem());
-
         CssLayout buttonItem = new CssLayout();
         Button plusButton = new Button("Plus");
         plusButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                        itemLayout.addComponent(buildItem());
+                Window setTimeLocationWindow = new Window();
+                setTimeLocationWindow.setModal(true);
+                setTimeLocationWindow.center();
+                setTimeLocationWindow.setWidth(300, Unit.PIXELS);
+                setTimeLocationWindow.setCaption(day.getDay().toString());
+
+                VerticalLayout wrapperLayout = new VerticalLayout();
+                wrapperLayout.setSizeFull();
+
+                VerticalLayout setTimeLayout = new VerticalLayout();
+                VerticalLayout headerLayout = new VerticalLayout();
+                headerLayout.addComponent(new Label("Set time"));
+                headerLayout.addStyleNames("modal-window-header");
+
+
+              //  dateField.setResolution(Min);
+
+                setTimeLayout.addComponent(headerLayout);
+
+                setTimeLocationWindow.setContent(setTimeLayout);
+
+                UI.getCurrent().addWindow(setTimeLocationWindow);
+
+
+
+
+
 
             }
         });
         buttonItem.addComponent(plusButton);
         buttonItem.setStyleName("item-box");
         buttonItem.setHeight(52, Unit.PIXELS);
-        buttonItem.setWidth("33%");
+        buttonItem.setWidth("24%");
 
 
         wrapperLayout.addComponent(itemLayout);
         wrapperLayout.addComponent(buttonItem);
 
-        formLayout.addComponent(new Label("Section Monday 232.21.2"));
+        formLayout.addComponent(new Label(header));
         formLayout.addComponent(wrapperLayout);
-
-
 
 
         return formLayout;
@@ -177,10 +198,6 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
 
-
-
-
-
         nav.addComponent(button);
         //nav.addComponent(b);
         nav.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
@@ -188,4 +205,25 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         return nav;
 
     }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        initContent();
+
+    }
+
+    private void initContent() {
+        AppUI app = (AppUI) UI.getCurrent();
+        GlobalWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
+        content.removeAllComponents();
+
+        List<DayWrapper> days = globalScheduleWrapper.getDays();
+        for (int i = 0; i < days.size(); i++) {
+            content.addComponent(buildContent(days.get(i)));
+        }
+
+
+    }
+
+
 }

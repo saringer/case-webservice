@@ -24,6 +24,9 @@ public class GlobalWrapper {
     public String getTitle() {
         return this.title;
     }
+    public List<DayWrapper> getDays() {
+        return this.days;
+    }
 
     public void removeDay(Date day) {
         for (int i=0; i<days.size();i++) {

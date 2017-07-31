@@ -243,7 +243,8 @@ public class CalendarComponent extends GridLayout {
             meeting.setStart(event.getStart());
             meeting.setEnd(event.getStart());
             meeting.setName("A Name");
-            meeting.setDetails("A Detail");
+            meeting.setDetails("Selected Day");
+
             eventProvider.addItem(new MeetingItem(meeting));
         }
         else {

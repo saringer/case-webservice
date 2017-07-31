@@ -144,12 +144,12 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-compatibility-server</artifactId>
-			<version>8.0.6</version>
+			<version>${vaadin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-compatibility-client-compiled</artifactId>
-			<version>8.0.6</version>
+			<version>${vaadin.version}</version>
 		</dependency>
 
 		<dependency>
@@ -169,6 +169,12 @@
             <artifactId>materialicons</artifactId>
             <version>3.0.1</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.percepta.mgrankvi</groupId>
+			<artifactId>TimeSelector</artifactId>
+			<version>2.0.0</version>
+		</dependency>
 
 
 
@@ -204,7 +210,7 @@
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>8.0.1</version>
+				<version>${vaadin.version}</version>
 				<executions>
 					<execution>
 						<goals>
