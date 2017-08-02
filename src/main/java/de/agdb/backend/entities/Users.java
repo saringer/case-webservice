@@ -38,6 +38,16 @@ public class Users implements Serializable{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
     @JoinTable(name = "USER_CONTACT", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONTACT_ID") })
     private Set<Contact> contacts;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+    @JoinTable(name = "USER_CATEGORY", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORY_ID") })
+    private Set<Categories> categories;
+
+
+
+
+
+
     // Public methods
     public Users() {
     }
@@ -88,11 +98,20 @@ public class Users implements Serializable{
         this.email = email;
     }
 
+    public Set<Categories> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Categories> categories) {
+        this.categories = categories;
+    }
+
     // basic access
 
     public void addContact(Contact contact) {
         this.contacts.add(contact);
     }
+    public void addCategory(Categories category) { this.categories.add(category);}
 
 
 }

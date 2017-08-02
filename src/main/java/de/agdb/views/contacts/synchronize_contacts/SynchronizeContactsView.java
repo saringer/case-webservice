@@ -48,6 +48,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+
     /**
      * File for storing user credentials.
      */
@@ -170,6 +171,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         googleButton.setStyleName("red");
         googleButton.setHeight(30, Unit.PIXELS);
         OAuthPopupButton button = testOauth();
+        button.addStyleNames("red-button");
 
         horizontalWrapper.addComponent(button);
         horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
@@ -209,8 +211,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         try {
             contacts = peopleService.people().connections().
                     list("people/me").setPersonFields("names,emailAddresses").
-                   //setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers").
-                    execute();
+                    //setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers").
+                            execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -226,20 +228,30 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         List<Person> connections = contacts.getConnections();
         for (int i = 0; i < connections.size(); i++) {
 
-            String name = "empty";
+            String firstname = "empty";
+            String lastname = "empty";
             String email = "empty";
+
+
             if (connections.get(i).getEmailAddresses() != null) {
                 email = connections.get(i).getEmailAddresses().get(0).getValue();
             }
-            if (connections.get(i).getNames() != null) {
-
-                name = connections.get(i).getNames().get(0).getDisplayName();
+            //if (connections.get(i).getNames() != null) {
+            try {
+                firstname = connections.get(i).getNames().get(0).getGivenName();
+            } catch (Exception e) {
 
             }
 
 
+            try {
+                lastname = connections.get(i).getNames().get(0).getFamilyName();
+            } catch (Exception e) {
+
+            }
+
             Users user = repository.findByUsername(userName).get(0);
-            user.addContact(new Contact(name, "", email));
+            user.addContact(new Contact(firstname, lastname, email));
             repository.save(user);
 
 
@@ -270,16 +282,19 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
                     ((OAuth2AccessToken) token).getExpiresIn();
                     storeContactsInDatabase(((OAuth2AccessToken) token).getAccessToken());
 
+                    google.addStyleNames("green-button");
 
                 } else {
                     ((OAuth1AccessToken) token).getToken();
                     ((OAuth1AccessToken) token).getTokenSecret();
+                    google.addStyleNames("green-button");
                 }
             }
 
             @Override
             public void authDenied(String reason) {
                 Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
+                google.addStyleNames("red-button");
             }
         });
         //layout.addComponent(twitter);
@@ -310,7 +325,6 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
 
     }
-
 
 
 }

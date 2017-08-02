@@ -13,6 +13,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import de.agdb.views.categories.assign_categories.AssignCategoriesView;
+import de.agdb.views.categories.manage_categories.AddCategoryView;
 import de.agdb.views.categories.manage_categories.ManageCategoriesView;
 import de.agdb.views.contacts.ContactsMainView;
 import de.agdb.views.contacts.manage_contacts.ManageContactsView;
@@ -106,6 +107,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         menu.addView(new CategoriesMainView(), CategoriesMainView.VIEW_NAME, "Categories", null);
         menu.addSubView(new ManageCategoriesView(), ManageCategoriesView.VIEW_NAME, "Manage categories");
         menu.addSubView(new AssignCategoriesView(), AssignCategoriesView.VIEW_NAME, "Assign categories");
+        menu.addDetailsView(new AddCategoryView(), AddCategoryView.VIEW_NAME);
 
         // CONTACTS
         menu.addView(new ContactsMainView(), ContactsMainView.VIEW_NAME, "Contacts", null);

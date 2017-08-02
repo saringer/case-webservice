@@ -39,6 +39,7 @@
     border: 1px solid black;
     color: black;
     text-align: center;
+    cursor: pointer;
   }
 
   .test {
@@ -52,8 +53,16 @@
     color: blue;
     text-align: center;
     border: 1px solid black;
-    vertical-align: middle;
-   //align-items: center;
+  }
+
+  .add-button {
+    background-color: rgba(0, 158, 15, 0.2);
+    color: blue;
+    text-align: center;
+    border: 1px solid black;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
 
   }
 
@@ -83,11 +92,46 @@
     color: white;
   }
 
+  .blue-border {
+    border: solid 1px #2b78e4;
+  }
+
   .modal-window-header {
     background-color: #2b78e4;
     color: white;
+    font-size: 20px;
+    padding-left: 5px;
+    margin-top: 15px;
+   // text-align: center;
+  //  margin-top: 15px;
 
   }
+
+
+
+  .modal-window-content {
+    background-color: rgba(204, 204, 204, 0.8);
+    color: #2b78e4;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    float: left;
+
+  }
+
+  .modal-window-margin {
+    margin-top:  15px;
+  }
+
+  .topcorner-delete-button{
+    color: white;
+    background-color: red;
+    top:0;
+    right:0;
+    float: right;
+    cursor: pointer;
+  }
+
 
 
 }

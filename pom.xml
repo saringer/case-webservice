@@ -170,11 +170,29 @@
             <version>3.0.1</version>
         </dependency>
 
+		<!-- Geocoder Add-On -->
 		<dependency>
-			<groupId>org.percepta.mgrankvi</groupId>
-			<artifactId>TimeSelector</artifactId>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>locationtextfield</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<!-- Google Maps Add-On -->
+
+		<dependency>
+			<groupId>com.vaadin.tapio</groupId>
+			<artifactId>googlemaps</artifactId>
 			<version>2.0.0</version>
 		</dependency>
+
+		<!-- NumberField Add-On -->
+
+		<dependency>
+			<groupId>org.vaadin.ui</groupId>
+			<artifactId>numberfield</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+
 
 
 

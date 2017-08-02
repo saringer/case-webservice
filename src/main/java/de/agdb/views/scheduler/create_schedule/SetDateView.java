@@ -1,6 +1,7 @@
 package de.agdb.views.scheduler.create_schedule;
 
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -42,15 +43,7 @@ public class SetDateView extends VerticalLayout implements View{
         content.setWidth("85%");
 
 
-        Button button = new Button("NEXT");
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("TimeLocationView");
-            }
-        });
-        button.setWidth("15%");
-        button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+
 
 
         CalendarComponent calendar = new CalendarComponent((AppUI) UI.getCurrent());
@@ -58,9 +51,9 @@ public class SetDateView extends VerticalLayout implements View{
 
         formWrapper.addComponent(calendar);
         //centeringLayout.addComponent(new Label("sadsdd"));
-        formWrapper.addComponent(button);
+        formWrapper.addComponent(createBottomNav());
         //formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
-        formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
+        //formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
         formWrapper.setComponentAlignment(calendar, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(calendar ,1);
 
@@ -121,6 +114,41 @@ public class SetDateView extends VerticalLayout implements View{
 
         //horizontalLayout.setExpandRatio(generalBar, 1);
         return horizontalLayout;
+    }
+
+    public HorizontalLayout createBottomNav() {
+        HorizontalLayout nav = new HorizontalLayout();
+        nav.setWidth("100%");
+        nav.setSpacing(false);
+        nav.setMargin(false);
+
+        Button nextButton = new Button("NEXT");
+        nextButton.addClickListener((Button.ClickListener) event ->
+                UI.getCurrent().getNavigator().navigateTo("TimeLocationView"));
+        nextButton.setWidth(167, Unit.PIXELS);
+        nextButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+
+        Button backButton = new Button("BACK");
+        backButton.setWidth(167, Unit.PIXELS);
+        backButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                UI.getCurrent().getNavigator().navigateTo("GeneralView");
+            }
+        });
+        backButton.addStyleName("back-button");
+
+
+
+
+        nav.addComponent(backButton);
+        nav.addComponent(nextButton);
+        //nav.addComponent(b);
+        nav.setComponentAlignment(backButton, Alignment.MIDDLE_LEFT);
+        nav.setComponentAlignment(nextButton, Alignment.MIDDLE_RIGHT);
+        // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
+        return nav;
+
     }
 }
 

@@ -16,6 +16,8 @@
   .managecontacts-header {
     background-color: #2b78e4;
     color: white;
+    padding-top: 7px;
+    padding-left: 20px;
   }
 
   .v-label-headerLabel {
@@ -39,6 +41,23 @@
     margin: 1px;
 
     border: 1px solid black;
+  }
+
+  .red-button {
+    margin: 15px;
+    background: red;
+    color: white;
+    height: 30px;
+    font-size: 13px;
+
+  }
+
+  .green-button {
+    margin: 15px;
+    background: green;
+    color: white;
+    height: 30px;
+    font-size: 13px;
   }
 
   .disable-grid-cell-select {

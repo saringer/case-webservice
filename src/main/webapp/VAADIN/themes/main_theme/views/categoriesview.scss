@@ -1,0 +1,15 @@
+@mixin categories-view {
+
+  .addcategory-header {
+    padding-top: 7px;
+    padding-left: 20px;
+    background-color: #009e0f;
+    color: white;
+  }
+
+  .assign-category-header {
+    font-size: 25px;
+    color: #2b78e4;
+  }
+
+}

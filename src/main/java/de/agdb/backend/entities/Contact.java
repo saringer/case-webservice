@@ -42,6 +42,30 @@ public class Contact implements Serializable {
     @Column(name = "EMAIL")
     private String email = "";
 
+    @Column(name = "AGE")
+    private int age;
+
+    @Column(name = "FUNCTION")
+    private String function;
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
+
+
     public Long getId() {
         return id;
     }

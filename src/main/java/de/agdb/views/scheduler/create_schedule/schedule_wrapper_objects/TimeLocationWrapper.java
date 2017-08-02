@@ -1,29 +1,65 @@
 package de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects;
 
-
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class TimeLocationWrapper {
 
-    List<TimeLocationObject> timeAndLocationList;
-
-    public List<TimeLocationObject> getTimeAndLocationList() {
-        return timeAndLocationList;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setTimeAndLocationList(List<TimeLocationObject> timeAndLocationList) {
-        this.timeAndLocationList = timeAndLocationList;
-    }
-
-    public void addTimeAndLocation(TimeLocationObject e) {
-        timeAndLocationList.add(e);
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
 
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    String startTime;
+    String endTime;
+    String location;
+
+    public List<CategoriesWrapper> getCategoriesList() {
+        return this.categoriesList;
+    }
+
+    public void setCategoriesList(List<CategoriesWrapper> categoriesList) {
+        this.categoriesList = categoriesList;
+    }
+
+    List<CategoriesWrapper> categoriesList;
 
 
-    public TimeLocationWrapper() {
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+
+    public TimeLocationWrapper(String startTime, String endTime, String location) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.location = location;
+        this.categoriesList = new ArrayList<>();
+
+    }
+
+    public void addCategory(CategoriesWrapper e) {
+        categoriesList.add(e);
+    }
+
+    public void removeCategory(CategoriesWrapper e) {
+        categoriesList.remove(e);
 
     }
 
