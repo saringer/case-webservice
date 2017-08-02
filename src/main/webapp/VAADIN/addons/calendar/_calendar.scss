@@ -195,7 +195,7 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
 
   .#{$primary-stylename}-week-number {
     //display: none;
-    cursor: pointer;
+    //cursor: pointer;
     //width: 20px; // Same as VCalendar.MONTHLY_WEEKTOOLBARWIDTH
     text-align: center;
     font-size: 0.8em;
@@ -241,11 +241,11 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
     margin: 0 round($v-unit-size/8);
     white-space: nowrap;
     border-top: 1px solid darken($v-background-color, 3%);
-    cursor: pointer;
+    /*cursor: pointer;
 
     &:hover {
       color: $v-focus-color;
-    }
+    }*/
   }
 
   .#{$primary-stylename}-month-day-today {
@@ -587,5 +587,10 @@ $v-calendar-event-colors: #00ace0, #2d9f19, #d18100, #ce3812, #2d55cd !default;
 @mixin valo-calendar-next-style {
   &:before {
     @include valo-tabsheet-scroller-next-icon-style;
+  }
+
+  .calendar-meeting {
+    background-color: red;
+    border: solid 1px black;
   }
 }

@@ -92,7 +92,7 @@ public class RegisterForm extends CssLayout {
 
 
         buttons.addComponent((cancelButton = new Button("Cancel")));
-        cancelButton.addStyleName(ValoTheme.BUTTON_DANGER);
+        cancelButton.addStyleNames(ValoTheme.BUTTON_DANGER, "float-right");
         cancelButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

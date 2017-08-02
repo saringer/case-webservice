@@ -2,18 +2,18 @@ package de.agdb.views.scheduler;
 
 import com.vaadin.ui.*;
 
-import com.vaadin.v7.ui.components.calendar.event.BasicEventProvider;
 import de.agdb.AppUI;
 import de.agdb.views.scheduler.create_schedule.calendar_meetings.Meeting;
 import de.agdb.views.scheduler.create_schedule.calendar_meetings.MeetingItem;
 
 import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
 import org.vaadin.addon.calendar.Calendar;
-import org.vaadin.addon.calendar.event.BasicItemProvider;
-import org.vaadin.addon.calendar.handler.BasicDateClickHandler;
+import org.vaadin.addon.calendar.item.BasicItemProvider;
+import org.vaadin.addon.calendar.handler.BasicWeekClickHandler;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 import java.text.DateFormatSymbols;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -24,7 +24,7 @@ public class CalendarComponent extends GridLayout {
     Button prevButton;
     GregorianCalendar calendar;
     private Date currentMonthsFirstDate;
-    Calendar calendarComponent;
+    Calendar<MeetingItem> calendarComponent;
     private final Label captionLabel = new Label("");
     private String calendarHeight = null;
 
@@ -107,14 +107,16 @@ public class CalendarComponent extends GridLayout {
         }
 
         if (firstDay != null && lastDay != null) {
-            calendarComponent.setFirstVisibleDayOfWeek(firstDay);
-            calendarComponent.setLastVisibleDayOfWeek(lastDay);
+
+
+//            calendarComponent.setFirstVisibleDayOfWeek(firstDay);
+  //          calendarComponent.setLastVisibleDayOfWeek(lastDay);
         }
 
         Date today = getToday();
         calendar = new GregorianCalendar();
         calendar.setTime(today);
-        calendarComponent.getInternalCalendar().setTime(today);
+        //calendarComponent.getInternalCalendar().setTime(today);
 
         // Calendar getStartDate (and getEndDate) has some strange logic which
         // returns Monday of the current internal time if no start date has been
@@ -164,11 +166,13 @@ public class CalendarComponent extends GridLayout {
     }
 
     private void rollMonth(int direction) {
+
         calendar.setTime(currentMonthsFirstDate);
         calendar.add(GregorianCalendar.MONTH, direction);
         //resetTime(false);
         currentMonthsFirstDate = calendar.getTime();
-        calendarComponent.setStartDate(currentMonthsFirstDate);
+        //calendarComponent.setStartDate(currentMonthsFirstDate);
+        calendarComponent.setStartDate(calendar.toZonedDateTime());
 
         updateCaptionLabel();
 
@@ -188,9 +192,9 @@ public class CalendarComponent extends GridLayout {
     private void resetCalendarTime(boolean resetEndTime) {
         resetTime(resetEndTime);
         if (resetEndTime) {
-            calendarComponent.setEndDate(calendar.getTime());
+            calendarComponent.setEndDate(calendar.toZonedDateTime());
         } else {
-            calendarComponent.setStartDate(calendar.getTime());
+            calendarComponent.setStartDate(calendar.toZonedDateTime());
             updateCaptionLabel();
         }
     }
@@ -219,6 +223,8 @@ public class CalendarComponent extends GridLayout {
 //        calendar.setHandler(new ExtendedBasicItemMoveHandler());
 //        calendar.setHandler(new ExtendedItemResizeHandler());
         //calendar.setHandler(new BasicDateClickHandler(false));
+        calendarComponent.setHandler((BasicWeekClickHandler)null);
+        calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler)null);
         calendarComponent.setHandler(this::onCalendarClick);
         calendarComponent.setHandler(this::onCalendarRangeSelect);
     }
@@ -245,11 +251,15 @@ public class CalendarComponent extends GridLayout {
             meeting.setName("A Name");
             meeting.setDetails("Selected Day");
 
-            eventProvider.addItem(new MeetingItem(meeting));
+            MeetingItem item = new MeetingItem(meeting);
+            System.out.println(item.getStyleName());
+            eventProvider.addItem(item);
+
         }
         else {
             app.getGlobalScheduleWrapper().removeDay(event.getStart());
             eventProvider.removeItem(meetingItemList.get(0));
+
         }
 
     }

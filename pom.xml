@@ -111,12 +111,13 @@
 		</dependency>
 
 
-		<!-- Vaadin Add-on which brings  calendar component to Vaadin 8 without compatibility packages -->
+		<!-- (1.0-BE)Vaadin Add-on which brings  calendar component to Vaadin 8 without compatibility packages -->
 		<dependency>
 			<groupId>org.vaadin.blackbluegl</groupId>
 			<artifactId>calendar-component</artifactId>
-			<version>1.0-BETA2</version>
+			<version>2.0-BETA1</version>
 		</dependency>
+
 
 		<!-- Vaadin Addon for icons -->
 		<dependency>

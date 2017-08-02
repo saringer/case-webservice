@@ -32,6 +32,7 @@ public class ManageCategoriesView extends VerticalLayout implements View {
     private ColorPicker shortcutColor;
     private TextField categoryTags;
     private TextArea categoryDescription;
+    private  Label categoryDetailsLabel;
 
 
 
@@ -141,16 +142,18 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         if (!repository.findByUsername(userName).isEmpty()) {
             grid.setItems(repository.findByUsername(userName).get(0).getCategories());
-            grid.addSelectionListener(event -> {
+            grid.getSelectionModel().addSelectionListener(event -> {
 
 
-               /*if (event.getFirstSelectedItem().get() != null) {
-                    Categories category = event.getFirstSelectedItem().get();
-                    //Categories category  = selected.iterator().next();
-                    categoryTitle.setValue(category.getTitle());
-                    categoryShortcut.setValue(category.getShortCut());
-                    categoryDescription.setValue(category.getDescription());
-                }*/
+                    boolean somethingSelected = !grid.getSelectedItems().isEmpty();
+                    if (somethingSelected) {
+                        Categories category = event.getFirstSelectedItem().get();
+                        categoryDetailsLabel.setValue(category.getTitle());
+                        categoryTitle.setValue(category.getTitle());
+                        categoryShortcut.setValue(category.getShortCut());
+                        categoryDescription.setValue(category.getDescription());
+                    }
+
             });
 
 
@@ -174,12 +177,12 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
         header.addStyleNames("solid-border");
-        Label label = new Label("SAS DETAIL");
+        categoryDetailsLabel = new Label("");
         //label.setWidth("100%");
-        label.addStyleNames("headerLabel");
+        categoryDetailsLabel.addStyleNames("headerLabel");
         //label.addStyleNames(ValoTheme.LABEL_H3);
         //label.addStyleNames(ValoTheme.LABEL_COLORED);
-        header.addComponent(label);
+        header.addComponent(categoryDetailsLabel);
 
         FormLayout detailsForm = new FormLayout();
         detailsForm.setMargin(true);

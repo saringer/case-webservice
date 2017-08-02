@@ -1,5 +1,6 @@
 package de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ public class GlobalWrapper {
         return this.days;
     }
 
-    public void removeDay(Date day) {
+    public void removeDay(ZonedDateTime day) {
         for (int i=0; i<days.size();i++) {
             if ((days.get(i).getDay().compareTo(day)) == 0) {
                         days.remove(i);

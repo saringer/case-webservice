@@ -21,6 +21,7 @@ import org.vaadin.addons.locationtextfield.GoogleGeocoder;
 import org.vaadin.addons.locationtextfield.LocationTextField;
 import org.vaadin.addons.locationtextfield.OpenStreetMapGeocoder;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @UIScope
@@ -241,7 +242,8 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         wrapperLayout.addComponent(itemLayout);
         wrapperLayout.addComponent(plusButtonLayout);
 
-        Label header = new Label(day.getDay().toString());
+        Label header = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd-MM-yyyy"))
+        );
         header.addStyleNames("h3", "colored");
         formLayout.addComponent(header);
         formLayout.addComponent(wrapperLayout);
@@ -267,8 +269,8 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         customDeleteButton.addComponent(test);
         customDeleteButton.addStyleNames("topcorner-delete-button", "solid-border");
         customDeleteButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-                    parentLayout.removeComponent(cssLayout);
-                    parentWrapper.removeTimeLocation(content);
+            parentLayout.removeComponent(cssLayout);
+            parentWrapper.removeTimeLocation(content);
 
         });
 
@@ -439,8 +441,6 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
 
     }
-
-
 
 
 }

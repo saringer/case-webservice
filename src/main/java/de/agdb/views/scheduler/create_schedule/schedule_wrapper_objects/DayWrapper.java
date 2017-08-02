@@ -1,16 +1,17 @@
 package de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class DayWrapper {
 
-    private Date day;
+    private ZonedDateTime day;
     private List<TimeLocationWrapper> timeAndLocationList;
 
 
-    public DayWrapper(Date day) {
+    public DayWrapper(ZonedDateTime day) {
         this.day = day;
         this.timeAndLocationList = new ArrayList<>();
     }
@@ -22,7 +23,7 @@ public class DayWrapper {
         timeAndLocationList.remove(e);
     }
 
-    public Date getDay() {
+    public ZonedDateTime getDay() {
         return this.day;
     }
 

@@ -1,7 +1,8 @@
 package de.agdb.views.scheduler.create_schedule.calendar_meetings;
 
-import org.vaadin.addon.calendar.event.BasicItem;
+import org.vaadin.addon.calendar.item.BasicItem;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class MeetingItem extends BasicItem {
@@ -67,13 +68,13 @@ public class MeetingItem extends BasicItem {
     }
 
     @Override
-    public void setEnd(Date end) {
+    public void setEnd(ZonedDateTime end) {
         meeting.setEnd(end);
         super.setEnd(end);
     }
 
     @Override
-    public void setStart(Date start) {
+    public void setStart(ZonedDateTime start) {
         meeting.setStart(start);
         super.setStart(start);
     }

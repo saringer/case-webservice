@@ -16,6 +16,7 @@ import de.agdb.views.categories.assign_categories.AssignCategoriesView;
 import de.agdb.views.categories.manage_categories.AddCategoryView;
 import de.agdb.views.categories.manage_categories.ManageCategoriesView;
 import de.agdb.views.contacts.ContactsMainView;
+import de.agdb.views.contacts.manage_contacts.AddContactView;
 import de.agdb.views.contacts.manage_contacts.ManageContactsView;
 import de.agdb.views.contacts.synchronize_contacts.SynchronizeContactsView;
 import de.agdb.views.scheduler.SchedulerMainView;
@@ -113,6 +114,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         menu.addView(new ContactsMainView(), ContactsMainView.VIEW_NAME, "Contacts", null);
         menu.addSubView(new SynchronizeContactsView(), SynchronizeContactsView.VIEW_NAME, "Synchronize contacts");
         menu.addSubView(new ManageContactsView(), ManageContactsView.VIEW_NAME, "Manage contacts");
+        menu.addDetailsView(new AddContactView(), AddContactView.VIEW_NAME);
 
 
         // PROFILE
