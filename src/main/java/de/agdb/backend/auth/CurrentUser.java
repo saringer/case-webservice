@@ -34,6 +34,7 @@ public final class CurrentUser {
         if (currentUser == null) {
             return "";
         } else {
+
             return currentUser;
         }
     }

@@ -7,6 +7,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -61,10 +62,24 @@ public class Menu extends CssLayout {
 
             @Override
             public void menuSelected(MenuItem selectedItem) {
+               /* UI.getCurrent().getPushConfiguration().setPushMode(PushMode.DISABLED);
+
                 SecurityContextHolder.clearContext();
+
                 UI.getCurrent().close();
+
+                //  push mode of the current session needs to be disabled before the session can be invalidated
+
+                                VaadinSession.getCurrent().getSession().invalidate();
+
+                */
+                SecurityContextHolder.clearContext();
+
                 VaadinSession.getCurrent().getSession().invalidate();
+
                 Page.getCurrent().reload();
+
+
             }
         });
 

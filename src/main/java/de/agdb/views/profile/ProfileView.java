@@ -30,9 +30,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.vaadin.addon.calendar.Calendar;
-import org.vaadin.addon.oauthpopup.OAuthListener;
-import org.vaadin.addon.oauthpopup.OAuthPopupButton;
-import org.vaadin.addon.oauthpopup.OAuthPopupConfig;
 
 import javax.annotation.PostConstruct;
 import java.io.*;

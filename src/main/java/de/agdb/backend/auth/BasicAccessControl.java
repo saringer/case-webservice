@@ -4,11 +4,15 @@ public class BasicAccessControl implements AccessControl {
 
     @Override
     public boolean signIn(String username, String password) {
-        if (username == null || username.isEmpty() || password == null || password.isEmpty())
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
             return false;
+        } else {
+            CurrentUser.set(username);
+            System.out.println(username);
+            return true;
+        }
 
-        CurrentUser.set(username);
-        return true;
+
     }
 
     @Override

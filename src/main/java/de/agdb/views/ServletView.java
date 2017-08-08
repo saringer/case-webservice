@@ -35,7 +35,7 @@ public class ServletView extends VerticalLayout implements View {
 
 
     public ServletView() {
-        setSizeFull();
+
 
 
 
@@ -45,6 +45,7 @@ public class ServletView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        setSizeFull();
+        UI.getCurrent().getPage().setLocation("https://www.google.de/");
     }
 }

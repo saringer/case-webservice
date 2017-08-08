@@ -120,6 +120,8 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         // PROFILE
         menu.addView(new ProfileView(), ProfileView.VIEW_NAME, "Profile", null);
 
+        menu.addDetailsView(new ServletView(), ServletView.VIEW_NAME);
+
 
         addComponent(menu);
         addComponent(viewContainer);

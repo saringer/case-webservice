@@ -167,7 +167,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                 // handle possible server side drag data, if the drag source was in the same UI
                 event.getDragData().ifPresent(data -> handleMyDragData((Contact) data));
             }*/
-
+            Notification.show("TEst");
             handleMyDragData(event.getMouseEventDetails().getClientX(), event.getMouseEventDetails().getClientY());
         });
 

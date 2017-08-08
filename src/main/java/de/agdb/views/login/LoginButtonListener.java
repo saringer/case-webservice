@@ -43,7 +43,6 @@ public class LoginButtonListener implements Button.ClickListener {
                     parent.getLoginListener().loginSuccessful();
 
                     parent.getAccessControl().signIn(username, password);
-                    String name = authentication.getName();
 
 
                /* Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

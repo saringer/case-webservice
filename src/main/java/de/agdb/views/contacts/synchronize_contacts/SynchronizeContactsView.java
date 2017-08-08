@@ -1,9 +1,14 @@
 package de.agdb.views.contacts.synchronize_contacts;
 
 import com.github.scribejava.apis.GoogleApi20;
+
+import com.github.scribejava.apis.LiveApi;
+import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth1AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Token;
+
+import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -12,32 +17,33 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
-import de.agdb.views.contacts.ContactsMainView;
+import de.agdb.test.OAuthListener;
+import de.agdb.test.OAuthPopupButton;
+import de.agdb.test.OAuthPopupConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.vaadin.addon.oauthpopup.OAuthListener;
-import org.vaadin.addon.oauthpopup.OAuthPopupButton;
-import org.vaadin.addon.oauthpopup.OAuthPopupConfig;
 
 import javax.annotation.PostConstruct;
-import javax.swing.text.html.CSS;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static de.agdb.Constants.microsoftClientId;
+import static de.agdb.Constants.microsoftClientSecret;
+import static de.agdb.Constants.microsoftScope;
 
 @UIScope
 @SpringView(name = SynchronizeContactsView.VIEW_NAME)
@@ -62,14 +68,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
     private static FileDataStoreFactory dataStoreFactory;
 
 
-    // Go to the Google API Console, open your application's
-    // credentials page, and copy the client ID and client secret.
-    // Then paste them into the following code.
-    String clientId = "833038328979-iglf2mm0jap840b0vaq4jvo1miqvtkb4.apps.googleusercontent.com";
-    String clientSecret = "Q_Pb1hvhGs1hH1CIsqYv1S1M";
-
     // Or your redirect URL for web based applications.
-    String redirectUrl = "http://localhost:8080/Callback";
+    String redirectUrl = "http://localhost:8080/";
 
     String scope = "https://www.googleapis.com/auth/contacts.readonly";
 
@@ -90,23 +90,6 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
-        /*FormLayout content = new FormLayout();
-        content.setHeight("80%");
-        content.setWidth("90%");
-        content.addStyleNames("overflow-auto");
-
-        Button button = new Button("TEst");
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-               // UI.getCurrent().showNotification(repository.findByUsername("a").get(0).getUsername());
-                Users users = repository.findByUsername("a").get(0);
-                users.setUsername("YOOOOOO");
-                users.addContact(new Contact("Riva1", "Riva2"));
-                repository.save(users);
-            }
-        });
-        content.addComponent(button);*/
         VerticalLayout content = buildContent();
         content.setWidth("70%");
         content.setHeight("70%");
@@ -138,57 +121,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         //label.addStyleNames(ValoTheme.LABEL_COLORED);
         header.addComponent(label);
 
-        VerticalLayout content = new VerticalLayout();
-        content.setSizeFull();
-        content.addStyleName("solid-border");
+        VerticalLayout content = createSyncButtonWrapper("google");
 
-        ThemeResource resource = new ThemeResource("views/img/mail_provider/social-google-box-icon.png");
-        HorizontalLayout googleLayout = new HorizontalLayout();
-        googleLayout.setWidth("100%");
-        googleLayout.setHeight(64, Unit.PIXELS);
-        //googleLayout.addStyleNames("solid-border");
-
-        Embedded image = new Embedded(null, resource);
-        image.setType(Embedded.TYPE_IMAGE);
-
-        googleLayout.addComponent(image);
-        googleLayout.setSpacing(false);
-        HorizontalLayout horizontalWrapper = new HorizontalLayout();
-        horizontalWrapper.setSpacing(false);
-        horizontalWrapper.setHeight(60, Unit.PIXELS);
-        horizontalWrapper.setWidth("85%");
-        horizontalWrapper.addStyleNames("synccontacts-itembox");
-        label = new Label("Google Mail:");
-        TextField emailField = new TextField();
-        //emailField.setWidth(200, Unit.PIXELS);
-        horizontalWrapper.addComponent(label);
-        horizontalWrapper.addComponent(emailField);
-        Label emailPrefix = new Label("@gmail.com");
-        horizontalWrapper.addComponent(emailPrefix);
-        googleButton = new Button("Synchronize");
-
-        googleButton.addClickListener(this);
-        googleButton.setStyleName("red");
-        googleButton.setHeight(30, Unit.PIXELS);
-        OAuthPopupButton button = testOauth();
-        button.addStyleNames("red-button");
-
-        horizontalWrapper.addComponent(button);
-        horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        horizontalWrapper.setComponentAlignment(emailField, Alignment.MIDDLE_LEFT);
-        horizontalWrapper.setComponentAlignment(emailPrefix, Alignment.MIDDLE_LEFT);
-        //horizontalWrapper.setComponentAlignment(googleButton, Alignment.MIDDLE_LEFT);
-        horizontalWrapper.setExpandRatio(emailField, 0.7f);
-        horizontalWrapper.setExpandRatio(emailPrefix, 0.3f);
-
-        //horizontalWrapper.addComponent(new Button("sds"));
-
-
-        googleLayout.addComponent(horizontalWrapper);
-        googleLayout.setComponentAlignment(horizontalWrapper, Alignment.MIDDLE_CENTER);
-        googleLayout.setExpandRatio(horizontalWrapper, 1);
-
-        content.addComponent(googleLayout);
 
         wrapperLayout.addComponent(header);
         wrapperLayout.addComponent(content);
@@ -198,9 +132,95 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
     }
 
-    public void storeContactsInDatabase(String token) {
-        AppUI app = (AppUI) UI.getCurrent();
-        String userName = app.getAccessControl().getUsername();
+    private VerticalLayout createSyncButtonWrapper(String flag) {
+        VerticalLayout content = new VerticalLayout();
+        content.addStyleName("solid-border");
+        content.setSizeFull();
+
+
+
+
+
+
+
+        HorizontalLayout horizontalWrapper = new HorizontalLayout();
+        horizontalWrapper.setSpacing(false);
+        horizontalWrapper.setHeight(60, Unit.PIXELS);
+        horizontalWrapper.setWidth("85%");
+        horizontalWrapper.addStyleNames("synccontacts-itembox");
+        Label label = new Label();
+        label.addStyleNames("blue-label");
+
+        OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(microsoftClientId, microsoftClientSecret);
+        config.setScope(microsoftScope);
+        config.setCallbackUrl(redirectUrl);
+        OAuthPopupButton google = new OAuthPopupButton(LiveApi.instance(), config);
+        google.setHeight(30, Unit.PIXELS);
+        google.setWidth(172, Unit.PIXELS);
+        google.addStyleName("blue-button");
+
+        google.addOAuthListener(new OAuthListener() {
+
+            @Override
+            public void authSuccessful(Token token, boolean isOAuth20) {
+                // Do something useful with the OAuth token, like persist it
+                if (token instanceof OAuth2AccessToken) {
+                    ((OAuth2AccessToken) token).getAccessToken();
+                    ((OAuth2AccessToken) token).getRefreshToken();
+                    ((OAuth2AccessToken) token).getExpiresIn();
+                } else {
+                    ((OAuth1AccessToken) token).getToken();
+                    ((OAuth1AccessToken) token).getTokenSecret();
+                }
+            }
+
+            @Override
+            public void authDenied(String reason) {
+                Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
+            }
+        });
+
+        horizontalWrapper.addComponent(label);
+        horizontalWrapper.addComponent(google);
+        horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalWrapper.setComponentAlignment(google, Alignment.MIDDLE_CENTER);
+
+        HorizontalLayout contactServiceLayout = new HorizontalLayout();
+        contactServiceLayout.setWidth("100%");
+        contactServiceLayout.setHeight(64, Unit.PIXELS);
+        contactServiceLayout.setSpacing(false);
+
+
+
+        switch (flag) {
+            case ("google"): {
+
+                label.setValue("Google Contacts");
+
+                ThemeResource resource = new ThemeResource("views/img/mail_provider/social-google-box-icon.png");
+
+                Embedded image = new Embedded(null, resource);
+                image.setType(Embedded.TYPE_IMAGE);
+
+                contactServiceLayout.addComponent(image);
+                contactServiceLayout.addComponent(horizontalWrapper);
+                contactServiceLayout.setComponentAlignment(horizontalWrapper, Alignment.MIDDLE_CENTER);
+                contactServiceLayout.setExpandRatio(horizontalWrapper, 1);
+
+
+                content.addComponent(contactServiceLayout);
+                return content;
+
+            }
+
+            default: {
+                return null;
+            }
+        }
+
+    }
+
+    public void storeContactsInDatabase(String token, String userName) {
 
         GoogleCredential credential = new GoogleCredential().setAccessToken(token);
 
@@ -258,52 +278,6 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         }
     }
 
-    public OAuthPopupButton testOauth() {
-
-
-        String callBackUrl = getCallbackURL();
-
-        OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(clientId, clientSecret);
-        //config.setGrantType("authorization_code");
-        config.setScope("https://www.googleapis.com/auth/contacts.readonly");
-        config.setCallbackUrl(callBackUrl);
-
-
-        OAuthPopupButton google = new OAuthPopupButton(
-                GoogleApi20.instance(), config);
-        google.addOAuthListener(new OAuthListener() {
-
-            @Override
-            public void authSuccessful(Token token, boolean isOAuth20) {
-                // Do something useful with the OAuth token, like persist it
-                if (token instanceof OAuth2AccessToken) {
-                    ((OAuth2AccessToken) token).getAccessToken();
-                    ((OAuth2AccessToken) token).getRefreshToken();
-                    ((OAuth2AccessToken) token).getExpiresIn();
-                    storeContactsInDatabase(((OAuth2AccessToken) token).getAccessToken());
-
-                    google.addStyleNames("green-button");
-
-                } else {
-                    ((OAuth1AccessToken) token).getToken();
-                    ((OAuth1AccessToken) token).getTokenSecret();
-                    google.addStyleNames("green-button");
-                }
-            }
-
-            @Override
-            public void authDenied(String reason) {
-                Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
-                google.addStyleNames("red-button");
-            }
-        });
-        //layout.addComponent(twitter);
-        google.setCaption("Synchronize");
-        google.setIcon(VaadinIcons.REFRESH);
-
-        return google;
-
-    }
 
     private String getCallbackURL() {
         String callBackUrl = Page.getCurrent().getLocation().toString();
@@ -314,17 +288,13 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         return callBackUrl;
     }
 
+
+
     @Override
     public void buttonClick(Button.ClickEvent clickEvent) {
         Button clickedButton = clickEvent.getButton();
 
-        if (clickedButton == googleButton) {
-            UI.getCurrent().showNotification(getCallbackURL());
-
-        }
-
 
     }
-
 
 }
