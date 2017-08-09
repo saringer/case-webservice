@@ -29,4 +29,12 @@ public class Constants {
     public static final String microsoftClientSecret = "qCz61Eb3S1tpPqdGpDxv000";
     // Scope for accessing Microsoft Contacts API
     public static final String microsoftScope = "wl.basic";
+
+    /*
+
+     */
+    public static final String yahooClientId = "dj0yJmk9dDlza3dVS3E0eExwJmQ9WVdrOU16Uk9WMmh1TXpRbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wYQ--";
+    public static final String yahooClientSecret = "3a5f149e9c576679338f69d2d92d0eee32104ece";
+    // Scope for accessing Yahoo Contacts API
+    public static final String yahooScope = "sdct-r";
 }

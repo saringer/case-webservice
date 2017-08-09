@@ -90,9 +90,15 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
-        VerticalLayout content = buildContent();
+
+
+        VerticalLayout content = new VerticalLayout();
+        content.addStyleName("solid-border");
+        content.setSpacing(false);
+        content.setMargin(false);
         content.setWidth("70%");
         content.setHeight("70%");
+        content.addComponent(buildContent());
 
 
         formWrapper.addStyleName("solid-border");
@@ -108,7 +114,8 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
         VerticalLayout wrapperLayout = new VerticalLayout();
         wrapperLayout.setSizeFull();
-        wrapperLayout.setSpacing(false);
+        //wrapperLayout.setSpacing(false);
+        wrapperLayout.setMargin(false);
 
         CssLayout header = new CssLayout();
         header.setWidth("100%");
@@ -121,104 +128,25 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         //label.addStyleNames(ValoTheme.LABEL_COLORED);
         header.addComponent(label);
 
-        VerticalLayout content = createSyncButtonWrapper("google");
+        VerticalLayout innerWrapperLayout = new VerticalLayout();
+        innerWrapperLayout.setSizeFull();
+        innerWrapperLayout.setSpacing(false);
+
+        HorizontalLayout googleLayout = new ContactServiceLayout("google");
+        HorizontalLayout microsoftLayout = new ContactServiceLayout("microsoft");
+        HorizontalLayout yahooLayout = new ContactServiceLayout("yahoo");
+        innerWrapperLayout.addComponents(googleLayout, microsoftLayout, yahooLayout);
 
 
         wrapperLayout.addComponent(header);
-        wrapperLayout.addComponent(content);
-        wrapperLayout.setExpandRatio(content, 1);
+        wrapperLayout.addComponent(innerWrapperLayout);
+
+        wrapperLayout.setExpandRatio(innerWrapperLayout, 1);
 
         return wrapperLayout;
 
     }
 
-    private VerticalLayout createSyncButtonWrapper(String flag) {
-        VerticalLayout content = new VerticalLayout();
-        content.addStyleName("solid-border");
-        content.setSizeFull();
-
-
-
-
-
-
-
-        HorizontalLayout horizontalWrapper = new HorizontalLayout();
-        horizontalWrapper.setSpacing(false);
-        horizontalWrapper.setHeight(60, Unit.PIXELS);
-        horizontalWrapper.setWidth("85%");
-        horizontalWrapper.addStyleNames("synccontacts-itembox");
-        Label label = new Label();
-        label.addStyleNames("blue-label");
-
-        OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(microsoftClientId, microsoftClientSecret);
-        config.setScope(microsoftScope);
-        config.setCallbackUrl(redirectUrl);
-        OAuthPopupButton google = new OAuthPopupButton(LiveApi.instance(), config);
-        google.setHeight(30, Unit.PIXELS);
-        google.setWidth(172, Unit.PIXELS);
-        google.addStyleName("blue-button");
-        google.setPopupWindowFeatures("resizable,width=800,height=600");
-        google.addOAuthListener(new OAuthListener() {
-
-            @Override
-            public void authSuccessful(Token token, boolean isOAuth20) {
-                // Do something useful with the OAuth token, like persist it
-                if (token instanceof OAuth2AccessToken) {
-                    ((OAuth2AccessToken) token).getAccessToken();
-                    ((OAuth2AccessToken) token).getRefreshToken();
-                    ((OAuth2AccessToken) token).getExpiresIn();
-                } else {
-                    ((OAuth1AccessToken) token).getToken();
-                    ((OAuth1AccessToken) token).getTokenSecret();
-                }
-            }
-
-            @Override
-            public void authDenied(String reason) {
-                Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
-            }
-        });
-
-        horizontalWrapper.addComponent(label);
-        horizontalWrapper.addComponent(google);
-        horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        horizontalWrapper.setComponentAlignment(google, Alignment.MIDDLE_CENTER);
-
-        HorizontalLayout contactServiceLayout = new HorizontalLayout();
-        contactServiceLayout.setWidth("100%");
-        contactServiceLayout.setHeight(64, Unit.PIXELS);
-        contactServiceLayout.setSpacing(false);
-
-
-
-        switch (flag) {
-            case ("google"): {
-
-                label.setValue("Google Contacts");
-
-                ThemeResource resource = new ThemeResource("views/img/mail_provider/social-google-box-icon.png");
-
-                Embedded image = new Embedded(null, resource);
-                image.setType(Embedded.TYPE_IMAGE);
-
-                contactServiceLayout.addComponent(image);
-                contactServiceLayout.addComponent(horizontalWrapper);
-                contactServiceLayout.setComponentAlignment(horizontalWrapper, Alignment.MIDDLE_CENTER);
-                contactServiceLayout.setExpandRatio(horizontalWrapper, 1);
-
-
-                content.addComponent(contactServiceLayout);
-                return content;
-
-            }
-
-            default: {
-                return null;
-            }
-        }
-
-    }
 
     public void storeContactsInDatabase(String token, String userName) {
 

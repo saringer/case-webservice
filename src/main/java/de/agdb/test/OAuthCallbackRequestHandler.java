@@ -9,6 +9,7 @@ import com.vaadin.server.RequestHandler;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.JavaScript;
 
 /**
  * Handles the callback from the OAuth authorization url.
