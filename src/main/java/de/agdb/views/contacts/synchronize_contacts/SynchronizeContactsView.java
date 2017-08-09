@@ -158,7 +158,7 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         google.setHeight(30, Unit.PIXELS);
         google.setWidth(172, Unit.PIXELS);
         google.addStyleName("blue-button");
-
+        google.setPopupWindowFeatures("resizable,width=800,height=600");
         google.addOAuthListener(new OAuthListener() {
 
             @Override
