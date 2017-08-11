@@ -4,10 +4,12 @@ import com.vaadin.annotations.*;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedSession;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.*;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.backend.auth.AccessControl;
 import de.agdb.backend.auth.BasicAccessControl;
@@ -15,6 +17,8 @@ import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
 import de.agdb.views.scheduler.SchedulerMainView;
 import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.GlobalWrapper;
+
+import elemental.json.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -24,6 +28,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import de.agdb.views.login.LoginForm;
+import org.vaadin.addons.popupextension.PopupExtension;
 
 
 @SpringUI
@@ -52,7 +57,7 @@ public class AppUI extends UI {
     protected void init(VaadinRequest request) {
 
 
-        Responsive.makeResponsive(this);
+       Responsive.makeResponsive(this);
 
         WrappedSession session = request.getWrappedSession();
         HttpSession httpSession = ((WrappedHttpSession) session).getHttpSession();
@@ -61,7 +66,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-        if (!accessControl.isUserSignedIn()) {
+       /* if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
                 @Override
                 public void loginSuccessful() {
@@ -70,9 +75,12 @@ public class AppUI extends UI {
             }, viewProvider, AppUI.this));
         } else {
             showMainView();
-        }
+        }*/
 
-       //showMainView();
+       showMainView();
+
+
+
 
     }
 

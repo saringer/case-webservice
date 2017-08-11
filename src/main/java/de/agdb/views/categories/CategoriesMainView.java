@@ -19,7 +19,7 @@ public class CategoriesMainView extends VerticalLayout implements View {
 
     public CategoriesMainView() {
         setSizeFull();
-
+        
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setSizeFull();
         addComponent(formWrapper);

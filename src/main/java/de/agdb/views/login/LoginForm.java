@@ -26,6 +26,14 @@ public class LoginForm extends CssLayout {
     private SpringViewProvider viewProvider;
     private AppUI ui;
 
+    /*
+    new Binder<Person>().forField(tf)
+    .withValidator(str -> str.length() == 4, "Must be 4 chars")
+    .withConverter(new StringToIntegerConverter("Must be Integer"))
+    .withValidator(integer -> integer.equals(2017), "Wrong date")
+    .bind(Person::getBirthYear, Person::setBirthYear);
+     */
+
 
 
     public LoginForm(AccessControl accessControl, LoginListener loginListener, SpringViewProvider viewProvider, AppUI ui) {

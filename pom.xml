@@ -173,6 +173,12 @@
 			<version>3.0.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+
 		<!-- Google Maps Add-On -->
 
 		<dependency>
@@ -189,6 +195,11 @@
 			<version>0.2.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>popupextension</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 
 
@@ -257,6 +268,7 @@
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+
 
 	</repositories>
 
