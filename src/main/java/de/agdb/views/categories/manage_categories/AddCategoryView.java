@@ -1,5 +1,6 @@
 package de.agdb.views.categories.manage_categories;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -12,6 +13,7 @@ import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
+import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
@@ -146,7 +148,7 @@ public class AddCategoryView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        resetDetailFields();
         initCategoriesList();
     }
 
@@ -199,21 +201,18 @@ public class AddCategoryView extends VerticalLayout implements View {
         CssLayout bottomNav = new CssLayout();
         bottomNav.setWidth("100%");
 
-        Button backButton = new Button("BACK");
-        backButton.addClickListener((Button.ClickListener) clickEvent -> {
-                    UI.getCurrent().getNavigator().navigateTo("ManageCategoriesView");
-        });
-        backButton.addStyleName("float-left");
-
-        Button cancelButton = new Button("CANCEL");
-        cancelButton.addClickListener((Button.ClickListener) clickEvent -> {
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             UI.getCurrent().getNavigator().navigateTo("ManageCategoriesView");
-        });
-        cancelButton.addStyleName("float-right");
-        cancelButton.addStyleName(ValoTheme.BUTTON_DANGER);
 
-        Button createButton = new Button("CREATE");
-        createButton.addClickListener((Button.ClickListener) clickEvent -> {
+        };
+        CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
+        backButton.addStyleNames("float-left", "back-button");
+        backButton.setHeight(40, Unit.PIXELS);
+        backButton.setWidth(115, Unit.PIXELS);
+
+
+
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             AppUI app = (AppUI) UI.getCurrent();
             String userName = app.getAccessControl().getUsername();
             Users thisUser = repository.findByUsername(userName).get(0);
@@ -221,14 +220,17 @@ public class AddCategoryView extends VerticalLayout implements View {
             category.setTitle(categoryTitle.getValue());
             category.setShortCut(categoryShortcut.getValue());
             category.setDescription(categoryDescription.getValue());
+            category.setShortCutColor(shortcutColor.getValue().getCSS());
             thisUser.addCategory(category);
             repository.save(thisUser);
             app.getNavigator().navigateTo("ManageCategoriesView");
-        });
-        createButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        createButton.addStyleName("float-right");
+        };
+        CustomButton createButton = new CustomButton("CREATE", listener);
+        createButton.addStyleNames("float-right","next-button");
+        createButton.setHeight(40, Unit.PIXELS);
+        createButton.setWidth(115, Unit.PIXELS);
 
-        bottomNav.addComponents(backButton, cancelButton, createButton);
+        bottomNav.addComponents(backButton, createButton);
 
         wrapperLayout.addComponent(header);
         wrapperLayout.addComponent(detailsForm);
@@ -239,6 +241,15 @@ public class AddCategoryView extends VerticalLayout implements View {
 
         return wrapperLayout;
 
+
+    }
+
+    private void resetDetailFields() {
+        categoryTitle.clear();
+        categoryShortcut.clear();
+        shortcutColor.clear();
+        categoryTags.clear();
+        categoryDescription.clear();
 
     }
 

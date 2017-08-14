@@ -61,6 +61,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "views/scheduleview";
 @import "views/contactsview";
 @import "views/categoriesview";
+@import "addons";
 
 
 @mixin main_theme {
@@ -69,6 +70,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   @include schedule-view;
   @include contacts-view;
   @include categories-view;
+  @include addons;
   // login screen - for small screens, see below
   .login-screen {
    // background: $editor-background-color;

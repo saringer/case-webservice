@@ -27,7 +27,6 @@ public class AddContactView extends VerticalLayout implements View {
     private TextField firstName;
     private TextField lastName;
     private TextField age;
-    private ComboBox sex;
     private TextField mobile;
     private TextField home;
     private TextField email;
@@ -44,8 +43,8 @@ public class AddContactView extends VerticalLayout implements View {
         addStyleNames("general-background-color-grey");
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth(1000, Unit.PIXELS);
-        formWrapper.setHeight(600, Unit.PIXELS);
+        formWrapper.setWidth(1200, Unit.PIXELS);
+        formWrapper.setHeight(800, Unit.PIXELS);
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
@@ -157,7 +156,7 @@ public class AddContactView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        resetDetailsFields();
         initContactList();
     }
 
@@ -189,8 +188,6 @@ public class AddContactView extends VerticalLayout implements View {
         lastName.setCaption("Last name");
         age = new TextField();
         age.setCaption("Age");
-        sex = new ComboBox();
-        sex.setCaption("Sex");
         mobile = new TextField();
         mobile.setCaption("Mobile");
         home = new TextField();
@@ -204,7 +201,6 @@ public class AddContactView extends VerticalLayout implements View {
         detailsForm.addComponent(firstName);
         detailsForm.addComponent(lastName);
         detailsForm.addComponent(age);
-        detailsForm.addComponent(sex);
         detailsForm.addComponent(mobile);
         detailsForm.addComponent(email);
         detailsForm.addComponent(function);
@@ -245,6 +241,16 @@ public class AddContactView extends VerticalLayout implements View {
 
         return wrapperLayout;
 
+
+    }
+
+    private void resetDetailsFields() {
+        firstName.clear();
+        lastName.clear();
+        age.clear();
+        mobile.clear();
+        email.clear();
+        function.clear();
 
     }
 

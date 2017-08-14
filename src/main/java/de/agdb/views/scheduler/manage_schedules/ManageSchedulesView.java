@@ -1,5 +1,6 @@
 package de.agdb.views.scheduler.manage_schedules;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Sizeable;
@@ -24,11 +25,13 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "ManageSchedulesView";
     private VerticalLayout schedulesList = new VerticalLayout();
+    CalendarComponent calendar = new CalendarComponent();
     @Autowired
     UsersRepository usersRepository;
 
     @PostConstruct
     void init() {
+        AppUI app = (AppUI) UI.getCurrent();
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setWidth("90%");
@@ -38,7 +41,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
 
 
-        HorizontalLayout content = buildContent();
+        HorizontalLayout content = buildContent(app);
         content.setSpacing(false);
         content.setMargin(false);
         content.setHeight("80%");
@@ -61,7 +64,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         formWrapper.setExpandRatio(content, 1);
     }
 
-    private HorizontalLayout buildContent() {
+    private HorizontalLayout buildContent(AppUI app) {
         /*HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();
 
@@ -80,9 +83,9 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         HorizontalLayout content = new HorizontalLayout();
         content.setSizeFull();
 
-        CalendarComponent c2 = new CalendarComponent();
-        c2.setMargin(true);
-        c2.addStyleName("solid-border-grey");
+
+        calendar.setMargin(true);
+        calendar.addStyleName("solid-border-grey");
 
         //c2.setMargin(false);
 
@@ -97,14 +100,14 @@ public class ManageSchedulesView extends VerticalLayout implements View {
      //   l.setMargin(true);
         schedulesList.addStyleNames("overflow-auto", "schedule-list");
 
-        initSchedules(schedulesList);
+        initSchedules(schedulesList, app);
 
         panel.setContent(schedulesList);
 
         content.addComponent(panel);
-        content.addComponent(c2);
+        content.addComponent(calendar);
         content.setExpandRatio(panel, 0.4f);
-        content.setExpandRatio(c2, 0.6f);
+        content.setExpandRatio(calendar, 0.6f);
 
 
 
@@ -121,21 +124,25 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
     }
 
-    private void initSchedules(VerticalLayout schedulesListLayout) {
+    private void initSchedules(VerticalLayout schedulesListLayout, AppUI app) {
         schedulesListLayout.removeAllComponents();
-        AppUI app = (AppUI) UI.getCurrent();
         String userName = app.getAccessControl().getUsername();
-        Users thisUser = usersRepository.findByUsername(userName).get(0);
+        if (!usersRepository.findByUsername(userName).isEmpty()) {
+            Users thisUser = usersRepository.findByUsername(userName).get(0);
 
-        List<ScheduleWrapper> schedules = thisUser.getSchedules();
-        for (int i=0;i<schedules.size();i++) {
-            schedulesListLayout.addComponent(buildItem(schedules.get(i)));
+            List<ScheduleWrapper> schedules = thisUser.getSchedules();
+            for (int i=0;i<schedules.size();i++) {
+                schedulesListLayout.addComponent(buildItem(schedules.get(i)));
+            }
         }
+
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        initSchedules(schedulesList);
+        AppUI app = (AppUI) UI.getCurrent();
+        calendar.clearEvents(true);
+        initSchedules(schedulesList, app);
 
     }
 
@@ -162,6 +169,14 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         textLayout.addComponent(title);
         textLayout.addComponent(description);
         wrapperLayout.addComponent(textLayout);
+
+        wrapperLayout.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            calendar.clearEvents(true);
+            for (int i=0;i<schedule.getDays().size(); i++) {
+                calendar.addEvent(schedule.getDays().get(i).getDay(), schedule.getTitle());
+            }
+
+        });
 
         return wrapperLayout;
 

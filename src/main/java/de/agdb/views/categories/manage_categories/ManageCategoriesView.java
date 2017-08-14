@@ -1,9 +1,12 @@
 package de.agdb.views.categories.manage_categories;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.colorpicker.Color;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -11,7 +14,9 @@ import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
+import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
@@ -148,10 +153,16 @@ public class ManageCategoriesView extends VerticalLayout implements View {
                     boolean somethingSelected = !grid.getSelectedItems().isEmpty();
                     if (somethingSelected) {
                         Categories category = event.getFirstSelectedItem().get();
+                        if (!category.getShortCut().isEmpty()) {
+                            Page.Styles styles = Page.getCurrent().getStyles();
+                            // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
+                            styles.add(".managecontacts-header { background:" + category.getShortCutColor() + "; }");
+                        }
                         categoryDetailsLabel.setValue(category.getTitle());
                         categoryTitle.setValue(category.getTitle());
                         categoryShortcut.setValue(category.getShortCut());
                         categoryDescription.setValue(category.getDescription());
+
                     }
 
             });
@@ -190,9 +201,11 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         detailsForm.addStyleNames("solid-border");
 
         categoryTitle = new TextField();
+        categoryTitle.setReadOnly(true);
         categoryTitle.setWidth("100%");
         categoryTitle.setCaption("Category title");
         categoryShortcut = new TextField();
+        categoryShortcut.setReadOnly(true);
         categoryShortcut.setWidth("100%");
         categoryShortcut.setCaption("Category shortcut");
         shortcutColor = new ColorPicker();
@@ -210,8 +223,34 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         detailsForm.addComponent(categoryDescription);
 
+
+        CssLayout bottomNav = new CssLayout();
+        bottomNav.setWidth("100%");
+
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+
+        };
+        CustomButton deleteButton = new CustomButton(VaadinIcons.TRASH.getHtml() + " " + "DELETE", listener);
+        deleteButton.addStyleNames("cancel-button","float-right");
+        deleteButton.setHeight(40, Unit.PIXELS);
+        deleteButton.setWidth(115, Unit.PIXELS);
+
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+
+        };
+        CustomButton saveButton = new CustomButton(VaadinIcons.SERVER.getHtml() + " "+ "SAVE", listener);
+        saveButton.addStyleNames("float-right","save-button");
+        saveButton.setHeight(40, Unit.PIXELS);
+        saveButton.setWidth(115, Unit.PIXELS);
+
+        bottomNav.addComponents(saveButton,deleteButton);
+
+
         wrapperLayout.addComponent(header);
         wrapperLayout.addComponent(detailsForm);
+        wrapperLayout.addComponent(bottomNav);
+        wrapperLayout.addStyleName("solid-border");
+
         wrapperLayout.setExpandRatio(detailsForm, 1);
 
 

@@ -11,6 +11,18 @@
     }
   }
 
+  .save-button {
+    border: solid 1px black;
+    background-color: #2b78e4;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: #0e4da5;
+
+    }
+  }
+
   .create-button {
     border: solid 1px black;
     background-color: #009e0f;
@@ -238,6 +250,10 @@
   .label-to {
     margin-top: 16px;
     margin-left: 5px;
+  }
+
+  .event .v-calendar-event .v-calendar-event-month .v-calendar-event-state-empty {
+    background: red;
   }
 
 }

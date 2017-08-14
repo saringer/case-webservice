@@ -142,7 +142,7 @@ public class SetDateView extends VerticalLayout implements View {
 
 
         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-            calendar.clearEvents();
+            calendar.clearEvents(false);
         };
 
         CustomButton clearButton = new CustomButton(VaadinIcons.ERASER.getHtml() + " " + "CLEAR", listener);

@@ -42,8 +42,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
     @Autowired
     UsersRepository usersRepository;
-    @Autowired
-    ScheduleRepository scheduleRepository;
+
 
     @PostConstruct
     void init() {

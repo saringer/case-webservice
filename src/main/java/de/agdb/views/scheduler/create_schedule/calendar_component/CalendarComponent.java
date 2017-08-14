@@ -12,6 +12,7 @@ import org.vaadin.addon.calendar.handler.BasicWeekClickHandler;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 import java.text.DateFormatSymbols;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -258,7 +259,6 @@ public class CalendarComponent extends VerticalLayout {
             meeting.setDetails("Selected Day");
 
             MeetingItem item = new MeetingItem(meeting);
-            System.out.println(item.getStyleName());
             eventProvider.addItem(item);
 
         } else {
@@ -269,15 +269,33 @@ public class CalendarComponent extends VerticalLayout {
 
     }
 
-    public void clearEvents() {
-        eventProvider.removeAllEvents();
-        app.getGlobalScheduleWrapper().removeAlldays();
+    public void clearEvents(boolean calendarOnly) {
+        if (calendarOnly) {
+            eventProvider.removeAllEvents();
+        } else {
+            eventProvider.removeAllEvents();
+            app.getGlobalScheduleWrapper().removeAlldays();
+
+        }
+
     }
 
     public boolean eventListisEmpty() {
         return eventProvider.isEmpty();
     }
 
+    public void addEvent(ZonedDateTime startTime, String title) {
+        Meeting meeting = new Meeting();
+
+        meeting.setStart(startTime);
+        meeting.setEnd(startTime);
+        meeting.setName("A Name");
+        meeting.setDetails(title);
+
+        MeetingItem item = new MeetingItem(meeting);
+        item.setStyleName("color2");
+        eventProvider.addItem(item);
+    }
 
     public MeetingDataProvider getEventProvider() {
         return this.eventProvider;
@@ -297,6 +315,7 @@ public class CalendarComponent extends VerticalLayout {
                 return true;
             }
         }
+
 
     }
 }
