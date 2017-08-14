@@ -198,7 +198,6 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         FormLayout detailsForm = new FormLayout();
         detailsForm.setMargin(true);
         detailsForm.setSizeFull();
-        detailsForm.addStyleNames("solid-border");
 
         categoryTitle = new TextField();
         categoryTitle.setReadOnly(true);

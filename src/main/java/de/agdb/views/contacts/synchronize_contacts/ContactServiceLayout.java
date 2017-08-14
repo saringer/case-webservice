@@ -56,6 +56,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
+                            google.addStyleName("green-button");
                             new GoogleContactsDBParser().storeContactsInDatabase( ((OAuth2AccessToken) token).getAccessToken(),currentUser, usersRepository);
                         } else {
                             ((OAuth1AccessToken) token).getToken();
@@ -65,6 +66,7 @@ public class ContactServiceLayout extends HorizontalLayout {
 
                     @Override
                     public void authDenied(String reason) {
+                        google.addStyleName("red-button");
                         Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
                     }
                 });
@@ -111,6 +113,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
+                            microsoft.addStyleName("green-button");
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -119,6 +122,7 @@ public class ContactServiceLayout extends HorizontalLayout {
 
                     @Override
                     public void authDenied(String reason) {
+                        microsoft.addStyleName("red-button");
                         Notification.show("Failed to authenticate!" + reason, Notification.Type.ERROR_MESSAGE);
                     }
                 });
@@ -162,6 +166,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
+                            yahoo.addStyleName("green-button");
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -170,7 +175,7 @@ public class ContactServiceLayout extends HorizontalLayout {
 
                     @Override
                     public void authDenied(String reason) {
-                        System.out.println("failed");
+                        yahoo.addStyleName("red-button");
                         Notification.show("Failed to authenticate!" + reason, Notification.Type.ERROR_MESSAGE);
                     }
                 });

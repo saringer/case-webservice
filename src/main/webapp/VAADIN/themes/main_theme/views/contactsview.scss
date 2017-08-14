@@ -46,11 +46,17 @@
   }
 
   .red-button {
-    margin: 15px;
-    padding: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
     background: red;
     color: white;
     font-size: 13px;
+    border-radius: 25px;
+    border: 1px solid black;
+    cursor: pointer;
+    text-align: center;
 
   }
 
@@ -77,10 +83,17 @@
   }
 
   .green-button {
-    margin: 15px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
     background: green;
     color: white;
     font-size: 13px;
+    border-radius: 25px;
+    border: 1px solid black;
+    cursor: pointer;
+    text-align: center;
   }
 
   .disable-grid-cell-select {
