@@ -1,4 +1,4 @@
-package de.agdb.test;
+package de.agdb.backend.oauth2;
 
 import com.github.scribejava.core.model.Token;
 

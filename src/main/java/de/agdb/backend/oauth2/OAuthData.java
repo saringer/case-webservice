@@ -1,4 +1,4 @@
-package de.agdb.test;
+package de.agdb.backend.oauth2;
 
 import java.io.IOException;
 import java.util.List;

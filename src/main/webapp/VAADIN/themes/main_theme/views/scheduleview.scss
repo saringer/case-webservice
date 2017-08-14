@@ -1,23 +1,88 @@
 @mixin schedule-view {
 
+  .next-button {
+    border: solid 1px black;
+    background-color: #009e0f;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: #066b0f;
+    }
+  }
 
-.solid-border {
-  border: solid 1px black;
+  .create-button {
+    border: solid 1px black;
+    background-color: #009e0f;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    &:hover {
+      background-color: #066b0f;
+    }
+  }
 
-}
+  .back-button {
+    border: solid 1px black;
+    background-color: #ffd966;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: #e0b226;
+      color: white;
+    }
+  }
+
+  .clear-button {
+    border: solid 1px black;
+    background-color: #cccccc;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: #b7b2b2;
+      color: white;
+    }
+  }
+
+  .cancel-button {
+    border: solid 1px black;
+    background-color: #cf2a27;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: #a30906;
+
+    }
+  }
+
+  .solid-border {
+    border: solid 1px black;
+
+  }
 
   .right-menu-style {
-   background-color: #741b47;
-   border: solid 1px black;
-   text-align: center;
-   color: white;
+    background-color: #741b47;
+    border: solid 1px black;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    &:hover {
+      background-color: #630634;
+    }
 
- }
+  }
   .left-menu-style {
     background-color: #2b78e4;
     border: solid 1px black;
     text-align: center;
     color: white;
+    cursor: pointer;
+    &:hover {
+      background-color: #1b4389;
+    }
 
   }
 
@@ -40,6 +105,9 @@
     color: black;
     text-align: center;
     cursor: pointer;
+    &:hover {
+      background-color: rgb(125, 160, 209);
+    }
   }
 
   .test {
@@ -53,6 +121,7 @@
     color: blue;
     text-align: center;
     border: 1px solid black;
+    margin-left: 1px;
   }
 
   .add-button {
@@ -62,7 +131,7 @@
     border: 1px solid black;
     padding-top: 10px;
     padding-bottom: 10px;
-
+    margin-left: 1px;
 
   }
 
@@ -76,7 +145,6 @@
     border: solid 1px black;
     text-align: center;
     color: white;
-
 
   }
 
@@ -102,34 +170,36 @@
     font-size: 20px;
     padding-left: 5px;
     margin-top: 15px;
-   // text-align: center;
-  //  margin-top: 15px;
+    // text-align: center;
+    //  margin-top: 15px;
 
   }
-
-
 
   .modal-window-content {
     background-color: rgba(204, 204, 204, 0.8);
     color: #2b78e4;
     text-align: center;
-    align-content: center;
-    align-items: center;
-    float: left;
+    //align-content: center;
+    //align-items: center;
+    //float: left;
 
   }
 
   .modal-window-margin {
-    margin-top:  15px;
+    margin-top: 15px;
   }
 
-  .topcorner-delete-button{
+  .topcorner-delete-button {
     color: white;
     background-color: red;
-    top:0;
-    right:0;
+    top: 0;
+    right: 0;
     float: right;
     cursor: pointer;
+    border-left: solid 1px black;
+    border-bottom: solid 1px black;
+    text-align: center;
+    padding-bottom: 20px;
   }
 
   .calendar-meeting {
@@ -137,6 +207,37 @@
     border: solid 1px black;
   }
 
+  .schedule-list-item {
+    background: rgba(51, 51, 51, 0.2);
+    border: 1px solid black;
+  }
 
+  .schedule-list {
+    .v-panel-content {
+      .v-margin-left {
+
+        padding: 30px;
+      }
+      .v-margin-top {
+
+        padding: 30px;
+      }
+    }
+
+  }
+
+  .endtime {
+    margin-top: 13px;
+    margin-left: 5px;
+  }
+
+  .label-from {
+    margin-top: 16px;
+    margin-left: -160px;
+  }
+  .label-to {
+    margin-top: 16px;
+    margin-left: 5px;
+  }
 
 }

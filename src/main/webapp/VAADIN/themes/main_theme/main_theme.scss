@@ -368,4 +368,17 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     float: right;
   }
 
+  .timefield {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .solid-border-grey {
+    border: 1px solid #d5d5d5;
+
+  }
+
 }

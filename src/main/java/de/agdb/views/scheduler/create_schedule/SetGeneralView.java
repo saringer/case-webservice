@@ -1,12 +1,16 @@
 package de.agdb.views.scheduler.create_schedule;
 
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.views.scheduler.CustomButton;
 
 @UIScope
 @SpringView(name = SetGeneralView.VIEW_NAME)
@@ -18,11 +22,10 @@ public class SetGeneralView extends VerticalLayout implements View {
     public SetGeneralView() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth("80%");
-        formWrapper.setHeight("80%");
+        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setHeight(650, Unit.PIXELS);
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
-
 
 
         FormLayout content = buildContent();
@@ -30,7 +33,6 @@ public class SetGeneralView extends VerticalLayout implements View {
         content.setMargin(true);
         content.setHeight("80%");
         content.setWidth("70%");
-
 
 
         HorizontalLayout topNavBar = createTopNavBar();
@@ -54,6 +56,25 @@ public class SetGeneralView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        AppUI app = (AppUI) UI.getCurrent();
+        app.getGlobalScheduleWrapper();
+
+        scheduleTitle.setComponentError(null);
+        scheduleDescription.setComponentError(null);
+
+        if (app.getGlobalScheduleWrapper().getTitle() == null) {
+            scheduleTitle.setValue("");
+        }
+        if (app.getGlobalScheduleWrapper().getDescription() == null) {
+            scheduleDescription.setValue("");
+        }
+        if (app.getGlobalScheduleWrapper().getTitle() != null) {
+            scheduleTitle.setValue(app.getGlobalScheduleWrapper().getTitle());
+        }
+        if (app.getGlobalScheduleWrapper().getDescription() != null) {
+            scheduleDescription.setValue(app.getGlobalScheduleWrapper().getDescription());
+        }
+
 
     }
 
@@ -127,6 +148,7 @@ public class SetGeneralView extends VerticalLayout implements View {
         NativeSelect<String> dropDownMenu = new NativeSelect();
         dropDownMenu.setEmptySelectionAllowed(false);
         dropDownMenu.setItems("weekly", "monthly");
+        dropDownMenu.setSelectedItem("monthly");
         recurrencyOptions.addComponent(dropDownMenu);
         recurrencyOptions.addComponent(new Label("until"));
         recurrencyOptions.addComponent(new DateField());
@@ -153,30 +175,35 @@ public class SetGeneralView extends VerticalLayout implements View {
         nav.setWidth("100%");
         nav.setSpacing(false);
         nav.setMargin(false);
-        Button button = new Button("NEXT");
-        button.setWidth("15%");
-        button.addClickListener(new Button.ClickListener() {
+
+        LayoutEvents.LayoutClickListener listener = new LayoutEvents.LayoutClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                AppUI app = (AppUI) UI.getCurrent();
-                app.getGlobalScheduleWrapper().setTitle(scheduleTitle.getValue());
+            public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
+                if (scheduleTitle.isEmpty()) {
+                    scheduleTitle.setComponentError(new UserError("Please enter a title foryour schedule"));
+                }
 
-                app.getNavigator().navigateTo("DateView");
+                if (scheduleDescription.isEmpty()) {
+                    scheduleDescription.setComponentError(new UserError("Please enter a description for your schedule"));
+                } else {
+                    AppUI app = (AppUI) UI.getCurrent();
+                    app.getGlobalScheduleWrapper().setTitle(scheduleTitle.getValue());
+                    app.getGlobalScheduleWrapper().setDescription(scheduleDescription.getValue());
+
+                    app.getNavigator().navigateTo("DateView");
+                }
             }
-        });
-        button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        };
 
-
-        Button b = new Button("Clear");
-        b.setWidth("15%");
-        b.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-
-
+        CustomButton button = new CustomButton(VaadinIcons.ARROW_CIRCLE_RIGHT_O.getHtml() + " " + "Next", listener);
+        button.setWidth("15%");
+        button.setHeight(40, Unit.PIXELS);
+        button.setWidth(167, Unit.PIXELS);
+        button.addStyleName("next-button");
 
         nav.addComponent(button);
-        //nav.addComponent(b);
         nav.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
-       // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
+
         return nav;
 
     }

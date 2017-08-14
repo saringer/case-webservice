@@ -7,15 +7,18 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Token;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
-import de.agdb.test.OAuthListener;
-import de.agdb.test.OAuthPopupButton;
-import de.agdb.test.OAuthPopupConfig;
+import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.oauth2.OAuthListener;
+import de.agdb.backend.oauth2.OAuthPopupButton;
+import de.agdb.backend.oauth2.OAuthPopupConfig;
 
 import static de.agdb.Constants.*;
 
 public class ContactServiceLayout extends HorizontalLayout {
 
-    public ContactServiceLayout(String flag) {
+
+
+    public ContactServiceLayout(String flag, String currentUser, UsersRepository usersRepository) {
 
         setWidth("100%");
         setHeight(64, Unit.PIXELS);
@@ -53,6 +56,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
+                            new GoogleContactsDBParser().storeContactsInDatabase( ((OAuth2AccessToken) token).getAccessToken(),currentUser, usersRepository);
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -93,12 +97,12 @@ public class ContactServiceLayout extends HorizontalLayout {
                 OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(microsoftClientId, microsoftClientSecret);
                 config.setScope(microsoftScope);
                 config.setCallbackUrl(redirectUrl);
-                OAuthPopupButton google = new OAuthPopupButton(LiveApi.instance(), config);
-                google.setHeight(30, Unit.PIXELS);
-                google.setWidth(172, Unit.PIXELS);
-                google.addStyleName("blue-button");
-                google.setPopupWindowFeatures("resizable,width=800,height=600");
-                google.addOAuthListener(new OAuthListener() {
+                OAuthPopupButton microsoft = new OAuthPopupButton(LiveApi.instance(), config);
+                microsoft.setHeight(30, Unit.PIXELS);
+                microsoft.setWidth(172, Unit.PIXELS);
+                microsoft.addStyleName("blue-button");
+                microsoft.setPopupWindowFeatures("resizable,width=800,height=600");
+                microsoft.addOAuthListener(new OAuthListener() {
 
                     @Override
                     public void authSuccessful(Token token, boolean isOAuth20) {
@@ -120,9 +124,9 @@ public class ContactServiceLayout extends HorizontalLayout {
                 });
 
                 horizontalWrapper.addComponent(label);
-                horizontalWrapper.addComponent(google);
+                horizontalWrapper.addComponent(microsoft);
                 horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-                horizontalWrapper.setComponentAlignment(google, Alignment.MIDDLE_CENTER);
+                horizontalWrapper.setComponentAlignment(microsoft, Alignment.MIDDLE_CENTER);
 
                 label.setValue("Microsoft Live");
 
@@ -144,12 +148,12 @@ public class ContactServiceLayout extends HorizontalLayout {
                 OAuthPopupConfig config = OAuthPopupConfig.getStandardOAuth20Config(yahooClientId, yahooClientSecret);
                 config.setScope(yahooScope);
                 config.setCallbackUrl("http://127.0.0.1");
-                OAuthPopupButton google = new OAuthPopupButton(YahooApi.instance(), config);
-                google.setHeight(30, Unit.PIXELS);
-                google.setWidth(172, Unit.PIXELS);
-                google.addStyleName("blue-button");
-                google.setPopupWindowFeatures("resizable,width=800,height=600");
-                google.addOAuthListener(new OAuthListener() {
+                OAuthPopupButton yahoo = new OAuthPopupButton(YahooApi.instance(), config);
+                yahoo.setHeight(30, Unit.PIXELS);
+                yahoo.setWidth(172, Unit.PIXELS);
+                yahoo.addStyleName("blue-button");
+                yahoo.setPopupWindowFeatures("resizable,width=800,height=600");
+                yahoo.addOAuthListener(new OAuthListener() {
 
                     @Override
                     public void authSuccessful(Token token, boolean isOAuth20) {
@@ -158,7 +162,6 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
-                            System.out.print(((OAuth2AccessToken) token).getAccessToken());
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -173,9 +176,9 @@ public class ContactServiceLayout extends HorizontalLayout {
                 });
 
                 horizontalWrapper.addComponent(label);
-                horizontalWrapper.addComponent(google);
+                horizontalWrapper.addComponent(yahoo);
                 horizontalWrapper.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-                horizontalWrapper.setComponentAlignment(google, Alignment.MIDDLE_CENTER);
+                horizontalWrapper.setComponentAlignment(yahoo, Alignment.MIDDLE_CENTER);
 
                 label.setValue("Yahoo");
 

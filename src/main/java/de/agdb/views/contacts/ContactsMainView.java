@@ -1,6 +1,5 @@
 package de.agdb.views.contacts;
 
-import com.vaadin.client.ui.Icon;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
@@ -8,8 +7,6 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.views.profile.ProfileView;
-import de.agdb.views.scheduler.CalendarComponent;
 
 @UIScope
 @SpringView(name = ContactsMainView.VIEW_NAME)

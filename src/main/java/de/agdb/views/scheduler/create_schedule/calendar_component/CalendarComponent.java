@@ -1,24 +1,22 @@
-package de.agdb.views.scheduler;
+package de.agdb.views.scheduler.create_schedule.calendar_component;
 
 import com.vaadin.ui.*;
 
 import de.agdb.AppUI;
-import de.agdb.views.scheduler.create_schedule.calendar_meetings.Meeting;
-import de.agdb.views.scheduler.create_schedule.calendar_meetings.MeetingItem;
 
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+
 import org.vaadin.addon.calendar.Calendar;
 import org.vaadin.addon.calendar.item.BasicItemProvider;
 import org.vaadin.addon.calendar.handler.BasicWeekClickHandler;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 import java.text.DateFormatSymbols;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class CalendarComponent extends GridLayout {
+public class CalendarComponent extends VerticalLayout {
 
     Button nextButton;
     Button prevButton;
@@ -39,21 +37,22 @@ public class CalendarComponent extends GridLayout {
     private Integer lastDay;
     private MeetingDataProvider eventProvider;
     private AppUI app;
-
+    private boolean readonly = false;
 
 
     public CalendarComponent() {
+        this.readonly = true;
         setSizeFull();
-        setHeight("500px");
-        setMargin(true);
-        setSpacing(true);
+        //setHeight("500px");
+        //setMargin(true);
+        //setSpacing(true);
         initContent();
     }
 
     public CalendarComponent(AppUI app) {
         this.app = app;
         setSizeFull();
-        setHeight("500px");
+        //setHeight("500px");
         setMargin(true);
         setSpacing(true);
         initContent();
@@ -81,7 +80,10 @@ public class CalendarComponent extends GridLayout {
         hl.setComponentAlignment(nextButton, Alignment.MIDDLE_RIGHT);
         addComponent(hl);
         addComponent(calendarComponent);
-        setRowExpandRatio(getRows() - 1, 1.0f);
+        setExpandRatio(hl, 0.1f);
+        setExpandRatio(calendarComponent, 0.9f);
+        //setRowExpandRatio(getRows() - 1, 1.0f);
+
     }
 
     private void initCalendar() {
@@ -89,6 +91,8 @@ public class CalendarComponent extends GridLayout {
         eventProvider = new MeetingDataProvider();
 
         calendarComponent = new Calendar(eventProvider);
+        calendarComponent.setSizeFull();
+        calendarComponent.setResponsive(true);
 
         if (calendarWidth != null || calendarHeight != null) {
             if (calendarHeight != null) {
@@ -109,14 +113,12 @@ public class CalendarComponent extends GridLayout {
         if (firstDay != null && lastDay != null) {
 
 
-//            calendarComponent.setFirstVisibleDayOfWeek(firstDay);
-  //          calendarComponent.setLastVisibleDayOfWeek(lastDay);
         }
 
         Date today = getToday();
         calendar = new GregorianCalendar();
         calendar.setTime(today);
-        //calendarComponent.getInternalCalendar().setTime(today);
+
 
         // Calendar getStartDate (and getEndDate) has some strange logic which
         // returns Monday of the current internal time if no start date has been
@@ -152,7 +154,7 @@ public class CalendarComponent extends GridLayout {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-               previousMonth();
+                previousMonth();
             }
         });
     }
@@ -168,6 +170,7 @@ public class CalendarComponent extends GridLayout {
     private void rollMonth(int direction) {
 
         calendar.setTime(currentMonthsFirstDate);
+
         calendar.add(GregorianCalendar.MONTH, direction);
         //resetTime(false);
         currentMonthsFirstDate = calendar.getTime();
@@ -210,6 +213,7 @@ public class CalendarComponent extends GridLayout {
             calendar.set(GregorianCalendar.MILLISECOND,
                     calendar.getMaximum(GregorianCalendar.MILLISECOND));
         } else {
+
             calendar.set(GregorianCalendar.HOUR_OF_DAY, 0);
             calendar.set(GregorianCalendar.MINUTE, 0);
             calendar.set(GregorianCalendar.SECOND, 0);
@@ -218,15 +222,17 @@ public class CalendarComponent extends GridLayout {
     }
 
     private void addCalendarEventListeners() {
-//        calendar.setHandler(new ExtendedForwardHandler());
-//        calendar.setHandler(new ExtendedBackwardHandler());
-//        calendar.setHandler(new ExtendedBasicItemMoveHandler());
-//        calendar.setHandler(new ExtendedItemResizeHandler());
-        //calendar.setHandler(new BasicDateClickHandler(false));
-        calendarComponent.setHandler((BasicWeekClickHandler)null);
-        calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler)null);
-        calendarComponent.setHandler(this::onCalendarClick);
-        calendarComponent.setHandler(this::onCalendarRangeSelect);
+        if (this.readonly == false) {
+            calendarComponent.setHandler((BasicWeekClickHandler) null);
+            calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler) null);
+            calendarComponent.setHandler(this::onCalendarClick);
+            calendarComponent.setHandler(this::onCalendarRangeSelect);
+        } else {
+            calendarComponent.setHandler((BasicWeekClickHandler) null);
+            calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler) null);
+            calendarComponent.setHandler(this::onCalendarClick);
+            calendarComponent.setHandler((CalendarComponentEvents.RangeSelectHandler) null);
+        }
     }
 
     private void onCalendarClick(CalendarComponentEvents.ItemClickEvent event) {
@@ -255,13 +261,26 @@ public class CalendarComponent extends GridLayout {
             System.out.println(item.getStyleName());
             eventProvider.addItem(item);
 
-        }
-        else {
+        } else {
             app.getGlobalScheduleWrapper().removeDay(event.getStart());
             eventProvider.removeItem(meetingItemList.get(0));
 
         }
 
+    }
+
+    public void clearEvents() {
+        eventProvider.removeAllEvents();
+        app.getGlobalScheduleWrapper().removeAlldays();
+    }
+
+    public boolean eventListisEmpty() {
+        return eventProvider.isEmpty();
+    }
+
+
+    public MeetingDataProvider getEventProvider() {
+        return this.eventProvider;
     }
 
     private final class MeetingDataProvider extends BasicItemProvider<MeetingItem> {
@@ -270,5 +289,14 @@ public class CalendarComponent extends GridLayout {
             this.itemList.clear();
             fireItemSetChanged();
         }
+
+        boolean isEmpty() {
+            if (this.itemList.size() > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
     }
 }

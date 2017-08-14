@@ -1,20 +1,25 @@
 package de.agdb.views.scheduler.create_schedule;
 
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.views.scheduler.CalendarComponent;
+import de.agdb.views.scheduler.CustomButton;
+import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 
 import javax.annotation.PostConstruct;
 
 @UIScope
 @SpringView(name = SetDateView.VIEW_NAME)
-public class SetDateView extends VerticalLayout implements View{
+public class SetDateView extends VerticalLayout implements View {
     public static final String VIEW_NAME = "DateView";
+    CalendarComponent calendar;
 
     @PostConstruct
     void init() {
@@ -22,9 +27,9 @@ public class SetDateView extends VerticalLayout implements View{
         setSizeFull();
 
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth("80%");
-        formWrapper.setHeight("80%");
-        formWrapper.setSpacing(false);
+        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setHeight(650, Unit.PIXELS);
+        formWrapper.setSpacing(true);
         formWrapper.setMargin(false);
         formWrapper.addStyleName("solid-border");
         addComponent(formWrapper);
@@ -43,11 +48,9 @@ public class SetDateView extends VerticalLayout implements View{
         content.setWidth("85%");
 
 
-
-
-
-        CalendarComponent calendar = new CalendarComponent((AppUI) UI.getCurrent());
+        calendar = new CalendarComponent((AppUI) UI.getCurrent());
         calendar.setSizeFull();
+        calendar.setHeight("90%");
 
         formWrapper.addComponent(calendar);
         //centeringLayout.addComponent(new Label("sadsdd"));
@@ -55,17 +58,16 @@ public class SetDateView extends VerticalLayout implements View{
         //formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         //formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
         formWrapper.setComponentAlignment(calendar, Alignment.MIDDLE_CENTER);
-        formWrapper.setExpandRatio(calendar ,1);
+        formWrapper.setExpandRatio(calendar, 1);
 
     }
-
 
 
     private VerticalLayout buildContent() {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.addComponent(new CalendarComponent());
-        return  verticalLayout;
+        return verticalLayout;
     }
 
     private HorizontalLayout createTopNavBar() {
@@ -80,6 +82,7 @@ public class SetDateView extends VerticalLayout implements View{
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
         generalBar.setStyleName("nav-top-passed");
+        generalBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("GeneralView"));
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");
@@ -116,38 +119,62 @@ public class SetDateView extends VerticalLayout implements View{
         return horizontalLayout;
     }
 
-    public HorizontalLayout createBottomNav() {
-        HorizontalLayout nav = new HorizontalLayout();
+    public CssLayout createBottomNav() {
+        CssLayout nav = new CssLayout();
         nav.setWidth("100%");
-        nav.setSpacing(false);
-        nav.setMargin(false);
+        //nav.setSpacing(false);
+        //nav.setMargin(false);
 
-        Button nextButton = new Button("NEXT");
-        nextButton.addClickListener((Button.ClickListener) event ->
-                UI.getCurrent().getNavigator().navigateTo("TimeLocationView"));
-        nextButton.setWidth(167, Unit.PIXELS);
-        nextButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-
-        Button backButton = new Button("BACK");
-        backButton.setWidth(167, Unit.PIXELS);
-        backButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("GeneralView");
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            if (calendar.eventListisEmpty()) {
+                Notification.show("No date selected",
+                        "Please select a date before you continue",
+                        Notification.Type.WARNING_MESSAGE);
+            } else {
+                UI.getCurrent().getNavigator().navigateTo("TimeLocationView");
             }
-        });
-        backButton.addStyleName("back-button");
+        };
+
+        CustomButton nextButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_RIGHT_O.getHtml() + " " + "NEXT", listener);
+        nextButton.setWidth(167, Unit.PIXELS);
+        nextButton.setHeight(40, Unit.PIXELS);
+        nextButton.addStyleNames("next-button", "float-right");
 
 
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            calendar.clearEvents();
+        };
+
+        CustomButton clearButton = new CustomButton(VaadinIcons.ERASER.getHtml() + " " + "CLEAR", listener);
+        clearButton.setWidth(167, Unit.PIXELS);
+        clearButton.setHeight(40, Unit.PIXELS);
+        clearButton.addStyleNames("clear-button", "float-right");
+
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("GeneralView");
+        };
+
+        CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
+        backButton.setWidth(167, Unit.PIXELS);
+        backButton.setHeight(40, Unit.PIXELS);
+        backButton.addStyleNames("back-button", "float-left");
 
 
         nav.addComponent(backButton);
         nav.addComponent(nextButton);
+        nav.addComponent(clearButton);
+
         //nav.addComponent(b);
-        nav.setComponentAlignment(backButton, Alignment.MIDDLE_LEFT);
-        nav.setComponentAlignment(nextButton, Alignment.MIDDLE_RIGHT);
+        //nav.setComponentAlignment(backButton, Alignment.MIDDLE_LEFT);
+        //nav.setComponentAlignment(nextButton, Alignment.MIDDLE_RIGHT);
         // nav.setComponentAlignment(b, Alignment.MIDDLE_RIGHT);
         return nav;
+
+    }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        calendar.setComponentError(null);
 
     }
 }

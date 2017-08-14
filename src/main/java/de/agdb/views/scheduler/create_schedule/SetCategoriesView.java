@@ -5,26 +5,29 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.ScheduleRepository;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.CategoriesWrapper;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.GlobalWrapper;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.TimeLocationWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.CategoriesWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
+import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.vaadin.ui.NumberField;
+import org.vaadin.risto.stepper.IntStepper;
+
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,18 +39,18 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "SetCategoriesView";
     private FormLayout content;
-    private ComboBox selectCategory;
-    private NumberField numberField;
 
     @Autowired
-    UsersRepository repository;
+    UsersRepository usersRepository;
+    @Autowired
+    ScheduleRepository scheduleRepository;
 
     @PostConstruct
     void init() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth("80%");
-        formWrapper.setHeight("80%");
+        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setHeight(650, Unit.PIXELS);
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
@@ -84,7 +87,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
         FormLayout formLayout = new FormLayout();
         formLayout.setWidth("100%");
 
-        Label header = new Label(day.getDay().toString());
+        Label header = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy")));
         header.addStyleNames("h3", "colored");
         formLayout.addComponent(header);
 
@@ -108,13 +111,13 @@ public class SetCategoriesView extends VerticalLayout implements View {
             plusButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    Window setTimeLocationWindow = new Window();
-                    setTimeLocationWindow.setModal(true);
-                    setTimeLocationWindow.setResizable(false);
-                    setTimeLocationWindow.setClosable(false);
-                    setTimeLocationWindow.setWidth(400, Unit.PIXELS);
+                    Window setCategories = new Window();
+                    setCategories.setModal(true);
+                    setCategories.setResizable(false);
+                    setCategories.setClosable(false);
+                    setCategories.setWidth(400, Unit.PIXELS);
                     //  setTimeLocationWindow.setHeight(800, Unit.PIXELS);
-                    setTimeLocationWindow.setCaption("Add a category");
+                    setCategories.setCaption("Add a category");
 
                     VerticalLayout wrapperLayout = new VerticalLayout();
                     wrapperLayout.setSpacing(false);
@@ -142,23 +145,19 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     selectLayout.setHeight(60, Unit.PIXELS);
                     selectLayout.setMargin(false);
                     selectLayout.setSpacing(false);
-                    numberField = new NumberField();
-                    numberField.setLocale(Locale.getDefault());
-                    numberField.setDecimalPrecision(2);
-                    numberField.setDecimalSeparator(',');
-                    numberField.setGroupingSeparator('.');
-                    numberField.setDecimalSeparatorAlwaysShown(true);
-                    numberField.setMinimumFractionDigits(2);
-                    numberField.setMinValue(5);
 
-                    Binder<Bean> binder = new Binder<>(Bean.class);
-                    binder.forField(numberField)
-                            .withConverter(NumberField.getConverter("Conversion error"))
-                            .bind("number");
-                    binder.setBean(new Bean());
+                    IntStepper intStepper = new IntStepper();
+                    intStepper.setWidth(50, Unit.PIXELS);
+                    intStepper.setValue(1);
+                    intStepper.setMinValue(1);
+                    intStepper.setMaxValue(99);
+                    intStepper.setStepAmount(1);
+                    //intStepper.setMinValue(1);
+                    //intStepper.setMaxValue(100);
 
-                    selectLayout.addComponent(numberField);
-                    selectLayout.setComponentAlignment(numberField, Alignment.MIDDLE_CENTER);
+
+                    selectLayout.addComponent(intStepper);
+                    selectLayout.setComponentAlignment(intStepper, Alignment.MIDDLE_LEFT);
                     selectLayout.addStyleNames("modal-window-content");
                     selectLayout.addStyleNames("solid-border");
 
@@ -190,24 +189,17 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     selectCategoryLayout.addStyleNames("modal-window-content", "solid-border");
 
 
-                    selectCategory = new ComboBox();
-                    selectCategory.setWidth("80%");
-                    selectCategory.setHeight("80%");
+                    Grid selectCategory = new Grid(Categories.class);
+                    selectCategory.setSelectionMode(Grid.SelectionMode.SINGLE);
+                    selectCategory.setColumns("title");
+                    selectCategory.removeHeaderRow(0);
+                    selectCategory.setWidth("90%");
+                    selectCategory.setHeight(400, Unit.PIXELS);
                     AppUI app = (AppUI) UI.getCurrent();
                     String userName = app.getAccessControl().getUsername();
-                    Users thisUser = repository.findByUsername(userName).get(0);
-                    List<String> list = new ArrayList();
-                    Iterator iter = thisUser.getCategories().iterator();
-                    while (iter.hasNext()) {
-                        Categories category = (Categories) iter.next();
-                        list.add(category.getTitle());
+                    Users thisUser = usersRepository.findByUsername(userName).get(0);
+                    selectCategory.setItems(thisUser.getCategories());
 
-                    }
-
-
-
-
-                    selectCategory.setItems(list);
 
                     selectCategoryLayout.addComponent(selectCategory);
                     selectCategoryLayout.setComponentAlignment(selectCategory, Alignment.MIDDLE_CENTER);
@@ -223,27 +215,26 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
                     HorizontalLayout buttonLayout = new HorizontalLayout();
                     buttonLayout.setWidth("100%");
-                    Button cancelButton = new Button("CANCEL");
 
-                    cancelButton.addStyleName(ValoTheme.BUTTON_DANGER);
-                    cancelButton.addClickListener(new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent clickEvent) {
-                            setTimeLocationWindow.close();
-                        }
-                    });
+                    LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> setCategories.close();
+                    CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
+                    cancelButton.addStyleName("cancel-button");
+                    cancelButton.setHeight(40, Unit.PIXELS);
+                    cancelButton.setWidth(150, Unit.PIXELS);
 
-                    Button okayButton = new Button("OKAY");
-                    okayButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-                    okayButton.addClickListener(new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(Button.ClickEvent clickEvent) {
-                            CategoriesWrapper categoryWrapper = new CategoriesWrapper(Integer.parseInt(numberField.getValue()), (String) selectCategory.getValue());
-                            day.getTimeAndLocationList().get(index).addCategory(categoryWrapper);
-                            itemLayout.addComponent(buildItem(numberField.getValue(), (String) selectCategory.getValue(), itemLayout, categoryWrapper, day.getTimeAndLocationList().get(index)));
-                            setTimeLocationWindow.close();
-                        }
+                    listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> selectCategory.getSelectionModel().getFirstSelectedItem().ifPresent(item -> {
+                        Categories categoryItem = (Categories) item;
+                        String categoryTitle = categoryItem.getTitle();
+                        CategoriesWrapper categoryWrapper = new CategoriesWrapper(intStepper.getValue(), categoryTitle);
+                        day.getTimeAndLocationList().get(index).addCategory(categoryWrapper);
+                        itemLayout.addComponent(buildItem(intStepper.getValue(), categoryTitle, itemLayout, categoryWrapper, day.getTimeAndLocationList().get(index)));
+                        setCategories.close();
                     });
+                    CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
+                    okayButton.addStyleName("next-button");
+                    okayButton.setHeight(40, Unit.PIXELS);
+                    okayButton.setWidth(150, Unit.PIXELS);
+
 
                     buttonLayout.addComponents(cancelButton, okayButton);
                     buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
@@ -258,9 +249,9 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     wrapperLayout.addComponent(setCategoryLayout);
                     wrapperLayout.addComponent(buttonLayout);
 
-                    setTimeLocationWindow.setContent(wrapperLayout);
+                    setCategories.setContent(wrapperLayout);
 
-                    UI.getCurrent().addWindow(setTimeLocationWindow);
+                    UI.getCurrent().addWindow(setCategories);
 
 
                 }
@@ -274,7 +265,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
             for (int x = 0; x < day.getTimeAndLocationList().get(index).getCategoriesList().size(); x++) {
                 TimeLocationWrapper timeLocationWrapper = day.getTimeAndLocationList().get(index);
                 CategoriesWrapper object = timeLocationWrapper.getCategoriesList().get(x);
-                itemLayout.addComponent(buildItem(Integer.toString(object.getNumberParticipants()), object.getCategory(), itemLayout, object, timeLocationWrapper));
+                itemLayout.addComponent(buildItem(object.getNumberParticipants(), object.getCategory(), itemLayout, object, timeLocationWrapper));
             }
 
             HorizontalLayout horizontalWrapperLayout = new HorizontalLayout();
@@ -283,19 +274,23 @@ public class SetCategoriesView extends VerticalLayout implements View {
             horizontalWrapperLayout.setMargin(false);
 
             TimeLocationWrapper object = day.getTimeAndLocationList().get(i);
-            String start = object.getStartTime();
-            String end = object.getEndTime();
+            int startHour = object.getStartHour();
+            int startMin = object.getStartMin();
+            int endHour = object.getEndHour();
+            int endMin = object.getEndMin();
             String address = object.getLocation();
 
             VerticalLayout timeLocationHeader = new VerticalLayout();
             timeLocationHeader.setSizeUndefined();
             timeLocationHeader.setHeight("100%");
             timeLocationHeader.addStyleName("item-box");
-            Label label = new Label(start + " - " + end + "<br>" + address);
+            Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" +
+                    endMin + "<br>" + address);
             label.setSizeUndefined();
             label.setContentMode(ContentMode.HTML);
             timeLocationHeader.addComponent(label);
             timeLocationHeader.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+
 
             wrapperLayout.addComponent(itemLayout);
             wrapperLayout.addComponent(plusButtonLayout);
@@ -322,7 +317,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
     private void initContent() {
         AppUI app = (AppUI) UI.getCurrent();
-        GlobalWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
+        ScheduleWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
         content.removeAllComponents();
 
         List<DayWrapper> days = globalScheduleWrapper.getDays();
@@ -333,7 +328,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
     }
 
-    private CssLayout buildItem(String numberOfParticipants, String category, CssLayout itemLayout, CategoriesWrapper object, TimeLocationWrapper timeLocationWrapper) {
+    private CssLayout buildItem(int numberOfParticipants, String category, CssLayout itemLayout, CategoriesWrapper object, TimeLocationWrapper timeLocationWrapper) {
         CssLayout cssLayout = new CssLayout();
         Label textLabel = new Label(numberOfParticipants + "<br>" + category);
         textLabel.setSizeUndefined();
@@ -344,7 +339,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
         cssLayout.setWidth("24%");
 
         CssLayout customDeleteButton = new CssLayout();
-        customDeleteButton.setSizeUndefined();
+        customDeleteButton.setWidth(20, Unit.PIXELS);
+        customDeleteButton.setHeight(20, Unit.PIXELS);
         Label test = new Label(VaadinIcons.CLOSE_SMALL.getHtml());
         test.setSizeUndefined();
         test.setContentMode(ContentMode.HTML);
@@ -373,6 +369,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
         generalBar.setStyleName("nav-top-passed");
+        generalBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("GeneralView"));
+
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");
@@ -381,6 +379,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
         dateHeader.setSizeUndefined();
         dateBar.addComponent(dateHeader);
         dateBar.setStyleName("nav-top-passed");
+        dateBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("DateView"));
+
 
         CssLayout timeLocationBar = new CssLayout();
         timeLocationBar.setWidth("100%");
@@ -389,6 +389,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
         timeLocationHeader.setSizeUndefined();
         timeLocationBar.addComponent(timeLocationHeader);
         timeLocationBar.setStyleName("nav-top-passed");
+        timeLocationBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("TimeLocationView"));
 
         CssLayout categoriesBar = new CssLayout();
         categoriesBar.setWidth("100%");
@@ -414,29 +415,50 @@ public class SetCategoriesView extends VerticalLayout implements View {
         nav.setWidth("100%");
         nav.setSpacing(false);
         nav.setMargin(false);
-        Button createButton = new Button("CREATE SCHEDULE");
-        createButton.setWidth(167, Unit.PIXELS);
-        createButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                String callBackUrl = Page.getCurrent().getLocation().toString();
-                if (callBackUrl.contains("#")) {
-                    callBackUrl = callBackUrl.substring(0, callBackUrl.indexOf("#"));
-                    UI.getCurrent().showNotification(callBackUrl);
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            AppUI app = (AppUI) UI.getCurrent();
+            List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+
+            Boolean flag = true;
+
+            for (int x = 0; x < days.size(); x++) {
+                if (flag == false) {
+                    break;
                 }
-
+                List<TimeLocationWrapper> timeLocation = days.get(x).getTimeAndLocationList();
+                for (int i = 0; i < timeLocation.size(); i++) {
+                    if (timeLocation.get(i).getCategoriesList().isEmpty()) {
+                        Notification.show("Missing category entry", "Please set the categories before creating the schedule", Notification.Type.WARNING_MESSAGE);
+                        flag = false;
+                        break;
+                    }
+                }
             }
-        });
-        createButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
-        Button backButton = new Button("BACK");
+            if (flag) {
+                String userName = app.getAccessControl().getUsername();
+                Users thisUser = usersRepository.findByUsername(userName).get(0);
+                thisUser.addSchedule(app.getGlobalScheduleWrapper());
+                usersRepository.save(thisUser);
+
+                // Clear the ScheduleWrapper
+                app.resetGlobalScheduleWrapper();
+                app.getNavigator().navigateTo("");
+            }
+        };
+
+        CustomButton createButton = new CustomButton("CREATE SCHEDULE", listener);
+        createButton.setWidth(167, Unit.PIXELS);
+        createButton.addStyleName("create-button");
+
+
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("TimeLocationView");
+        };
+
+        CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
         backButton.setWidth(167, Unit.PIXELS);
-        backButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("TimeLocationView");
-            }
-        });
+        backButton.setHeight(40, Unit.PIXELS);
         backButton.addStyleName("back-button");
 
 

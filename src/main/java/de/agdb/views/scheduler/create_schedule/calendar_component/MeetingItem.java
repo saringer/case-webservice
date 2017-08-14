@@ -1,9 +1,8 @@
-package de.agdb.views.scheduler.create_schedule.calendar_meetings;
+package de.agdb.views.scheduler.create_schedule.calendar_component;
 
 import org.vaadin.addon.calendar.item.BasicItem;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 public class MeetingItem extends BasicItem {
 

@@ -1,9 +1,8 @@
-package de.agdb.views.scheduler.create_schedule.calendar_meetings;
+package de.agdb.views.scheduler.create_schedule.calendar_component;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
-import static de.agdb.views.scheduler.create_schedule.calendar_meetings.Meeting.State.empty;
+import static de.agdb.views.scheduler.create_schedule.calendar_component.Meeting.State.empty;
 
 
 public class Meeting {

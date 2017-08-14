@@ -1,7 +1,7 @@
 package de.agdb.views.scheduler;
 
 
-import com.vaadin.icons.VaadinIcons;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -9,16 +9,8 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.components.calendar.handler.BasicDateClickHandler;
+import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 import org.vaadin.addon.calendar.Calendar;
-import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
-
-
-import javax.xml.soap.Text;
-import java.text.Normalizer;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 
 @UIScope
@@ -43,25 +35,39 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
 
         HorizontalLayout bottomNav = createBottomNav();
+        bottomNav.setSizeUndefined();
         bottomNav.setWidth("100%");
 
 
-       FormLayout form = new FormLayout();
+       VerticalLayout form = new VerticalLayout();
        form.setWidth("80%");
        form.setHeight("80%");
-       form.setMargin(true);
+       form.setMargin(false);
+       form.setSpacing(false);
        //form.addStyleNames("solid-border");
 
-
-       form.addComponent(new CalendarComponent());
+        CalendarComponent calendar = new CalendarComponent();
+        calendar.setSizeUndefined();
+        calendar.setWidth("100%");
+        calendar.setHeight("90%");
+        calendar.setMargin(true);
+        calendar.setSpacing(true);
+        Panel panel = new Panel();
+        panel.addStyleName("solid-border");
+        panel.setSizeFull();
+        panel.setContent(calendar);
+       // calendar.setHeight(500, Unit.PIXELS);
+       form.addComponent(panel);
        form.addComponent(bottomNav);
+       form.setExpandRatio(panel, 1);
+      //form.setExpandRatio(bottomNav, 0.2f);
 
 //        form.setComponentAlignment(bottomNav, Alignment.TOP_CENTER);
 
 
 
-        formWrapper.setMargin(true);
-        formWrapper.setSpacing(true);
+        formWrapper.setMargin(false);
+        formWrapper.setSpacing(false);
         formWrapper.addComponent(form);
         formWrapper.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
@@ -91,25 +97,25 @@ public class SchedulerMainView extends VerticalLayout implements View {
         createSchedulesButton.addStyleName("left-menu-style");
         //createSchedulesButton.addComponent(leftMenuIcon);
         //createSchedulesButton.addComponent(leftMenuCaption);
-        Button buttonLeft = new Button("Create schedule");
+        Label buttonLeft = new Label("Create schedule");
         buttonLeft.setSizeUndefined();
-        buttonLeft.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        //buttonLeft.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        //buttonLeft.setIcon(VaadinIcons.CALENDAR_O);
-        buttonLeft.addStyleName(ValoTheme.BUTTON_LARGE);
+        buttonLeft.addStyleName(ValoTheme.LABEL_LARGE);
         createSchedulesButton.addComponent(buttonLeft);
+        createSchedulesButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("GeneralView");
+        });
 
         VerticalLayout manageSchedulesButton = new VerticalLayout();
         //manageSchedulesButton.setSizeFull();
         manageSchedulesButton.setWidth("100%");
         manageSchedulesButton.addStyleName("right-menu-style");
-        Button buttonRight = new Button("Manage schedules");
+        Label buttonRight = new Label("Manage schedules");
         buttonRight.setSizeUndefined();
-        buttonRight.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        //buttonRight.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        //buttonRight.setIcon(VaadinIcons.CALENDAR);
-        buttonRight.addStyleName(ValoTheme.BUTTON_LARGE);
+        buttonRight.addStyleName(ValoTheme.LABEL_LARGE);
         manageSchedulesButton.addComponent(buttonRight);
+        manageSchedulesButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+                UI.getCurrent().getNavigator().navigateTo("ManageSchedulesView");
+        });
 
         nav.addComponent(createSchedulesButton);
         nav.addComponent(manageSchedulesButton);

@@ -107,6 +107,7 @@ public class AddCategoryView extends VerticalLayout implements View {
 
         Button addContactButton = new Button("Add category");
         addContactButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        addContactButton.setEnabled(false);
         addContactButton.setIcon(MaterialIcons.PLUS_ONE);
         addContactButton.setWidth("100%");
 

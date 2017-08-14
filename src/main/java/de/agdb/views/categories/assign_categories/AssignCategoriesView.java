@@ -27,19 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 
-   /* VerticalLayout layout = new VerticalLayout();
-        TextField field = new TextField();
-        field.setId("batmanField");
-        layout.addComponent(field);
-        setContent(layout);
-        Label spanLabel = new Label();
-        spanLabel.setContentMode(ContentMode.HTML);
-        spanLabel.setValue("<span onmouseover=\"myfunc()\"> Test</span>");
-        layout.addComponent(spanLabel);
-        PopupView p = new PopupView(null, new Label("sdsd"));
-        layout.addComponent(p);
 
-       */
 
 
 @UIScope
@@ -52,6 +40,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     private Set<Contact> draggedItems;
     private List<PopupExtension> list = new ArrayList();
     private PopupExtension popupExtension;
+    String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+            "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
     @Autowired
     UsersRepository usersRepository;
@@ -68,7 +58,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             //System.out.println("aha");
                            //double c = arguments.getNumber(0);
                            String letter = arguments.getString(0);
-                           System.out.println(letter);
+                           System.out.println(list);
+
                           if (letter.equals("A")) {
                              closePopupViewIfOpen();
                               popupExtension = list.get(0);
@@ -183,6 +174,30 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         return wrapperLayout;
     }
 
+    private void initView() {
+        addStyleNames("general-background-color-grey");
+        setSizeFull();
+        VerticalLayout formWrapper = new VerticalLayout();
+        formWrapper.setWidth(1200, Sizeable.Unit.PIXELS);
+        formWrapper.setHeight(800, Sizeable.Unit.PIXELS);
+        addComponent(formWrapper);
+        setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
+
+
+        VerticalLayout content = buildContent();
+        content.setWidth("80%");
+        content.setHeight("80%");
+
+
+        formWrapper.addStyleName("solid-border");
+        formWrapper.addStyleName("general-background-color-white");
+        formWrapper.setSpacing(false);
+        formWrapper.setMargin(false);
+        formWrapper.addComponent(content);
+        formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
+        formWrapper.setExpandRatio(content, 1);
+    }
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
 
@@ -253,8 +268,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         horizontalWrapper.setWidth("100%");
         horizontalWrapper.setSpacing(true);
         horizontalWrapper.setMargin(true);
-        String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
-                "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
         for (int i = 0; i < letters.length; i++) {
 
 

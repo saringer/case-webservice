@@ -1,4 +1,4 @@
-package de.agdb.views.scheduler;
+package de.agdb.views.scheduler.create_schedule.calendar_component;
 
 import java.text.DateFormatSymbols;
 import java.util.Date;

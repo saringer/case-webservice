@@ -224,7 +224,6 @@ public class ManageContactsView extends VerticalLayout implements View {
 
         wrapperLayout.addComponent(header);
         wrapperLayout.addComponent(detailsForm);
-        wrapperLayout.setMargin(true);
         wrapperLayout.setExpandRatio(detailsForm, 1);
 
         return wrapperLayout;

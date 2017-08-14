@@ -25,6 +25,7 @@ import de.agdb.views.scheduler.create_schedule.SetCategoriesView;
 import de.agdb.views.scheduler.create_schedule.SetGeneralView;
 import de.agdb.views.scheduler.create_schedule.SetDateView;
 import de.agdb.views.scheduler.create_schedule.SetTimeLocationView;
+import de.agdb.views.scheduler.manage_schedules.ManageSchedulesView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -100,14 +101,15 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         // SCHEDULE
         menu.addView(new SchedulerMainView(), SchedulerMainView.VIEW_NAME, "Schedule", null);
         menu.addSubView(new SetGeneralView(), SetGeneralView.VIEW_NAME, "Create Schedule");
+        menu.addSubView(new ManageSchedulesView(), ManageSchedulesView.VIEW_NAME, "Manage schedules");
         menu.addDetailsView(new SetDateView(), SetDateView.VIEW_NAME);
         menu.addDetailsView(new SetTimeLocationView(), SetTimeLocationView.VIEW_NAME);
         menu.addDetailsView(new SetCategoriesView(), SetCategoriesView.VIEW_NAME);
 
         // CATEGORIES
         menu.addView(new CategoriesMainView(), CategoriesMainView.VIEW_NAME, "Categories", null);
-        menu.addSubView(new ManageCategoriesView(), ManageCategoriesView.VIEW_NAME, "Manage categories");
         menu.addSubView(new AssignCategoriesView(), AssignCategoriesView.VIEW_NAME, "Assign categories");
+        menu.addSubView(new ManageCategoriesView(), ManageCategoriesView.VIEW_NAME, "Manage categories");
         menu.addDetailsView(new AddCategoryView(), AddCategoryView.VIEW_NAME);
 
         // CONTACTS

@@ -1,6 +1,5 @@
 package de.agdb.views.scheduler.create_schedule;
 
-import com.vaadin.data.HasValue;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -8,18 +7,16 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.tapio.googlemaps.GoogleMap;
-import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.DayWrapper;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.GlobalWrapper;
-import de.agdb.views.scheduler.create_schedule.schedule_wrapper_objects.TimeLocationWrapper;
+import de.agdb.views.scheduler.CustomButton;
+import de.agdb.views.scheduler.modal_windows.TimeLocationWindow;
+import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import org.vaadin.addons.locationtextfield.GeocodedLocation;
-import org.vaadin.addons.locationtextfield.GoogleGeocoder;
 import org.vaadin.addons.locationtextfield.LocationTextField;
-import org.vaadin.addons.locationtextfield.OpenStreetMapGeocoder;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -37,8 +34,8 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth("80%");
-        formWrapper.setHeight("80%");
+        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setHeight(650, Unit.PIXELS);
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
@@ -76,9 +73,6 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         FormLayout formLayout = new FormLayout();
         formLayout.setWidth("100%");
 
-        CssLayout wrapperLayout = new CssLayout();
-        wrapperLayout.setWidth("100%");
-
 
         CssLayout itemLayout = new CssLayout();
         itemLayout.setWidth("100%");
@@ -92,136 +86,10 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         plusButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Window setTimeLocationWindow = new Window();
-                setTimeLocationWindow.setModal(true);
-                // setTimeLocationWindow.center();
-                setTimeLocationWindow.setResizable(false);
-                setTimeLocationWindow.setClosable(false);
-                //  setTimeLocationWindow.setDraggable(false);
-                //setTimeLocationWindow.setWidth(400, Unit.PIXELS);
-                //setTimeLocationWindow.setHeight(800, Unit.PIXELS);
-                //setTimeLocationWindow.setSizeUndefined();
+                Window setTimeLocationWindow = new TimeLocationWindow(day, itemLayout, plusButtonLayout);
                 setTimeLocationWindow.setWidth(400, Unit.PIXELS);
-                //  setTimeLocationWindow.setHeight(800, Unit.PIXELS);
-                setTimeLocationWindow.setCaption(day.getDay().toString());
-
-                VerticalLayout wrapperLayout = new VerticalLayout();
-                wrapperLayout.setSpacing(false);
-                wrapperLayout.setMargin(true);
-                wrapperLayout.setSizeUndefined();
-                wrapperLayout.setWidth(400, Unit.PIXELS);
-
-                /* SET UP TIMEPICKER
-                */
-
-                VerticalLayout setTimeLayout = new VerticalLayout();
-                setTimeLayout.setSpacing(false);
-                setTimeLayout.setMargin(false);
-
-                VerticalLayout headerLayout = new VerticalLayout();
-                headerLayout.setMargin(false);
-                headerLayout.setSpacing(false);
-                headerLayout.setWidth("100%");
-                headerLayout.setHeight(30, Unit.PIXELS);
-                headerLayout.addComponent(new Label("Set time"));
-                headerLayout.addStyleNames("modal-window-header");
-                headerLayout.addStyleName("solid-border");
-                HorizontalLayout selectLayout = new HorizontalLayout();
-                selectLayout.setWidth("100%");
-                selectLayout.setHeight(60, Unit.PIXELS);
-                selectLayout.setMargin(false);
-                selectLayout.setSpacing(false);
-                Label labelFrom = new Label("from");
-                labelFrom.setSizeUndefined();
-                selectLayout.addComponent(labelFrom);
-                HorizontalLayout timePickerStart = buildTimePicker(startTime);
-                timePickerStart.setWidth("100%");
-                selectLayout.addComponent(timePickerStart);
-                Label labelTo = new Label("to");
-                labelTo.setSizeUndefined();
-                selectLayout.addComponent(labelTo);
-                HorizontalLayout timePickerEnd = buildTimePicker(endTime);
-                timePickerEnd.setSizeUndefined();
-                selectLayout.addComponent(timePickerEnd);
-                selectLayout.addStyleNames("modal-window-content");
-                selectLayout.addStyleNames("solid-border");
-                selectLayout.setComponentAlignment(labelFrom, Alignment.MIDDLE_LEFT);
-                selectLayout.setComponentAlignment(timePickerStart, Alignment.MIDDLE_LEFT);
-                selectLayout.setComponentAlignment(labelTo, Alignment.MIDDLE_LEFT);
-                selectLayout.setComponentAlignment(timePickerEnd, Alignment.MIDDLE_LEFT);
-
-                setTimeLayout.addComponent(headerLayout);
-                setTimeLayout.addComponent(selectLayout);
-
-
-                /*
-                SET UP LOCATIONPICKER
-                 */
-
-                VerticalLayout setLocationLayout = new VerticalLayout();
-                setLocationLayout.setSpacing(false);
-                setLocationLayout.setMargin(false);
-
-                headerLayout = new VerticalLayout();
-                headerLayout.setMargin(false);
-                headerLayout.setSpacing(false);
-                headerLayout.setWidth("100%");
-                headerLayout.setHeight(30, Unit.PIXELS);
-                headerLayout.addComponent(new Label("Set location"));
-                headerLayout.addStyleNames("modal-window-header");
-                headerLayout.addStyleName("solid-border");
-
-
-                setLocationLayout.addComponent(headerLayout);
-                setLocationLayout.addComponent(buildLocationPicker());
-
-
-                /*
-                    SET UP BUTTONLAYOUT
-
-                 */
-
-                HorizontalLayout buttonLayout = new HorizontalLayout();
-                buttonLayout.setWidth("100%");
-                Button cancelButton = new Button("CANCEL");
-
-                cancelButton.addStyleName(ValoTheme.BUTTON_DANGER);
-                cancelButton.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        setTimeLocationWindow.close();
-                    }
-                });
-                Button okayButton = new Button("OKAY");
-                okayButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-                okayButton.addClickListener((Button.ClickListener) clickEvent -> {
-                    String start = (String) startTime.getValue();
-                    String end = (String) endTime.getValue();
-                    String address = ltf.getValue().getOriginalAddress();
-                    TimeLocationWrapper timeLocationWrapper = new TimeLocationWrapper(start, end, address);
-                    itemLayout.addComponent(buildItem(start, end, address, itemLayout, timeLocationWrapper, day));
-                    day.addTimeLocation(timeLocationWrapper);
-                    setTimeLocationWindow.close();
-                });
-
-                buttonLayout.addComponents(cancelButton, okayButton);
-                buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
-                buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
-                buttonLayout.addStyleNames("modal-window-margin");
-
-                /*
-                ADD COMPONENTS TO WRAPPERLAYOUT
-                 */
-
-                wrapperLayout.addComponent(setTimeLayout);
-                wrapperLayout.addComponent(setLocationLayout);
-                wrapperLayout.addComponent(buttonLayout);
-
-                setTimeLocationWindow.setContent(wrapperLayout);
-
+                //setTimeLocationWindow.setHeight(800, Unit.PIXELS);
                 UI.getCurrent().addWindow(setTimeLocationWindow);
-
-
             }
         });
         plusButtonLayout.addComponent(plusButton);
@@ -232,17 +100,19 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         /* init already selected times & locations */
         for (int i = 0; i < day.getTimeAndLocationList().size(); i++) {
             TimeLocationWrapper object = day.getTimeAndLocationList().get(i);
-            String start = object.getStartTime();
-            String end = object.getEndTime();
             String address = object.getLocation();
-            itemLayout.addComponent(buildItem(start, end, address, itemLayout, object, day));
+            itemLayout.addComponent(buildItem(object.getStartHour(), object.getStartMin(),
+                    object.getEndHour(), object.getEndMin(), address, itemLayout, object, day));
         }
 
-
+        CssLayout wrapperLayout = new CssLayout();
+        wrapperLayout.setWidth("100%");
+        itemLayout.addComponent(plusButtonLayout);
         wrapperLayout.addComponent(itemLayout);
-        wrapperLayout.addComponent(plusButtonLayout);
 
-        Label header = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd-MM-yyyy"))
+        //wrapperLayout.addComponent(plusButtonLayout);
+
+        Label header = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy"))
         );
         header.addStyleNames("h3", "colored");
         formLayout.addComponent(header);
@@ -252,9 +122,9 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         return formLayout;
     }
 
-    private CssLayout buildItem(String startTime, String endTime, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
+    private CssLayout buildItem(int startHour, int startMin, int endHour, int endMin, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
         CssLayout cssLayout = new CssLayout();
-        Label label = new Label(startTime + " - " + endTime + "<br>" + location);
+        Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" + endMin + "<br>" + location);
         label.setContentMode(ContentMode.HTML);
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");
@@ -262,12 +132,13 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         cssLayout.setWidth("24%");
 
         CssLayout customDeleteButton = new CssLayout();
-        customDeleteButton.setSizeUndefined();
+        customDeleteButton.setWidth(20, Unit.PIXELS);
+        customDeleteButton.setHeight(20, Unit.PIXELS);
         Label test = new Label(VaadinIcons.CLOSE_SMALL.getHtml());
         test.setSizeUndefined();
         test.setContentMode(ContentMode.HTML);
         customDeleteButton.addComponent(test);
-        customDeleteButton.addStyleNames("topcorner-delete-button", "solid-border");
+        customDeleteButton.addStyleNames("topcorner-delete-button");
         customDeleteButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             parentLayout.removeComponent(cssLayout);
             parentWrapper.removeTimeLocation(content);
@@ -292,6 +163,8 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         generalHeader.setSizeUndefined();
         generalBar.addComponent(generalHeader);
         generalBar.setStyleName("nav-top-passed");
+        generalBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("GeneralView"));
+
 
         CssLayout dateBar = new CssLayout();
         dateBar.setWidth("100%");
@@ -300,6 +173,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         dateHeader.setSizeUndefined();
         dateBar.addComponent(dateHeader);
         dateBar.setStyleName("nav-top-passed");
+        dateBar.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> UI.getCurrent().getNavigator().navigateTo("DateView"));
 
         CssLayout timeLocationBar = new CssLayout();
         timeLocationBar.setWidth("100%");
@@ -333,26 +207,40 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         nav.setWidth("100%");
         nav.setSpacing(false);
         nav.setMargin(false);
-        Button button = new Button("NEXT");
-        button.setWidth(167, Unit.PIXELS);
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
+
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            AppUI app = (AppUI) UI.getCurrent();
+            List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+
+            Boolean flag = false;
+            for (int i = 0; i < days.size(); i++
+                    ) {
+                if (days.get(i).getTimeAndLocationList().isEmpty()) {
+                    Notification.show("Missing Time/Location", "Please set time and location before continuing", Notification.Type.WARNING_MESSAGE);
+                    flag = false;
+                    break;
+                }
+                flag = true;
+            }
+            if (flag) {
                 UI.getCurrent().getNavigator().navigateTo("SetCategoriesView");
             }
-        });
-        button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
-        Button backButton = new Button("BACK");
+        };
+        CustomButton button = new CustomButton(VaadinIcons.ARROW_CIRCLE_RIGHT_O.getHtml() + " " + "Next", listener);
+        button.setWidth(167, Unit.PIXELS);
+        button.setHeight(40, Unit.PIXELS);
+        button.addStyleName("next-button");
+
+
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("DateView");
+        };
+
+        CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
         backButton.setWidth(167, Unit.PIXELS);
-        backButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                UI.getCurrent().getNavigator().navigateTo("DateView");
-            }
-        });
+        backButton.setHeight(40, Unit.PIXELS);
         backButton.addStyleName("back-button");
-
 
         nav.addComponents(backButton, button);
         nav.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
@@ -369,75 +257,13 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
     private void initContent() {
         AppUI app = (AppUI) UI.getCurrent();
-        GlobalWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
+        ScheduleWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
         content.removeAllComponents();
 
         List<DayWrapper> days = globalScheduleWrapper.getDays();
         for (int i = 0; i < days.size(); i++) {
             content.addComponent(buildContent(days.get(i)));
         }
-
-
-    }
-
-    private HorizontalLayout buildTimePicker(NativeSelect selectHour) {
-        HorizontalLayout wrapperLayout = new HorizontalLayout();
-        wrapperLayout.setSpacing(false);
-        wrapperLayout.setMargin(false);
-
-
-        selectHour.setItems("10:00", "12:00");
-
-        wrapperLayout.addComponent(selectHour);
-
-        return wrapperLayout;
-    }
-
-    private VerticalLayout buildLocationPicker() {
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-        GoogleGeocoder geocoder2 = GoogleGeocoder.getInstance();
-        OpenStreetMapGeocoder geocoder = OpenStreetMapGeocoder.getInstance();
-        geocoder.setLimit(5);
-        ltf = new LocationTextField<GeocodedLocation>(geocoder2);
-        ltf.setWidth("100%");
-        ltf.setMinimumQueryCharacters(5);
-        ltf.addStyleName("blue-border");
-
-
-        //ltf.setAutoSelectionEnabled(false);
-
-
-        GoogleMap googleMap = new GoogleMap("AIzaSyDmcnkMKoB-xqSaZ6VdqT-k-G8bnHbO-wQ", null, "english");
-        googleMap.setSizeFull();
-        googleMap.setHeight(300, Unit.PIXELS);
-        googleMap.setMinZoom(14);
-        googleMap.setMaxZoom(16);
-        googleMap.addStyleNames("blue-border");
-
-
-        ltf.addLocationValueChangeListener(new HasValue.ValueChangeListener<GeocodedLocation>() {
-            @Override
-            public void valueChange(HasValue.ValueChangeEvent<GeocodedLocation> valueChangeEvent) {
-                GeocodedLocation loc = (GeocodedLocation) valueChangeEvent.getValue();
-                if (loc != null) {
-                    LatLon latLong = new LatLon(loc.getLat(), loc.getLon());
-                    googleMap.removeAllComponents();
-                    googleMap.setCenter(latLong);
-                    googleMap.addMarker("", latLong, false, null);
-
-                } else {
-
-                }
-            }
-        });
-
-
-        verticalLayout.addComponent(ltf);
-        verticalLayout.addComponent(googleMap);
-        verticalLayout.addStyleNames("modal-window-content", "solid-border", "padding-text");
-
-        return verticalLayout;
 
 
     }
