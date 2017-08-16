@@ -12,6 +12,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.GridDragSource;
 import com.vaadin.ui.dnd.DropTargetExtension;
 import de.agdb.AppUI;
+import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
@@ -304,6 +305,16 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         }
     }
 
+    private void setUpCategoryGrid(Grid grid) {
+        grid = new Grid(Categories.class);
+
+    }
+
+    /**
+     * LISTENERS FOR CATEGORY-POPUPVIEWS
+     * TO-DO: Clean up
+     */
+
     private void addJavaScriptFunction() {
         JavaScript.getCurrent().addFunction("myfunc", new JavaScriptFunction() {
             @Override
@@ -419,6 +430,61 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
                             popupExtension.setContent(new Label("F"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+
+                    if (letter.equals("G")) {
+                        if (!mouseOverLetter.equals("G")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "G";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(6));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("G"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+                    if (letter.equals("H")) {
+                        if (!mouseOverLetter.equals("H")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "H";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(7));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("H"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+                    if (letter.equals("I")) {
+                        if (!mouseOverLetter.equals("I")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "I";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(8));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("I"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);

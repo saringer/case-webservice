@@ -13,15 +13,15 @@ import java.util.List;
 }*/
 
 public interface UsersRepository extends JpaRepository<Users, Long>{
+
     List<Users> findByUsername(String username);
     Users save(Users user);
-
 
     //List<Users> findByPrice(long price);
     //List<Users> findByNameAndAuthor(String name, String author);
     /*
     Customer customerToUpdate = customerRepository.getOne(id);
-customerToUpdate.setName(customerDto.getName);
-customerRepository.save(customerToUpdate);
+    customerToUpdate.setName(customerDto.getName);
+    customerRepository.save(customerToUpdate);
      */
 }
