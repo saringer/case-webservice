@@ -6,24 +6,24 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 
 import com.vaadin.server.Page;
-import com.vaadin.shared.ui.colorpicker.Color;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.shared.ui.colorpicker.Color;
+import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 
 @UIScope
@@ -34,10 +34,11 @@ public class ManageCategoriesView extends VerticalLayout implements View {
     private Grid<Categories> grid = new Grid<>(Categories.class);
     private TextField categoryTitle;
     private TextField categoryShortcut;
-    private ColorPicker shortcutColor;
+    private ColorPicker categoryShortcutColor;
     private TextField categoryTags;
     private TextArea categoryDescription;
-    private  Label categoryDetailsLabel;
+    private Label categoryDetailsLabel;
+    CssLayout header;
 
 
 
@@ -92,7 +93,7 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         wrapperLayout.setSpacing(false);
         wrapperLayout.setMargin(false);
 
-        CssLayout header = new CssLayout();
+        header = new CssLayout();
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
@@ -156,12 +157,22 @@ public class ManageCategoriesView extends VerticalLayout implements View {
                         if (!category.getShortCut().isEmpty()) {
                             Page.Styles styles = Page.getCurrent().getStyles();
                             // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
-                            styles.add(".managecontacts-header { background:" + category.getShortCutColor() + "; }");
+                            styles.add(".managecontacts-header { background:" + category.getShortCutColorCss() + "; }");
                         }
                         categoryDetailsLabel.setValue(category.getTitle());
                         categoryTitle.setValue(category.getTitle());
                         categoryShortcut.setValue(category.getShortCut());
+                        categoryShortcutColor.setColor(new Color(category.getShortCutColorRGB()));
                         categoryDescription.setValue(category.getDescription());
+
+                        // Get the stylesheet of the page
+                        Page.Styles styles = Page.getCurrent().getStyles();
+                        // inject the new color as a style
+                        styles.add(".headerLabel2 { background-color:" + category.getShortCutColorCss() + "; }");
+                        addStyleName("headerLabel2");
+                        header.setStyleName("headerLabel2");
+
+
 
                     }
 
@@ -201,14 +212,24 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         categoryTitle = new TextField();
         categoryTitle.setReadOnly(true);
+        categoryTitle.setEnabled(false);
         categoryTitle.setWidth("100%");
         categoryTitle.setCaption("Category title");
         categoryShortcut = new TextField();
+        categoryShortcut.setEnabled(false);
         categoryShortcut.setReadOnly(true);
         categoryShortcut.setWidth("100%");
         categoryShortcut.setCaption("Category shortcut");
-        shortcutColor = new ColorPicker();
-        shortcutColor.setCaption("Shortcut-color");
+        CssLayout colorPickerLayout = new CssLayout();
+        categoryShortcutColor = new ColorPicker("Pick a color");
+        categoryShortcutColor.setPosition(
+                Page.getCurrent().getBrowserWindowWidth() / 2 - 246/2,
+                Page.getCurrent().getBrowserWindowHeight() / 2 - 507/2);
+        categoryShortcutColor.setHistoryVisibility(false);
+        categoryShortcutColor.setHSVVisibility(false);
+        categoryShortcutColor.setRGBVisibility(false);
+        colorPickerLayout.addComponent(categoryShortcutColor);
+        colorPickerLayout.setCaption("Shortcut-color");
         categoryTags = new TextField();
         categoryTags.setCaption("Category tags ");
         categoryDescription = new TextArea();
@@ -217,7 +238,7 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         categoryDescription.setCaption("Category description");
         detailsForm.addComponent(categoryTitle);
         detailsForm.addComponent(categoryShortcut);
-        detailsForm.addComponent(shortcutColor);
+        detailsForm.addComponent(colorPickerLayout);
         detailsForm.addComponent(categoryTags);
 
         detailsForm.addComponent(categoryDescription);
@@ -256,6 +277,10 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         return wrapperLayout;
 
+
+    }
+
+    private void generateDynamicCSS() {
 
     }
 

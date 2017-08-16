@@ -4,13 +4,25 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.*;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.shared.ui.colorpicker.Color;
+import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
@@ -33,12 +45,8 @@ public class AddCategoryView extends VerticalLayout implements View {
     private TextArea categoryDescription;
 
 
-
     @Autowired
     UsersRepository repository;
-
-
-
 
 
     @PostConstruct
@@ -142,7 +150,7 @@ public class AddCategoryView extends VerticalLayout implements View {
         String userName = app.getAccessControl().getUsername();
 
         if (!repository.findByUsername(userName).isEmpty()) {
-           grid.setItems(repository.findByUsername(userName).get(0).getCategories());
+            grid.setItems(repository.findByUsername(userName).get(0).getCategories());
         }
     }
 
@@ -175,14 +183,24 @@ public class AddCategoryView extends VerticalLayout implements View {
         detailsForm.setSizeFull();
         //detailsForm.addStyleNames("solid-border");
 
+
+
         categoryTitle = new TextField();
         categoryTitle.setWidth("100%");
         categoryTitle.setCaption("Category title");
         categoryShortcut = new TextField();
         categoryShortcut.setWidth("100%");
         categoryShortcut.setCaption("Category shortcut");
-        shortcutColor = new ColorPicker();
-        shortcutColor.setCaption("Shortcut-color");
+        CssLayout colorPickerLayout = new CssLayout();
+        shortcutColor = new ColorPicker("Pick a color");
+        shortcutColor.setHistoryVisibility(false);
+        shortcutColor.setHSVVisibility(false);
+        shortcutColor.setRGBVisibility(false);
+        shortcutColor.setPosition(
+                Page.getCurrent().getBrowserWindowWidth() / 2 - 246/2,
+                Page.getCurrent().getBrowserWindowHeight() / 2 - 507/2);
+        colorPickerLayout.addComponent(shortcutColor);
+        colorPickerLayout.setCaption("Shortcut-color");
         categoryTags = new TextField();
         categoryTags.setCaption("Category tags ");
         categoryDescription = new TextArea();
@@ -191,11 +209,10 @@ public class AddCategoryView extends VerticalLayout implements View {
         categoryDescription.setCaption("Category description");
         detailsForm.addComponent(categoryTitle);
         detailsForm.addComponent(categoryShortcut);
-        detailsForm.addComponent(shortcutColor);
+        detailsForm.addComponent(colorPickerLayout);
         detailsForm.addComponent(categoryTags);
 
         detailsForm.addComponent(categoryDescription);
-
 
 
         CssLayout bottomNav = new CssLayout();
@@ -211,7 +228,6 @@ public class AddCategoryView extends VerticalLayout implements View {
         backButton.setWidth(115, Unit.PIXELS);
 
 
-
         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             AppUI app = (AppUI) UI.getCurrent();
             String userName = app.getAccessControl().getUsername();
@@ -220,13 +236,14 @@ public class AddCategoryView extends VerticalLayout implements View {
             category.setTitle(categoryTitle.getValue());
             category.setShortCut(categoryShortcut.getValue());
             category.setDescription(categoryDescription.getValue());
-            category.setShortCutColor(shortcutColor.getValue().getCSS());
+            category.setShortCutColorCss(shortcutColor.getColor().getCSS());
+            category.setShortCutColorRGB(shortcutColor.getColor().getRGB());
             thisUser.addCategory(category);
             repository.save(thisUser);
             app.getNavigator().navigateTo("ManageCategoriesView");
         };
         CustomButton createButton = new CustomButton("CREATE", listener);
-        createButton.addStyleNames("float-right","next-button");
+        createButton.addStyleNames("float-right", "next-button");
         createButton.setHeight(40, Unit.PIXELS);
         createButton.setWidth(115, Unit.PIXELS);
 
@@ -247,7 +264,7 @@ public class AddCategoryView extends VerticalLayout implements View {
     private void resetDetailFields() {
         categoryTitle.clear();
         categoryShortcut.clear();
-        shortcutColor.clear();
+        shortcutColor.setColor(Color.WHITE);
         categoryTags.clear();
         categoryDescription.clear();
 

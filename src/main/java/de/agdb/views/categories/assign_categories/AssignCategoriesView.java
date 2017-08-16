@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 
-
-
-
 @UIScope
 @SpringView(name = AssignCategoriesView.VIEW_NAME)
 public class AssignCategoriesView extends VerticalLayout implements View {
@@ -38,47 +35,18 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     Grid grid = new Grid<>(Contact.class);
     private Grid<Contact> draggedGrid;
     private Set<Contact> draggedItems;
-    private List<PopupExtension> list = new ArrayList();
+    private List<Label> popUpViewslist;
     private PopupExtension popupExtension;
-    String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+    private Label testLabel = new Label("#");
+    private String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
             "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    private String mouseOverLetter = "";
 
     @Autowired
     UsersRepository usersRepository;
 
     @PostConstruct
     void init() {
-
-
-        JavaScript.getCurrent().addFunction("myfunc",
-                new JavaScriptFunction() {
-                    @Override
-                    public void call(JsonArray arguments) {
-                        try {
-                            //System.out.println("aha");
-                           //double c = arguments.getNumber(0);
-                           String letter = arguments.getString(0);
-                           System.out.println(list);
-
-                          if (letter.equals("A")) {
-                             closePopupViewIfOpen();
-                              popupExtension = list.get(0);
-                              popupExtension.open();
-                          }
-                            if (letter.equals("B")) {
-                                closePopupViewIfOpen();
-                                popupExtension = list.get(1);
-                                popupExtension.open();
-                            }
-
-
-
-                        } catch (Exception e) {
-                            Notification.show("Error: " + e.getMessage());
-                        }
-                    }
-                });
-
 
 
         addStyleNames("general-background-color-grey");
@@ -94,6 +62,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         content.setWidth("80%");
         content.setHeight("80%");
 
+
+        addJavaScriptFunction();
 
         formWrapper.addStyleName("solid-border");
         formWrapper.addStyleName("general-background-color-white");
@@ -117,7 +87,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         Button test = new Button("Categories:");
         test.setSizeUndefined();
         //cssLayout.addComponent(createCategoriesStrip());
-
 
 
         test.addStyleNames("assign-category-header");
@@ -163,9 +132,9 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                 draggedGrid = null;
             }
             closePopupViewIfOpen();
+
             //dragSource.setDragData(null);
         });
-
         wrapperLayout.addComponent(createCategoriesStrip());
         wrapperLayout.addComponent(searchbar);
         wrapperLayout.addComponent(grid);
@@ -224,6 +193,11 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         set.add(c);
         set.add(b);
         grid.setItems(set);
+        /**
+         * RESET ON VIEWCHANGE
+         */
+        mouseOverLetter = "";
+
 
     }
 
@@ -262,21 +236,34 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     }
 
-
-    private HorizontalLayout createCategoriesStrip() {
-        HorizontalLayout horizontalWrapper = new HorizontalLayout();
+    /**
+     * Since Vaadin removes and adds div's automatically via Ajax,
+     * you must add dragover listener to the components(letters) every time it's added to the DOM.
+     *
+     * @return
+     */
+    private CssLayout createCategoriesStrip() {
+        popUpViewslist = new ArrayList<>();
+        CssLayout horizontalWrapper = new CssLayout();
         horizontalWrapper.setWidth("100%");
-        horizontalWrapper.setSpacing(true);
-        horizontalWrapper.setMargin(true);
+        //horizontalWrapper.setSpacing(false);
+        //horizontalWrapper.setMargin(false);
+        // Label c = new Label("Categories");
+        // c.setSizeUndefined();
+        HorizontalLayout verticalLayout = new HorizontalLayout();
+        verticalLayout.setWidth("100%");
 
+        horizontalWrapper.addComponents(new Label("CATEGORIES:"), new Label("General"), new Label("Unassigned"));
+        //horizontalWrapper.addComponent(c);
         for (int i = 0; i < letters.length; i++) {
 
 
             Label label = new Label();
+            label.setSizeUndefined();
             label.setContentMode(ContentMode.HTML);
-            label.setValue("<span ondragover=\"myfunc('"+letters[i] + "')\")> "  + letters[i] + "</span>");
-            //label.setWidth("100%");
-            horizontalWrapper.addComponent(label);
+            label.setValue("<span ondragover=\"myfunc('" + letters[i] + "',1)\")> " + letters[i] + "</span>");
+//            label.setValue("<span ondragover=\"myfunc('" + letters[i] + "')\")> " + letters[i] + "</span>");
+
             // make the label accept drops
             DropTargetExtension<Label> dropTarget = new DropTargetExtension<>(label);
 
@@ -284,32 +271,171 @@ public class AssignCategoriesView extends VerticalLayout implements View {
             dropTarget.setDropEffect(DropEffect.MOVE);
 
 
-            PopupExtension extension;
-
+           /* PopupExtension extension;
             ListSelect listSelect = new ListSelect();
             listSelect.setData("Test");
-            listSelect.setWidth(300,Unit.PIXELS);
+            listSelect.setWidth(300, Unit.PIXELS);
             listSelect.setHeight(300, Unit.PIXELS);
-
             extension = PopupExtension.extend(label);
             extension.setContent(listSelect);
             extension.setAnchor(Alignment.BOTTOM_CENTER);
             extension.setDirection(Alignment.BOTTOM_CENTER);
-            extension.closeOnOutsideMouseClick(true);
-            list.add(extension);
-            //horizontalWrapper.setExpandRatio(label, 1);
+            extension.closeOnOutsideMouseClick(false);*/
+            popUpViewslist.add(label);
+
+
+            verticalLayout.addComponent(label);
         }
-
-
+        horizontalWrapper.addComponent(verticalLayout);
         return horizontalWrapper;
 
 
     }
 
+
     private void closePopupViewIfOpen() {
         if (popupExtension != null) {
-            popupExtension.close();
+            //popupExtension.remove();
+
+            if (popupExtension.isOpen()) {
+                popupExtension.close();
+                //  popupExtension.detach();
+            }
         }
+    }
+
+    private void addJavaScriptFunction() {
+        JavaScript.getCurrent().addFunction("myfunc", new JavaScriptFunction() {
+            @Override
+            public void call(JsonArray arguments) {
+                try {
+                    //System.out.println("aha");
+                    //double c = arguments.getNumber(0);
+                    String letter = arguments.getString(0);
+                    //System.out.println(list);
+
+                    if (letter.equals("A")) {
+                        if (!mouseOverLetter.equals("A")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "A";
+                            Thread.sleep(500);
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(0));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("A"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen()) {
+                                popupExtension.open();
+                            }
+                            //  popupExtension.close();
+                            // popupExtension.open();
+                        }
+
+                    }
+                    if (letter.equals("B")) {
+                        if (!mouseOverLetter.equals("B")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "B";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(1));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("B"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+                    if (letter.equals("C")) {
+                        if (!mouseOverLetter.equals("C")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "C";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(2));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("C"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+
+                    if (letter.equals("D")) {
+                        if (!mouseOverLetter.equals("D")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "D";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(3));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("D"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+
+                    if (letter.equals("E")) {
+                        if (!mouseOverLetter.equals("E")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "E";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(4));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("E"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+
+                    if (letter.equals("F")) {
+                        if (!mouseOverLetter.equals("F")) {
+                            closePopupViewIfOpen();
+                            mouseOverLetter = "F";
+                            popupExtension = PopupExtension.extend(popUpViewslist.get(5));
+                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                            popupExtension.closeOnOutsideMouseClick(false);
+                            popupExtension.setContent(new Label("F"));
+
+                        } else {
+                            //popupExtension = popUpViewslist.get(0);
+                            if (!popupExtension.isOpen())
+                                popupExtension.open();
+                        }
+
+                    }
+
+
+
+                } catch (Exception e) {
+                    Notification.show("Error: " + e.getMessage());
+                }
+            }
+
+        });
     }
 
 }

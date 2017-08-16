@@ -31,10 +31,6 @@ import de.agdb.views.login.LoginForm;
 @Theme("main_theme")
 @Widgetset("WidgetSet")
 @PreserveOnRefresh
-/*
-v7 Widgetset, deprecated
- */
-//@Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
 @Push
 public class AppUI extends UI {
     /**

@@ -128,22 +128,6 @@ public class Menu extends CssLayout {
         createViewButton(name, caption, icon);
     }
 
-    /**
-     * Register a view in the navigation menu and in the {@link Navigator} based
-     * on a view class.
-     *
-     * @param viewClass class of the views to create
-     * @param name      view name
-     * @param caption   view caption in the menu
-     * @param icon      view icon in the menu
-     * @see Navigator#addView(String, Class)
-     */
-    public void addView(Class<? extends View> viewClass, final String name,
-                        String caption, Resource icon) {
-        navigator.addView(name, viewClass);
-        createViewButton(name, caption, icon);
-    }
-
 
     public void addSubView(View view, final String name, String caption) {
         navigator.addView(name, view);
@@ -151,17 +135,8 @@ public class Menu extends CssLayout {
     }
 
 
-    public void addSubView(Class<? extends View> viewClass, final String name,
-                        String caption) {
-        navigator.addView(name, viewClass);
-        createSubViewButton(name, caption);
-    }
-
     public void addDetailsView(View view, final String name) {
         navigator.addView(name, view);
-    }
-    public void addDetailsView(Class<? extends View> viewClass, final String name) {
-        navigator.addView(name, viewClass);
     }
 
 
@@ -177,6 +152,7 @@ public class Menu extends CssLayout {
             }
         });
         button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+        button.addStyleName("bigger-caption");
         button.setIcon(icon);
         menuItemsLayout.addComponent(button);
         viewButtons.put(name, button);
