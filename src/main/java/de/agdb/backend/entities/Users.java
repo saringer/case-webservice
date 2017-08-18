@@ -2,10 +2,13 @@ package de.agdb.backend.entities;
 
 
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,11 +41,13 @@ public class Users implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
     @JoinTable(name = "USER_CONTACT", joinColumns = {@JoinColumn(name = "USER_ID")}, inverseJoinColumns = {@JoinColumn(name = "CONTACT_ID")})
-    private Set<Contact> contacts;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Contact> contacts;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
     @JoinTable(name = "USER_CATEGORY", joinColumns = {@JoinColumn(name = "USER_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
-    private Set<Categories> categories;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Categories> categories;
 
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = ScheduleWrapper.class)
@@ -52,6 +57,31 @@ public class Users implements Serializable {
 
     // Public methods
     public Users() {
+    }
+
+    public List<Categories> getCategoriesStartingWith(String firstLetter) {
+        List<Categories> resultList = new ArrayList<>();
+        List<Categories> allCategories = getCategories();
+        for (int i = 0; i < allCategories.size(); i++) {
+            if (allCategories.get(i).getTitle().substring(0, 1).compareToIgnoreCase(firstLetter) == 0) {
+                resultList.add(allCategories.get(i));
+            }
+        }
+
+        return resultList;
+    }
+
+    public boolean hasCategoryStartingWith(String firstLetter) {
+        boolean result = false;
+        List<Categories> allCategories = getCategories();
+        for (int i = 0; i < allCategories.size(); i++) {
+            if (allCategories.get(i).getTitle().substring(0,1).compareToIgnoreCase(firstLetter) == 0) {
+                result = true;
+                break;
+            }
+
+        }
+        return result;
     }
 
 
@@ -83,11 +113,11 @@ public class Users implements Serializable {
     }
 
 
-    public Set<Contact> getContacts() {
+    public List<Contact> getContacts() {
         return contacts;
     }
 
-    public void setContacts(Set<Contact> contacts) {
+    public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
 
@@ -99,11 +129,11 @@ public class Users implements Serializable {
         this.email = email;
     }
 
-    public Set<Categories> getCategories() {
+    public List<Categories> getCategories() {
         return categories;
     }
 
-    public void setCategories(Set<Categories> categories) {
+    public void setCategories(List<Categories> categories) {
         this.categories = categories;
     }
 

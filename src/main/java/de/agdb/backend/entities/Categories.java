@@ -1,5 +1,6 @@
 package de.agdb.backend.entities;
 
+import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -18,9 +19,12 @@ public class Categories implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
+    @Unique
     private String title;
     @NotNull
     private String description;
+    @NotNull
+    @Unique
     private String shortCut;
     private String shortCutColorCss;
     private int shortCutColorRGB;

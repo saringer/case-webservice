@@ -1,9 +1,13 @@
 package de.agdb.backend.entities;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 
@@ -47,6 +51,32 @@ public class Contact implements Serializable {
 
     @Column(name = "FUNCTION")
     private String function;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+    @JoinTable(name = "CONTACT_CATEGORY", joinColumns = {@JoinColumn(name = "CONTACT_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<String> assignedCategories;
+
+    public List<String> getAssignedCategories() {
+        return this.assignedCategories;
+    }
+
+    public void setAssignedCategories(List<String> list) {
+        this.assignedCategories = list;
+    }
+
+    public void addCategory(String categoryTitle) {
+        this.assignedCategories.add(categoryTitle);
+    }
+
+    public void removeCategory(String categoryTitle) {
+        for (int i=0;i<assignedCategories.size();i++) {
+            if (assignedCategories.get(i).equals(categoryTitle)) {
+                assignedCategories.remove(assignedCategories.get(i));
+                break;
+            }
+        }
+    }
 
     public int getAge() {
         return age;

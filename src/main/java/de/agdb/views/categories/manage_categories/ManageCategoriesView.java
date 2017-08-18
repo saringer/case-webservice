@@ -28,7 +28,8 @@ import javax.annotation.PostConstruct;
 
 @UIScope
 @SpringView(name = ManageCategoriesView.VIEW_NAME)
-public class ManageCategoriesView extends VerticalLayout implements View {
+public class ManageCategoriesView extends VerticalLayout implements View, ViewChangeListener {
+
 
     public static final String VIEW_NAME = "ManageCategoriesView";
     private Grid<Categories> grid = new Grid<>(Categories.class);
@@ -41,16 +42,18 @@ public class ManageCategoriesView extends VerticalLayout implements View {
     CssLayout header;
 
 
-
     @Autowired
     UsersRepository repository;
 
 
-
-
-
     @PostConstruct
     void init() {
+
+        /* Listener added to ensure that the ColorPicker PopUp-Window will be closed on view change.
+        *  TODO: Implement a custom colorpicker or wait for the fixed vaadin 8 colorpicker
+        */
+        UI.getCurrent().getNavigator().addViewChangeListener(this);
+
         addStyleNames("general-background-color-grey");
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -114,7 +117,7 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         Button addCategoryButton = new Button("Add category");
         addCategoryButton.addClickListener((Button.ClickListener) clickEvent -> {
-                    UI.getCurrent().getNavigator().navigateTo("AddCategoryView");
+            UI.getCurrent().getNavigator().navigateTo("AddCategoryView");
         });
         addCategoryButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         addCategoryButton.setIcon(MaterialIcons.PLUS_ONE);
@@ -151,30 +154,29 @@ public class ManageCategoriesView extends VerticalLayout implements View {
             grid.getSelectionModel().addSelectionListener(event -> {
 
 
-                    boolean somethingSelected = !grid.getSelectedItems().isEmpty();
-                    if (somethingSelected) {
-                        Categories category = event.getFirstSelectedItem().get();
-                        if (!category.getShortCut().isEmpty()) {
-                            Page.Styles styles = Page.getCurrent().getStyles();
-                            // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
-                            styles.add(".managecontacts-header { background:" + category.getShortCutColorCss() + "; }");
-                        }
-                        categoryDetailsLabel.setValue(category.getTitle());
-                        categoryTitle.setValue(category.getTitle());
-                        categoryShortcut.setValue(category.getShortCut());
-                        categoryShortcutColor.setColor(new Color(category.getShortCutColorRGB()));
-                        categoryDescription.setValue(category.getDescription());
-
-                        // Get the stylesheet of the page
+                boolean somethingSelected = !grid.getSelectedItems().isEmpty();
+                if (somethingSelected) {
+                    Categories category = event.getFirstSelectedItem().get();
+                    if (!category.getShortCut().isEmpty()) {
                         Page.Styles styles = Page.getCurrent().getStyles();
-                        // inject the new color as a style
-                        styles.add(".headerLabel2 { background-color:" + category.getShortCutColorCss() + "; }");
-                        addStyleName("headerLabel2");
-                        header.setStyleName("headerLabel2");
-
-
-
+                        // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
+                        styles.add(".managecontacts-header { background:" + category.getShortCutColorCss() + "; }");
                     }
+                    categoryDetailsLabel.setValue(category.getTitle());
+                    categoryTitle.setValue(category.getTitle());
+                    categoryShortcut.setValue(category.getShortCut());
+                    categoryShortcutColor.setColor(new Color(category.getShortCutColorRGB()));
+                    categoryDescription.setValue(category.getDescription());
+
+                    // Get the stylesheet of the page
+                    Page.Styles styles = Page.getCurrent().getStyles();
+                    // inject the new color as a style
+                    styles.add(".headerLabel2 { background-color:" + category.getShortCutColorCss() + "; }");
+                    addStyleName("headerLabel2");
+                    header.setStyleName("headerLabel2");
+
+
+                }
 
             });
 
@@ -223,8 +225,8 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         CssLayout colorPickerLayout = new CssLayout();
         categoryShortcutColor = new ColorPicker("Pick a color");
         categoryShortcutColor.setPosition(
-                Page.getCurrent().getBrowserWindowWidth() / 2 - 246/2,
-                Page.getCurrent().getBrowserWindowHeight() / 2 - 507/2);
+                Page.getCurrent().getBrowserWindowWidth() / 2 - 246 / 2,
+                Page.getCurrent().getBrowserWindowHeight() / 2 - 507 / 2);
         categoryShortcutColor.setHistoryVisibility(false);
         categoryShortcutColor.setHSVVisibility(false);
         categoryShortcutColor.setRGBVisibility(false);
@@ -251,19 +253,19 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
         };
         CustomButton deleteButton = new CustomButton(VaadinIcons.TRASH.getHtml() + " " + "DELETE", listener);
-        deleteButton.addStyleNames("cancel-button","float-right");
+        deleteButton.addStyleNames("cancel-button", "float-right");
         deleteButton.setHeight(40, Unit.PIXELS);
         deleteButton.setWidth(115, Unit.PIXELS);
 
         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
 
         };
-        CustomButton saveButton = new CustomButton(VaadinIcons.SERVER.getHtml() + " "+ "SAVE", listener);
-        saveButton.addStyleNames("float-right","save-button");
+        CustomButton saveButton = new CustomButton(VaadinIcons.SERVER.getHtml() + " " + "SAVE", listener);
+        saveButton.addStyleNames("float-right", "save-button");
         saveButton.setHeight(40, Unit.PIXELS);
         saveButton.setWidth(115, Unit.PIXELS);
 
-        bottomNav.addComponents(saveButton,deleteButton);
+        bottomNav.addComponents(saveButton, deleteButton);
 
 
         wrapperLayout.addComponent(header);
@@ -274,7 +276,6 @@ public class ManageCategoriesView extends VerticalLayout implements View {
         wrapperLayout.setExpandRatio(detailsForm, 1);
 
 
-
         return wrapperLayout;
 
 
@@ -282,6 +283,14 @@ public class ManageCategoriesView extends VerticalLayout implements View {
 
     private void generateDynamicCSS() {
 
+    }
+
+    @Override
+    public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+        if (categoryShortcutColor != null) {
+            categoryShortcutColor.hidePopup();
+        }
+        return true;
     }
 
 }

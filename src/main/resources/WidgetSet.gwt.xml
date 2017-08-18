@@ -38,4 +38,8 @@
     <inherits name="com.vaadin.addon.onoffswitch.WidgetSet" />
 
     <inherits name="org.vaadin.risto.stepper.StepperWidgetset" />
+
+    <inherits name="org.vaadin.alump.scaleimage.ScaleImageWidgetset" />
+
+    <inherits name="org.vaadin.anna.dndscroll.WidgetSet" />
 </module>

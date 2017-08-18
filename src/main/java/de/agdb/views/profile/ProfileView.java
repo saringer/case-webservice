@@ -7,6 +7,8 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Token;
 import com.google.api.client.googleapis.auth.oauth2.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
@@ -27,201 +29,239 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.Contact;
+import de.agdb.backend.entities.Users;
+import de.agdb.backend.entities.UsersRepository;
+import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.vaadin.addon.calendar.Calendar;
+import org.vaadin.alump.scaleimage.ScaleImage;
+import org.vaadin.alump.scaleimage.css.*;
 
 import javax.annotation.PostConstruct;
+import javax.swing.text.html.CSS;
 import java.io.*;
 import java.util.*;
 
 @UIScope
 @SpringView(name = ProfileView.VIEW_NAME)
-public class ProfileView extends VerticalLayout implements View {
+public class ProfileView extends VerticalLayout implements View, Upload.Receiver,
+        Upload.SucceededListener, Upload.StartedListener {
     public static final String VIEW_NAME = "ProfileView";
-    /**
-     * File for storing user credentials.
-     */
-    private static final java.io.File DATA_STORE_FILE =
-            new File(System.getProperty("user.home"), ".credentials/user-credentials.json");
+    TextField firstName;
+    TextField lastName;
+    TextField age;
+    private ScaleImage image;
+    private Upload uploader;
+    private CssLayout personalButtons;
+    private CssLayout contactButtons;
 
-    /**
-     * Global instance of the {DataStoreFactory}. The best practice is to make it a single
-     * globally shared instance across your application.
-     */
-    private static FileDataStoreFactory dataStoreFactory;
-
-
-    // Go to the Google API Console, open your application's
-    // credentials page, and copy the client ID and client secret.
-    // Then paste them into the following code.
-    String clientId = "833038328979-iglf2mm0jap840b0vaq4jvo1miqvtkb4.apps.googleusercontent.com";
-    String clientSecret = "Q_Pb1hvhGs1hH1CIsqYv1S1M";
-
-    // Or your redirect URL for web based applications.
-    String redirectUrl = "http://localhost:8080/Callback";
-
-    String scope = "https://www.googleapis.com/auth/contacts.readonly";
-
-    HttpTransport httpTransport = new NetHttpTransport();
-    JacksonFactory jsonFactory = new JacksonFactory();
-    HorizontalSplitPanel rootLayout;
-    // User user;
-    // UserImage picture;
-    ListSelect groupList;
-    //StartSeite startSeiteInstance;
-
-    VerticalLayout formWrapper;
-    FormLayout form;
-
-    // UserDetails
-    TextField name;
-    DateField birthday;
-    TextField username;
-    NativeSelect<String> sex;
-    TextField email;
-    TextField location;
-    TextField phone;
-    TextField website;
-    TextArea shortbio;
-    RichTextArea bio;
-    GoogleCredential credential;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    File file;
+    ByteArrayOutputStream outputBuffer = null;
+    ArrayList<String> allowedMimeTypes = new ArrayList<String>();
 
 
     @PostConstruct
     void init() {
+        allowedMimeTypes.add("image/jpeg");
+        allowedMimeTypes.add("image/png");
+
         setSizeFull();
-        setUpFormLayout();
+        VerticalLayout formWrapper = new VerticalLayout();
+        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setHeight(700, Unit.PIXELS);
+        formWrapper.addStyleName("solid-border");
+
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
+
+        HorizontalLayout content = setUpFormLayout();
+        content.addStyleName("overflow-auto");
+        content.setSpacing(true);
+        content.setMargin(true);
+        content.setHeight("95%");
+        content.setWidth("80%");
+
+
+        formWrapper.setSpacing(false);
+        formWrapper.setMargin(false);
+        formWrapper.addComponent(content);
+        formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
+        formWrapper.setExpandRatio(content, 1);
+
+
     }
 
-    public void setUpFormLayout() {
-        formWrapper = new VerticalLayout();
-        formWrapper.setSizeFull();
-        formWrapper.setSpacing(true);
-        formWrapper.setMargin(true);
-        formWrapper.addStyleName("white");
+    public HorizontalLayout setUpFormLayout() {
+        HorizontalLayout wrapperLayout = new HorizontalLayout();
+        wrapperLayout.setSizeFull();
 
 
-        // FormLayout
-        form = new FormLayout();
-        form.setMargin(true);
-        //form.setWidth("800px");
-        // form.addStyleName("light");
+        FormLayout formLayout = new FormLayout();
+       // formLayout.addStyleName("overflow-auto");
+        formLayout.setSizeFull();
 
-        formWrapper.addComponent(form);
-
-        // form.addComponent(panelCaption);
-        Label section = new Label("Personal Info");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        form.addComponent(section);
-        name = new TextField("Name");
-        name.setValue("Jim Saringer");
-        name.setWidth("50%");
-        form.addComponent(name);
-        birthday = new DateField("Birthday");
-        form.addComponent(birthday);
-        username = new TextField("Username");
-        username.setValue("Riva");
-
-        // username.setRequired(true);
-        form.addComponent(username);
-        sex = new NativeSelect<>("Sex");
-        sex.setItems("Male", "Female");
-        sex.addStyleName("horizontal");
-        sex.setSelectedItem("Male");
-        form.addComponent(sex);
-
-        VerticalLayout imageBox = new VerticalLayout();
-        imageBox.setWidth(200, Unit.PIXELS);
-        imageBox.setHeight(200, Unit.PIXELS);
-        imageBox.setStyleName("wrapperPreview");
-        // A theme resource in the current theme ("mytheme")
-// Located in: VAADIN/themes/mytheme/img/themeimage.png
-        ThemeResource resource = new ThemeResource("img/archetype-login-bg.jpg");
-
-        Image image = new Image();
-        image.setWidth("250px");
-        image.setHeight("200px");
-        imageBox.addComponent(image);
-
-
-        //form.addComponent(imageBox);
-
-        // uploader.addStyleName("horizontal");*/
-
-        section = new Label("Contact Info");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        form.addComponent(section);
-        email = new TextField("Email");
-
-        email.setWidth("50%");
-        email.setValue("jim.saringer@fu-berlin.de");
-        // email.setRequired(true);
-        form.addComponent(email);
-        location = new TextField("Location");
-
-        location.setWidth("50%");
-        // location.setComponentError(new
-        // UserError("This address doesn't exist"));
-        form.addComponent(location);
-        phone = new TextField("Phone");
-
-        phone.setWidth("50%");
-        form.addComponent(phone);
-
-        section = new Label("Additional Info");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        form.addComponent(section);
-        website = new TextField("Website");
-        website.setDescription("http://");
-
-        website.setWidth("100%");
-        form.addComponent(website);
-        shortbio = new TextArea("Short Bio");
-
-        shortbio.setWidth("100%");
-        shortbio.setRows(2);
-        form.addComponent(shortbio);
-        bio = new RichTextArea("Bio");
-        bio.setWidth("100%");
-        form.addComponent(bio);
-
-
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setMargin(new MarginInfo(true, false, true, false));
-        footer.setSpacing(true);
-        footer.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        form.addComponent(footer);
-
-        section = new Label ("Calendar test");
-        section.addStyleNames("h3");
-        section.addStyleNames("colored");
-        form.addComponent(section);
-        Calendar cal = new Calendar();
-        cal.setWidth("100%");
-        form.addComponent(cal);
-
-        form.addComponent(createBottomNav());
-
-        section = new Label("Synchronize your Email-Accounts");
-        section.addStyleName("h3");
-        section.addStyleName("colored");
-        form.addComponent(section);
-        form.addComponent(setUpGoogleButton());
+        VerticalLayout imageLayout = new VerticalLayout();
+        imageLayout.addStyleName("solid-border-grey");
+        imageLayout.setSizeUndefined();
+        imageLayout.setSpacing(false);
+        imageLayout.setMargin(false);
+        imageLayout.addStyleName("image-layout");
+        setImageBox();
+        uploader = new Upload();
+        uploader.setSizeFull();
+        uploader.setButtonCaption("Upload new picture");
+        uploader.setReceiver(this);
+        uploader.addSucceededListener(this);
+        uploader.addStartedListener(this);
+        imageLayout.addComponents(image, uploader);
 
 
 
 
+        wrapperLayout.addComponents(imageLayout, formLayout);
+        wrapperLayout.setExpandRatio(formLayout, 1);
 
+        // PERSONAL INFORMATION
+        Label personalSection = new Label("Personal information");
+        personalSection.addStyleNames(ValoTheme.LABEL_H3, ValoTheme.LABEL_COLORED);
+        VerticalLayout blockLayoutPersonalInformation = new VerticalLayout();
+        blockLayoutPersonalInformation.addStyleName("info-block");
+        blockLayoutPersonalInformation.setSizeUndefined();
+        blockLayoutPersonalInformation.setWidth("100%");
+        blockLayoutPersonalInformation.setMargin(false);
+        blockLayoutPersonalInformation.setSpacing(false);
+        HorizontalLayout personalInformationLayout = new HorizontalLayout();
+        personalInformationLayout.setMargin(true);
+        personalInformationLayout.setSpacing(true);
+        FormLayout innerForm = new FormLayout();
+        Button editButton = new Button("edit");
+        editButton.addClickListener((Button.ClickListener) clickEvent -> {
+            personalButtons.setVisible(true);
+            editButton.setVisible(false);
+            firstName.setEnabled(true);
+            lastName.setEnabled(true);
+            age.setEnabled(true);
+        });
+        firstName = new TextField("First name:");
+        firstName.setValue("Riva");
+        firstName.setEnabled(false);
+        firstName.setWidth("100%");
+        lastName = new TextField("Last name:");
+        lastName.setValue("Saringer");
+        lastName.setEnabled(false);
+        lastName.setWidth("100%");
+        age = new TextField("Age:");
+        age.setValue("27");
+        age.setWidth("10%");
+        age.setEnabled(false);
+        LayoutEvents.LayoutClickListener cancelListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+                personalButtons.setVisible(false);
+                editButton.setVisible(true);
+                firstName.setEnabled(false);
+                lastName.setEnabled(false);
+                age.setEnabled(false);
+        };
+        LayoutEvents.LayoutClickListener okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+
+        };
+        personalButtons = setUpFormButtons(cancelListener,okayListener);
+        personalButtons.setWidth("100%");
+        innerForm.addComponents(firstName, lastName, age);
+        personalButtons.setVisible(false);
+        editButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.BUTTON_BORDERLESS);
+        personalInformationLayout.addComponent(innerForm);
+        personalInformationLayout.addComponent(editButton);
+        personalInformationLayout.setExpandRatio(innerForm, 1);
+        personalInformationLayout.setComponentAlignment(editButton, Alignment.TOP_RIGHT);
+        personalInformationLayout.setWidth("100%");
+        blockLayoutPersonalInformation.addComponents(personalInformationLayout, personalButtons);
+
+
+        // Contact INFORMATION
+        Label contactSection = new Label("Contact information");
+        contactSection.addStyleNames(ValoTheme.LABEL_H3, ValoTheme.LABEL_COLORED);
+        VerticalLayout blockLayoutContactInformation = new VerticalLayout();
+        blockLayoutContactInformation.addStyleName("info-block");
+        blockLayoutContactInformation.setSizeUndefined();
+        blockLayoutContactInformation.setWidth("100%");
+        blockLayoutContactInformation.setMargin(false);
+        blockLayoutContactInformation.setSpacing(false);
+        personalInformationLayout = new HorizontalLayout();
+        personalInformationLayout.setMargin(true);
+        personalInformationLayout.setSpacing(true);
+        innerForm = new FormLayout();
+        Button editButton2 = new Button("edit");
+        editButton2.addClickListener((Button.ClickListener) clickEvent -> {
+            contactButtons.setVisible(true);
+            editButton2.setVisible(false);
+            firstName.setEnabled(true);
+            lastName.setEnabled(true);
+            age.setEnabled(true);
+        });
+        firstName = new TextField("First name:");
+        firstName.setValue("Riva");
+        firstName.setEnabled(false);
+        firstName.setWidth("100%");
+        lastName = new TextField("Last name:");
+        lastName.setValue("Saringer");
+        lastName.setEnabled(false);
+        lastName.setWidth("100%");
+        age = new TextField("Age:");
+        age.setValue("27");
+        age.setWidth("10%");
+        age.setEnabled(false);
+        cancelListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            contactButtons.setVisible(false);
+            editButton2.setVisible(true);
+            firstName.setEnabled(false);
+            lastName.setEnabled(false);
+            age.setEnabled(false);
+        };
+        okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+
+        };
+        contactButtons = setUpFormButtons(cancelListener,okayListener);
+        contactButtons.setWidth("100%");
+        innerForm.addComponents(firstName, lastName, age);
+        contactButtons.setVisible(false);
+        editButton2.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.BUTTON_BORDERLESS);
+        personalInformationLayout.addComponent(innerForm);
+        personalInformationLayout.addComponent(editButton2);
+        personalInformationLayout.setExpandRatio(innerForm, 1);
+        personalInformationLayout.setComponentAlignment(editButton2, Alignment.TOP_RIGHT);
+        personalInformationLayout.setWidth("100%");
+        blockLayoutContactInformation.addComponents(personalInformationLayout, personalButtons);
+
+
+
+
+        formLayout.addComponent(personalSection);
+        formLayout.addComponents(blockLayoutPersonalInformation);
+        formLayout.addComponent(contactSection);
+        formLayout.addComponent(blockLayoutContactInformation);
+
+        return wrapperLayout;
+
+    }
+
+    private void setImageBox() {
+        image = new ScaleImage();
+        image.setWidth(200, Unit.PIXELS);
+        image.setHeight(200, Unit.PIXELS);
+
+        image.setCssValues(
+                BackgroundSize.COVER,
+                BackgroundAttachment.LOCAL,
+                //BackgroundClip.PADDING_BOX,
+                //BackgroundOrigin.PADDING_BOX,
+                BackgroundPositionX.CENTER,
+                BackgroundPositionY.CENTER,
+                new BackgroundColor("silver")
+        );
 
     }
 
@@ -231,89 +271,55 @@ public class ProfileView extends VerticalLayout implements View {
     }
 
 
-    private Button setUpGoogleButton() {
-        Button google = new Button("google");
-        return  google;
+    @Override
+    public OutputStream receiveUpload(String fileName, String mimeType) {
+
+        outputBuffer = new ByteArrayOutputStream();
+        return outputBuffer;
     }
 
+    @Override
+    public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
+        File file = new File("C:\\Users\\Riva\\Desktop\\" + succeededEvent.getFilename());
 
-    /**
-     * Authorizes the installed application to access user's protected data.
-     */
-    private static Credential authorize() throws Exception {
-
-        String scope = "https://www.googleapis.com/auth/contacts.readonly";
-        dataStoreFactory = new FileDataStoreFactory(DATA_STORE_FILE);
-
-
-        HttpTransport httpTransport = new NetHttpTransport();
-        JacksonFactory jsonFactory = new JacksonFactory();
-        // load client secrets
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory,
-                new InputStreamReader(ProfileView.class.getResourceAsStream("/client_secret.json")));
-        // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                httpTransport, jsonFactory, clientSecrets,
-                Collections.singleton(scope)).setDataStoreFactory(dataStoreFactory)
-                .setAccessType("offline").build();
-
-
-        LocalServerReceiver localReceiver = new LocalServerReceiver.Builder().setHost("localhost").setPort(8090).build();
-
-
-        return new AuthorizationCodeInstalledApp(flow, localReceiver).authorize("user");
+        image.setSource(new FileResource(file));
+        //image.
 
     }
 
-    private HorizontalLayout createBottomNav() {
+    private CssLayout setUpFormButtons(LayoutEvents.LayoutClickListener cancelListener, LayoutEvents.LayoutClickListener okayListener) {
+        CssLayout buttonLayout = new CssLayout();
+        CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), cancelListener);
+        cancelButton.addStyleNames("cancel-button","float-left");
+        cancelButton.setHeight(40, Unit.PIXELS);
+        cancelButton.setWidth(150, Unit.PIXELS);
 
+        CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), okayListener);
+        okayButton.addStyleNames("save-button", "float-right");
+        okayButton.setHeight(40, Unit.PIXELS);
+        okayButton.setWidth(150, Unit.PIXELS);
 
-        HorizontalLayout nav = new HorizontalLayout();
-        nav.setWidth("100%");
-
-
-        VerticalLayout createSchedulesButton = new VerticalLayout();
-        //createSchedulesButton.setSizeFull();
-        createSchedulesButton.setWidth("100%");
-        createSchedulesButton.addStyleName("left-menu-style");
-        //createSchedulesButton.addComponent(leftMenuIcon);
-        //createSchedulesButton.addComponent(leftMenuCaption);
-        Button buttonLeft = new Button("Create schedule");
-        buttonLeft.setSizeUndefined();
-        buttonLeft.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        //buttonLeft.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        //buttonLeft.setIcon(VaadinIcons.CALENDAR_O);
-        buttonLeft.addStyleName(ValoTheme.BUTTON_LARGE);
-        createSchedulesButton.addComponent(buttonLeft);
-
-        VerticalLayout manageSchedulesButton = new VerticalLayout();
-        //manageSchedulesButton.setSizeFull();
-        manageSchedulesButton.setWidth("100%");
-        manageSchedulesButton.addStyleName("right-menu-style");
-        Button buttonRight = new Button("Manage schedules");
-        buttonRight.setSizeUndefined();
-        buttonRight.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-        //buttonRight.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_TOP);
-        //buttonRight.setIcon(VaadinIcons.CALENDAR);
-        buttonRight.addStyleName(ValoTheme.BUTTON_LARGE);
-        manageSchedulesButton.addComponent(buttonRight);
-
-        nav.addComponent(createSchedulesButton);
-        nav.addComponent(manageSchedulesButton);
-        nav.setMargin(false);
-        nav.setSpacing(false);
-        //nav.setExpandRatio(createSchedulesButton, 1);
-        // nav.setExpandRatio(manageSchedulesButton, 1);
-
-        return nav;
-
+        buttonLayout.addComponents(cancelButton,okayButton);
+        return  buttonLayout;
     }
 
 
+    @Override
+    public void uploadStarted(Upload.StartedEvent startedEvent) {
 
+        String contentType = startedEvent.getMIMEType();
+        boolean allowed = false;
+        for(int i=0;i<allowedMimeTypes.size();i++){
+            if(contentType.equalsIgnoreCase(allowedMimeTypes.get(i))){
+                allowed = true;
+                break;
+            }
+        }
+        if(allowed){
 
-
-
-
-
+        }else{
+            Notification.show("Error", "\nAllowed MIME: "+allowedMimeTypes, Notification.Type.ERROR_MESSAGE);
+            uploader.interruptUpload();
+        }
+    }
 }

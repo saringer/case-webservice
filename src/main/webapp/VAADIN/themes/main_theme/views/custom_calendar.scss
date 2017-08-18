@@ -1,0 +1,116 @@
+/* Keyframes for the fade-in */
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+@mixin meetings_calendar {
+
+  .meetings {
+
+    .v-calendar-event-month {
+      background: #2b78e4;
+      color:white;
+    }
+
+    .v-calendar-event-month:hover {
+      position: absolute;
+      width: inherit;
+      height: 230px;
+      overflow: auto;
+      background: rgba(236, 243, 247, 0.95);
+      box-shadow: 0px 7px 20px 0px #ddd;
+      border: 1px solid #d6d6d6;
+      border-top: 3px solid #00ace0;
+      border-radius: 0 0 3px 3px;
+      z-index: 1;
+      margin-left: 15px;
+
+      opacity:0;
+      opacity: 1 \9; /*just in case ie*/
+      -webkit-animation:fadeIn ease-in 1;
+      -moz-animation:fadeIn ease-in 1;
+      animation:fadeIn ease-in 1;
+
+      -webkit-animation-fill-mode:forwards;
+      -moz-animation-fill-mode:forwards;
+      animation-fill-mode:forwards;
+
+      -webkit-animation-duration:.2s;
+      -moz-animation-duration:.2s;
+      animation-duration:.2s;
+
+      -webkit-animation-delay: .12s;
+      -moz-animation-delay: .12s;
+      animation-delay: .12s;
+
+      &:before {
+        border-top: 19px solid #00ace0;
+        position: fixed;
+        width: 15px;
+        border-radius: 10px 0 0 10px;
+        box-shadow: 0px 1px 3px 0px #c5c5c5;
+        margin-top: -3px;
+        margin-left: -20px;
+        content: "";
+      }
+    }
+
+    .v-calendar-month-day-today {
+      background: none;
+    }
+    .v-calendar-month-day-today .v-calendar-day-number {
+      background: #eef3f8;
+    }
+
+    /*
+        .v-calendar-month-day.firstDay {
+            outline: none;
+            box-sizing: border-box;
+            line-height: 1.2;
+             .v-calendar-day-number {
+              color: darken($v-focus-color, 10%);
+            }
+          }
+    */
+    .v-calendar-header-day {
+      font-size: 14px;
+    }
+
+    .v-calendar-header-day-today {
+      color: #2B9CE2;
+    }
+
+    .v-calendar-event-caption {
+
+      .target {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 2px;
+      }
+    }
+
+    .v-calendar-event.v-calendar-event-state-planned {
+      color: #222222;
+
+      .v-calendar-event-content {
+        border: 1px solid cadetblue;
+
+        background-color: rgba(200, 243, 243, 0.8);
+
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .v-calendar-event.v-calendar-event-state-confirmed {
+      color: #095F3F;
+
+      .v-calendar-event-content {
+        background-color: rgba(190, 239, 190, 0.65);
+      }
+    }
+
+  }
+}

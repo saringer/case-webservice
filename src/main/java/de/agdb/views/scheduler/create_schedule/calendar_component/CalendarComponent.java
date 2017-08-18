@@ -92,6 +92,7 @@ public class CalendarComponent extends VerticalLayout {
         eventProvider = new MeetingDataProvider();
 
         calendarComponent = new Calendar(eventProvider);
+        calendarComponent.addStyleName("meetings");
         calendarComponent.setSizeFull();
         calendarComponent.setResponsive(true);
 
@@ -259,6 +260,8 @@ public class CalendarComponent extends VerticalLayout {
             meeting.setDetails("Selected Day");
 
             MeetingItem item = new MeetingItem(meeting);
+            item.setAllDay(true);
+            item.setStyleName("color2");
             eventProvider.addItem(item);
 
         } else {
@@ -292,8 +295,10 @@ public class CalendarComponent extends VerticalLayout {
         meeting.setName("A Name");
         meeting.setDetails(title);
 
+
         MeetingItem item = new MeetingItem(meeting);
-        item.setStyleName("color2");
+        item.setAllDay(true);
+        item.setStyleName("color1");
         eventProvider.addItem(item);
     }
 

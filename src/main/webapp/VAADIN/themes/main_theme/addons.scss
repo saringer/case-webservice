@@ -5,6 +5,10 @@
 @import "../../../VAADIN/addons/vaadin-icons/vaadin-icons.scss";
 
 
+/* Provided by scaleimage-addon-0.5.0.jar */
+@import "../../../VAADIN/addons/scaleimage/scaleimage.scss";
+
+
 /* Provided by calendar-component-2.0-BETA2.jar */
 @import "../../../VAADIN/addons/calendar/calendar-addon.scss";
 
@@ -24,6 +28,7 @@
 /* Import and include this mixin into your project theme to include the addon themes */
 @mixin addons {
 	@include vaadin-icons;
+	@include scaleimage;
 	@include calendar-addon;
 	@include stepper;
 	@include stepper;

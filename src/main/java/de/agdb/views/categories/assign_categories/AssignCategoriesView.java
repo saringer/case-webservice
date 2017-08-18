@@ -1,5 +1,7 @@
 package de.agdb.views.categories.assign_categories;
 
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Sizeable;
@@ -10,6 +12,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.GridDragSource;
+import com.vaadin.ui.components.grid.GridDragStartEvent;
 import com.vaadin.ui.dnd.DropTargetExtension;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
@@ -19,11 +22,11 @@ import de.agdb.backend.entities.UsersRepository;
 import elemental.json.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.popupextension.PopupExtension;
+import org.vaadin.anna.dndscroll.PanelAutoScrollExtension;
 
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +36,7 @@ import java.util.Set;
 public class AssignCategoriesView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "AssignCategoriesView";
+
     Grid grid = new Grid<>(Contact.class);
     private Grid<Contact> draggedGrid;
     private Set<Contact> draggedItems;
@@ -42,6 +46,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     private String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
             "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     private String mouseOverLetter = "";
+    CssLayout categoriesStripLayout = new CssLayout();
 
     @Autowired
     UsersRepository usersRepository;
@@ -62,9 +67,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         VerticalLayout content = buildContent();
         content.setWidth("80%");
         content.setHeight("80%");
-
-
-        addJavaScriptFunction();
 
         formWrapper.addStyleName("solid-border");
         formWrapper.addStyleName("general-background-color-white");
@@ -96,18 +98,21 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
         TextField searchbar = new TextField();
         searchbar.setWidth("100%");
+        searchbar.setPlaceholder("search...");
+        searchbar.addValueChangeListener(this::setupGridFilter);
+
 
         // Create a grid bound to the list
 
         grid.setSizeFull();
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        //grid.addStyleNames("disable-grid-cell-select");
+        grid.addStyleNames("disable-grid-cell-select");
         grid.setColumns("firstName", "lastName", "email");
         GridDragSource<Contact> dragSource = new GridDragSource<>(grid);// set the allowed effect
         dragSource.setEffectAllowed(EffectAllowed.MOVE);
 
         // Add drag start listener
-        dragSource.addGridDragStartListener(event -> {
+        dragSource.addGridDragStartListener((GridDragStartEvent<Contact> event) -> {
             // Keep reference to the dragged items,
             // note that there can be only one drag at a time
             draggedItems = event.getDraggedItems();
@@ -136,7 +141,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
             //dragSource.setDragData(null);
         });
-        wrapperLayout.addComponent(createCategoriesStrip());
+        loadCategoriesStrip();
+        wrapperLayout.addComponent(categoriesStripLayout);
         wrapperLayout.addComponent(searchbar);
         wrapperLayout.addComponent(grid);
         wrapperLayout.setExpandRatio(grid, 1);
@@ -144,7 +150,26 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         return wrapperLayout;
     }
 
+    private void setupGridFilter(HasValue.ValueChangeEvent<String> event) {
+        ListDataProvider<Contact> dataProvider = (ListDataProvider<Contact>) grid.getDataProvider();
+        dataProvider.clearFilters();
+        String filterText = event.getValue();
+        dataProvider.setFilter(Contact ->
+                caseInsensitiveContains(Contact.getFirstName(), filterText) ||
+                        caseInsensitiveContains(Contact.getLastName(), filterText) ||
+                        caseInsensitiveContains(Contact.getEmail(), filterText));
+    }
+
+    private Boolean caseInsensitiveContains(String fullText, String filterText) {
+        if (fullText == null && filterText != null) {
+            return false;
+        } else {
+            return fullText.toLowerCase().contains(filterText.toLowerCase());
+        }
+    }
+
     private void initView() {
+
         addStyleNames("general-background-color-grey");
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -170,6 +195,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        loadCategoriesStrip();
 
         AppUI app = (AppUI) UI.getCurrent();
         String userName = app.getAccessControl().getUsername();
@@ -179,21 +205,12 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
             Users thisUser = usersRepository.findByUsername(userName).get(0);
             grid.setItems(thisUser.getContacts());
+            addJavaScriptClickListener(grid, popUpViewslist, thisUser);
+
         }
-        Contact c = new Contact();
-        c.setFirstName("First");
-        c.setLastName("Last");
-        Contact b = new Contact();
-        b.setFirstName("First");
-        b.setLastName("Last");
-        Contact a = new Contact();
-        a.setFirstName("First");
-        a.setLastName("Last");
-        List<Contact> set = new ArrayList<>();
-        set.add(a);
-        set.add(c);
-        set.add(b);
-        grid.setItems(set);
+
+        addJavaScriptDragListener();
+
         /**
          * RESET ON VIEWCHANGE
          */
@@ -243,52 +260,57 @@ public class AssignCategoriesView extends VerticalLayout implements View {
      *
      * @return
      */
-    private CssLayout createCategoriesStrip() {
-        popUpViewslist = new ArrayList<>();
-        CssLayout horizontalWrapper = new CssLayout();
-        horizontalWrapper.setWidth("100%");
-        //horizontalWrapper.setSpacing(false);
-        //horizontalWrapper.setMargin(false);
-        // Label c = new Label("Categories");
-        // c.setSizeUndefined();
-        HorizontalLayout verticalLayout = new HorizontalLayout();
-        verticalLayout.setWidth("100%");
+    private void loadCategoriesStrip() {
+        AppUI app = (AppUI) UI.getCurrent();
+        String currentUser = app.getAccessControl().getUsername();
 
-        horizontalWrapper.addComponents(new Label("CATEGORIES:"), new Label("General"), new Label("Unassigned"));
-        //horizontalWrapper.addComponent(c);
-        for (int i = 0; i < letters.length; i++) {
+        if (!usersRepository.findByUsername(currentUser).isEmpty()) {
+            Users user = usersRepository.findByUsername(currentUser).get(0);
 
 
-            Label label = new Label();
-            label.setSizeUndefined();
-            label.setContentMode(ContentMode.HTML);
-            label.setValue("<span ondragover=\"myfunc('" + letters[i] + "',1)\")> " + letters[i] + "</span>");
-//            label.setValue("<span ondragover=\"myfunc('" + letters[i] + "')\")> " + letters[i] + "</span>");
+            popUpViewslist = new ArrayList<>();
+            categoriesStripLayout.removeAllComponents();
+            categoriesStripLayout.addStyleName("categories-strip");
+            categoriesStripLayout.setWidth("100%");
 
-            // make the label accept drops
-            DropTargetExtension<Label> dropTarget = new DropTargetExtension<>(label);
+            HorizontalLayout horizontalLayout = new HorizontalLayout();
+            horizontalLayout.setWidth("100%");
 
-// the drop effect must match the allowed effect in the drag source for a successful drop
-            dropTarget.setDropEffect(DropEffect.MOVE);
+            Label topHeader = new Label("Categories:");
+            topHeader.setContentMode(ContentMode.HTML);
+            topHeader.addStyleName("passive-header");
+            categoriesStripLayout.addComponent(topHeader);
 
+            topHeader = new Label("General");
+            topHeader.addStyleName("active-header");
+            categoriesStripLayout.addComponent(topHeader);
 
-           /* PopupExtension extension;
-            ListSelect listSelect = new ListSelect();
-            listSelect.setData("Test");
-            listSelect.setWidth(300, Unit.PIXELS);
-            listSelect.setHeight(300, Unit.PIXELS);
-            extension = PopupExtension.extend(label);
-            extension.setContent(listSelect);
-            extension.setAnchor(Alignment.BOTTOM_CENTER);
-            extension.setDirection(Alignment.BOTTOM_CENTER);
-            extension.closeOnOutsideMouseClick(false);*/
-            popUpViewslist.add(label);
+            topHeader = new Label("Unassigned");
+            topHeader.addStyleName("active-header");
+            categoriesStripLayout.addComponent(topHeader);
 
+            for (int i = 0; i < letters.length; i++) {
 
-            verticalLayout.addComponent(label);
+                Label label = new Label();
+                label.setSizeUndefined();
+                label.setContentMode(ContentMode.HTML);
+
+                // Make label only a drop target if at least one category exists with respective first letter
+                if (user.hasCategoryStartingWith(letters[i])) {
+                    label.setValue("<span ondragover=\"myfunc('" + letters[i] + "')\") onclick=\"customClickListener('" + letters[i] + "')\"> " + letters[i] + "</span>");
+                    DropTargetExtension<Label> dropTarget = new DropTargetExtension<>(label);
+                    dropTarget.setDropEffect(DropEffect.MOVE);
+                    label.addStyleName("active-letter");
+                } else {
+                    label.setValue("<span onclick=\"customClickListener('" + letters[i] + "')\")> " + letters[i] + "</span>");
+                    label.addStyleName("passive-letter");
+                }
+                popUpViewslist.add(label);
+                horizontalLayout.addComponent(label);
+            }
+
+            categoriesStripLayout.addComponent(horizontalLayout);
         }
-        horizontalWrapper.addComponent(verticalLayout);
-        return horizontalWrapper;
 
 
     }
@@ -305,17 +327,45 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         }
     }
 
-    private void setUpCategoryGrid(Grid grid) {
-        grid = new Grid(Categories.class);
+    private Panel loadCategories(String firstLetter) {
+        AppUI app = (AppUI) UI.getCurrent();
+        String currentUser = app.getAccessControl().getUsername();
+
+        Panel listPanel = new Panel();
+        VerticalLayout content = new VerticalLayout();
+        //content.addStyleName("solid-border-grey");
+        content.setSizeUndefined();
+        content.setWidth(200, Unit.PIXELS);
+        Users user = usersRepository.findByUsername(currentUser).get(0);
+
+
+        List<Categories> categories = user.getCategoriesStartingWith(firstLetter);
+        for (int i = 0; i < categories.size(); i++) {
+            content.addComponent(new Label(categories.get(i).getShortCut()));
+        }
+
+        listPanel.setContent(content);
+        listPanel.setHeight(350, Unit.PIXELS);
+        listPanel.setWidth(200, Unit.PIXELS);
+
+        PanelAutoScrollExtension extension = new PanelAutoScrollExtension();
+        extension.extend(listPanel);
+
+        return listPanel;
 
     }
 
     /**
      * LISTENERS FOR CATEGORY-POPUPVIEWS
-     * TO-DO: Clean up
+     * TODO: Clean up
      */
 
-    private void addJavaScriptFunction() {
+    private void addJavaScriptClickListener(Grid grid, List<Label> labelList, Users user) {
+        JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user));
+
+    }
+
+    private void addJavaScriptDragListener() {
         JavaScript.getCurrent().addFunction("myfunc", new JavaScriptFunction() {
             @Override
             public void call(JsonArray arguments) {
@@ -329,12 +379,11 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                         if (!mouseOverLetter.equals("A")) {
                             closePopupViewIfOpen();
                             mouseOverLetter = "A";
-                            Thread.sleep(500);
                             popupExtension = PopupExtension.extend(popUpViewslist.get(0));
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("A"));
+                            popupExtension.setContent(loadCategories("A"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -354,7 +403,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("B"));
+                            popupExtension.setContent(loadCategories("B"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -372,7 +421,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("C"));
+                            popupExtension.setContent(loadCategories("C"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -391,7 +440,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("D"));
+                            popupExtension.setContent(loadCategories("D"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -410,7 +459,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("E"));
+                            popupExtension.setContent(loadCategories("E"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -429,7 +478,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("F"));
+                            popupExtension.setContent(loadCategories("F"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -448,7 +497,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("G"));
+                            popupExtension.setContent(loadCategories("G"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -466,7 +515,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("H"));
+                            popupExtension.setContent(loadCategories("H"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -484,7 +533,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                             popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
                             popupExtension.setDirection(Alignment.BOTTOM_CENTER);
                             popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(new Label("I"));
+                            popupExtension.setContent(loadCategories("I"));
 
                         } else {
                             //popupExtension = popUpViewslist.get(0);
@@ -493,7 +542,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                         }
 
                     }
-
 
 
                 } catch (Exception e) {

@@ -7,18 +7,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.UI;
 import com.vaadin.v7.shared.ui.colorpicker.Color;
 import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
@@ -34,7 +24,7 @@ import javax.annotation.PostConstruct;
 
 @UIScope
 @SpringView(name = AddCategoryView.VIEW_NAME)
-public class AddCategoryView extends VerticalLayout implements View {
+public class AddCategoryView extends VerticalLayout implements View, ViewChangeListener {
 
     public static final String VIEW_NAME = "AddCategoryView";
     private Grid<Categories> grid;
@@ -51,6 +41,10 @@ public class AddCategoryView extends VerticalLayout implements View {
 
     @PostConstruct
     void init() {
+         /* Listener added to ensure that the ColorPicker PopUp-Window will be closed on view change.
+        *  TODO: Implement a custom colorpicker or wait for the fixed vaadin 8 colorpicker
+        */
+        UI.getCurrent().getNavigator().addViewChangeListener(this);
         addStyleNames("general-background-color-grey");
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -199,6 +193,7 @@ public class AddCategoryView extends VerticalLayout implements View {
         shortcutColor.setPosition(
                 Page.getCurrent().getBrowserWindowWidth() / 2 - 246/2,
                 Page.getCurrent().getBrowserWindowHeight() / 2 - 507/2);
+
         colorPickerLayout.addComponent(shortcutColor);
         colorPickerLayout.setCaption("Shortcut-color");
         categoryTags = new TextField();
@@ -268,6 +263,14 @@ public class AddCategoryView extends VerticalLayout implements View {
         categoryTags.clear();
         categoryDescription.clear();
 
+    }
+
+    @Override
+    public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
+        if (shortcutColor != null) {
+            shortcutColor.hidePopup();
+        }
+        return true;
     }
 
 }

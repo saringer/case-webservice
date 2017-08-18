@@ -12,4 +12,31 @@
     color: #2b78e4;
   }
 
+  .active-letter {
+    font-size: 20px;
+    color: #2b78e4;
+    cursor: pointer;
+  }
+
+  .passive-letter {
+    font-size: 10px
+  }
+
+  .active-header {
+    font-size: 15px;
+    color: #2b78e4;
+    cursor: pointer;
+    margin-left: 10px;
+
+  }
+
+  .passive-header {
+    font-size: 15px;
+  }
+
+  .categories-strip {
+    margin-left: 3px;
+    margin-bottom: 5px;
+  }
+
 }

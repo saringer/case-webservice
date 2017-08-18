@@ -61,6 +61,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "views/scheduleview";
 @import "views/contactsview";
 @import "views/categoriesview";
+@import "views/profileview";
+@import "views/custom_calendar";
 @import "addons";
 
 
@@ -70,6 +72,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   @include schedule-view;
   @include contacts-view;
   @include categories-view;
+  @include profile-view;
+  @include meetings_calendar;
   @include addons;
   // login screen - for small screens, see below
   .login-screen {
