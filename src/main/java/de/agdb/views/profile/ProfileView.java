@@ -1,47 +1,26 @@
 package de.agdb.views.profile;
 
 
-import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.core.model.OAuth1AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.Token;
-import com.google.api.client.googleapis.auth.oauth2.*;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 
-import com.google.api.client.auth.oauth2.Credential;
-
-
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-
-
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
+import de.agdb.AppUI;
 import de.agdb.backend.entities.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.vaadin.addon.calendar.Calendar;
+import org.vaadin.alump.materialicons.MaterialIcons;
 import org.vaadin.alump.scaleimage.ScaleImage;
 import org.vaadin.alump.scaleimage.css.*;
 
 import javax.annotation.PostConstruct;
-import javax.swing.text.html.CSS;
 import java.io.*;
 import java.util.*;
 
@@ -53,15 +32,26 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
     TextField firstName;
     TextField lastName;
     TextField age;
+    TextField mobile;
+    TextField home;
+    TextField email;
+    TextField location;
+    TextField homeAddress;
+    TextField organization;
+    TextField function;
+    Label usernameLabel = new Label();
     private ScaleImage image;
     private Upload uploader;
     private CssLayout personalButtons;
     private CssLayout contactButtons;
+    private CssLayout jobButtons;
 
     File file;
     ByteArrayOutputStream outputBuffer = null;
     ArrayList<String> allowedMimeTypes = new ArrayList<String>();
 
+    @Autowired
+    UsersRepository usersRepository;
 
     @PostConstruct
     void init() {
@@ -70,9 +60,12 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth(1150, Unit.PIXELS);
+        formWrapper.setWidth(900, Unit.PIXELS);
         formWrapper.setHeight(700, Unit.PIXELS);
-        formWrapper.addStyleName("solid-border");
+        formWrapper.addStyleName("profile-layout");
+        formWrapper.setSpacing(false);
+        formWrapper.setMargin(false);
+
 
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
@@ -80,14 +73,20 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
         HorizontalLayout content = setUpFormLayout();
         content.addStyleName("overflow-auto");
-        content.setSpacing(true);
+        content.setSpacing(false);
         content.setMargin(true);
         content.setHeight("95%");
-        content.setWidth("80%");
+        content.setWidth("95%");
 
+        CssLayout userNameHeader = new CssLayout();
+        userNameHeader.setWidth("100%");
+        userNameHeader.setHeight(50, Unit.PIXELS);
+        userNameHeader.addComponent(usernameLabel);
+        userNameHeader.addStyleName("username-header");
 
         formWrapper.setSpacing(false);
         formWrapper.setMargin(false);
+        formWrapper.addComponent(userNameHeader);
         formWrapper.addComponent(content);
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
@@ -117,7 +116,15 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         uploader.setReceiver(this);
         uploader.addSucceededListener(this);
         uploader.addStartedListener(this);
-        imageLayout.addComponents(image, uploader);
+        AbsoluteLayout absoluteLayout = new AbsoluteLayout();
+        absoluteLayout.setWidth(200, Unit.PIXELS);
+        absoluteLayout.setHeight(200, Unit.PIXELS);
+        absoluteLayout.addComponent(image);
+        Button rotateButton = new Button();
+        rotateButton.setIcon(VaadinIcons.ROTATE_RIGHT);
+        rotateButton.addStyleNames(ValoTheme.BUTTON_BORDERLESS_COLORED);
+        absoluteLayout.addComponent(rotateButton,"right:0px; top:0px");
+        imageLayout.addComponents(absoluteLayout, uploader);
 
 
 
@@ -194,39 +201,56 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         personalInformationLayout.setMargin(true);
         personalInformationLayout.setSpacing(true);
         innerForm = new FormLayout();
+        Button addEmail = new Button("Add email");
+        addEmail.setWidth("100%");
+        addEmail.setVisible(false);
         Button editButton2 = new Button("edit");
         editButton2.addClickListener((Button.ClickListener) clickEvent -> {
             contactButtons.setVisible(true);
+            addEmail.setVisible(true);
             editButton2.setVisible(false);
-            firstName.setEnabled(true);
-            lastName.setEnabled(true);
-            age.setEnabled(true);
+            mobile.setEnabled(true);
+            home.setEnabled(true);
+            email.setEnabled(true);
+            location.setEnabled(true);
+            homeAddress.setEnabled(true);
         });
-        firstName = new TextField("First name:");
-        firstName.setValue("Riva");
-        firstName.setEnabled(false);
-        firstName.setWidth("100%");
-        lastName = new TextField("Last name:");
-        lastName.setValue("Saringer");
-        lastName.setEnabled(false);
-        lastName.setWidth("100%");
-        age = new TextField("Age:");
-        age.setValue("27");
-        age.setWidth("10%");
-        age.setEnabled(false);
+        mobile = new TextField("Mobile:");
+        mobile.setValue("0176 75189503");
+        mobile.setEnabled(false);
+        mobile.setWidth("100%");
+        home = new TextField("Home:");
+        home.setValue("030 44678388");
+        home.setEnabled(false);
+        home.setWidth("100%");
+        email = new TextField("Email:");
+        email.setValue("bidding@web.de");
+        email.setWidth("100%");
+        email.setEnabled(false);
+        location = new TextField("Location:");
+        location.setValue("...");
+        location.setWidth("100%");
+        location.setEnabled(false);
+        homeAddress = new TextField("Home Address:");
+        homeAddress.setValue("Lettestraße 3");
+        homeAddress.setWidth("100%");
+        homeAddress.setEnabled(false);
         cancelListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             contactButtons.setVisible(false);
             editButton2.setVisible(true);
-            firstName.setEnabled(false);
-            lastName.setEnabled(false);
-            age.setEnabled(false);
+            addEmail.setVisible(false);
+            mobile.setEnabled(false);
+            home.setEnabled(false);
+            email.setEnabled(false);
+            location.setEnabled(false);
+            homeAddress.setEnabled(false);
         };
         okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
 
         };
         contactButtons = setUpFormButtons(cancelListener,okayListener);
         contactButtons.setWidth("100%");
-        innerForm.addComponents(firstName, lastName, age);
+        innerForm.addComponents(mobile, home, email, addEmail, location, homeAddress);
         contactButtons.setVisible(false);
         editButton2.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.BUTTON_BORDERLESS);
         personalInformationLayout.addComponent(innerForm);
@@ -234,8 +258,57 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         personalInformationLayout.setExpandRatio(innerForm, 1);
         personalInformationLayout.setComponentAlignment(editButton2, Alignment.TOP_RIGHT);
         personalInformationLayout.setWidth("100%");
-        blockLayoutContactInformation.addComponents(personalInformationLayout, personalButtons);
+        blockLayoutContactInformation.addComponents(personalInformationLayout, contactButtons);
 
+
+        // JOB INFORMATION
+        Label jobSection = new Label("Job information");
+        jobSection.addStyleNames(ValoTheme.LABEL_H3, ValoTheme.LABEL_COLORED);
+        VerticalLayout blockLayoutJobInformation = new VerticalLayout();
+        blockLayoutJobInformation.addStyleName("info-block");
+        blockLayoutJobInformation.setSizeUndefined();
+        blockLayoutJobInformation.setWidth("100%");
+        blockLayoutJobInformation.setMargin(false);
+        blockLayoutJobInformation.setSpacing(false);
+        personalInformationLayout = new HorizontalLayout();
+        personalInformationLayout.setMargin(true);
+        personalInformationLayout.setSpacing(true);
+        innerForm = new FormLayout();
+        Button editButton3 = new Button("edit");
+        editButton3.addClickListener((Button.ClickListener) clickEvent -> {
+            jobButtons.setVisible(true);
+            editButton3.setVisible(false);
+            organization.setEnabled(true);
+            function.setEnabled(true);
+        });
+        organization = new TextField("Organization:");
+        organization.setValue("Charite");
+        organization.setEnabled(false);
+        organization.setWidth("100%");
+        function = new TextField("Function:");
+        function.setValue("Ambulance Driver");
+        function.setEnabled(false);
+        function.setWidth("100%");
+        cancelListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            jobButtons.setVisible(false);
+            editButton3.setVisible(true);
+            organization.setEnabled(false);
+            function.setEnabled(false);
+        };
+        okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+
+        };
+        jobButtons = setUpFormButtons(cancelListener,okayListener);
+        jobButtons.setWidth("100%");
+        innerForm.addComponents(organization, function);
+        jobButtons.setVisible(false);
+        editButton3.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.BUTTON_BORDERLESS);
+        personalInformationLayout.addComponent(innerForm);
+        personalInformationLayout.addComponent(editButton3);
+        personalInformationLayout.setExpandRatio(innerForm, 1);
+        personalInformationLayout.setComponentAlignment(editButton3, Alignment.TOP_RIGHT);
+        personalInformationLayout.setWidth("100%");
+        blockLayoutJobInformation.addComponents(personalInformationLayout, jobButtons);
 
 
 
@@ -243,6 +316,8 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         formLayout.addComponents(blockLayoutPersonalInformation);
         formLayout.addComponent(contactSection);
         formLayout.addComponent(blockLayoutContactInformation);
+        formLayout.addComponent(jobSection);
+        formLayout.addComponent(blockLayoutJobInformation);
 
         return wrapperLayout;
 
@@ -253,7 +328,9 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         image.setWidth(200, Unit.PIXELS);
         image.setHeight(200, Unit.PIXELS);
 
+
         image.setCssValues(
+
                 BackgroundSize.COVER,
                 BackgroundAttachment.LOCAL,
                 //BackgroundClip.PADDING_BOX,
@@ -267,6 +344,13 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+
+
+        AppUI app = (AppUI) UI.getCurrent();
+        String userName = app.getAccessControl().getUsername();
+        usernameLabel.setValue(userName);
+
+
 
     }
 
@@ -294,7 +378,7 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         cancelButton.setHeight(40, Unit.PIXELS);
         cancelButton.setWidth(150, Unit.PIXELS);
 
-        CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), okayListener);
+        CustomButton okayButton = new CustomButton(MaterialIcons.SAVE.getHtml(), okayListener);
         okayButton.addStyleNames("save-button", "float-right");
         okayButton.setHeight(40, Unit.PIXELS);
         okayButton.setWidth(150, Unit.PIXELS);

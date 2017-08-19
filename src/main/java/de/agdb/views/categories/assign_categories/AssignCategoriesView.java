@@ -355,11 +355,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     }
 
-    /**
-     * LISTENERS FOR CATEGORY-POPUPVIEWS
-     * TODO: Clean up
-     */
-
     private void addJavaScriptClickListener(Grid grid, List<Label> labelList, Users user) {
         JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user));
 
@@ -370,180 +365,25 @@ public class AssignCategoriesView extends VerticalLayout implements View {
             @Override
             public void call(JsonArray arguments) {
                 try {
-                    //System.out.println("aha");
-                    //double c = arguments.getNumber(0);
                     String letter = arguments.getString(0);
-                    //System.out.println(list);
-
-                    if (letter.equals("A")) {
-                        if (!mouseOverLetter.equals("A")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "A";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(0));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("A"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen()) {
-                                popupExtension.open();
+                    for (int i = 0; i < letters.length; i++) {
+                        if (letter.equals(letters[i])) {
+                            if (!mouseOverLetter.equals(letters[i])) {
+                                closePopupViewIfOpen();
+                                mouseOverLetter = letters[i];
+                                popupExtension = PopupExtension.extend(popUpViewslist.get(i));
+                                popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
+                                popupExtension.setDirection(Alignment.BOTTOM_CENTER);
+                                popupExtension.closeOnOutsideMouseClick(false);
+                                popupExtension.setContent(loadCategories(letters[i]));
+                            } else {
+                                if (!popupExtension.isOpen()) {
+                                    popupExtension.open();
+                                }
                             }
-                            //  popupExtension.close();
-                            // popupExtension.open();
+                            break;
                         }
-
                     }
-                    if (letter.equals("B")) {
-                        if (!mouseOverLetter.equals("B")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "B";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(1));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("B"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-                    if (letter.equals("C")) {
-                        if (!mouseOverLetter.equals("C")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "C";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(2));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("C"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-
-                    if (letter.equals("D")) {
-                        if (!mouseOverLetter.equals("D")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "D";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(3));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("D"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-
-                    if (letter.equals("E")) {
-                        if (!mouseOverLetter.equals("E")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "E";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(4));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("E"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-
-                    if (letter.equals("F")) {
-                        if (!mouseOverLetter.equals("F")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "F";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(5));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("F"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-
-                    if (letter.equals("G")) {
-                        if (!mouseOverLetter.equals("G")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "G";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(6));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("G"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-                    if (letter.equals("H")) {
-                        if (!mouseOverLetter.equals("H")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "H";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(7));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("H"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-                    if (letter.equals("I")) {
-                        if (!mouseOverLetter.equals("I")) {
-                            closePopupViewIfOpen();
-                            mouseOverLetter = "I";
-                            popupExtension = PopupExtension.extend(popUpViewslist.get(8));
-                            popupExtension.setAnchor(Alignment.BOTTOM_CENTER);
-                            popupExtension.setDirection(Alignment.BOTTOM_CENTER);
-                            popupExtension.closeOnOutsideMouseClick(false);
-                            popupExtension.setContent(loadCategories("I"));
-
-                        } else {
-                            //popupExtension = popUpViewslist.get(0);
-                            if (!popupExtension.isOpen())
-                                popupExtension.open();
-                        }
-
-                    }
-
-
                 } catch (Exception e) {
                     Notification.show("Error: " + e.getMessage());
                 }

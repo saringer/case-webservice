@@ -38,7 +38,6 @@ public class LoginButtonListener implements Button.ClickListener {
 
                 SecurityContext context = SecurityContextHolder.getContext();
                 Authentication authentication = context.getAuthentication();
-                //authentication != null && authentication.isAuthenticated()
                 if (authentication != null && authentication.isAuthenticated()) {
                     parent.getLoginListener().loginSuccessful();
 

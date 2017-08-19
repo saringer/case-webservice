@@ -1,5 +1,7 @@
 package de.agdb.views.categories.manage_categories;
 
+import com.vaadin.data.Binder;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -15,6 +17,7 @@ import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.field_validators.IsAlphabeticalValidator;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -33,6 +36,10 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
     private ColorPicker shortcutColor;
     private TextField categoryTags;
     private TextArea categoryDescription;
+    private Categories categoryBean = new Categories();
+    Binder<Categories> binder = new Binder<>();
+
+
 
 
     @Autowired
@@ -155,6 +162,9 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
     }
 
     private VerticalLayout buildCategoryDetails() {
+
+
+
         VerticalLayout wrapperLayout = new VerticalLayout();
         wrapperLayout.setSizeFull();
         wrapperLayout.setSpacing(false);
@@ -210,6 +220,9 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         detailsForm.addComponent(categoryDescription);
 
 
+        setUpDataBinding();
+
+
         CssLayout bottomNav = new CssLayout();
         bottomNav.setWidth("100%");
 
@@ -224,18 +237,24 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
 
 
         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-            AppUI app = (AppUI) UI.getCurrent();
-            String userName = app.getAccessControl().getUsername();
-            Users thisUser = repository.findByUsername(userName).get(0);
-            Categories category = new Categories();
-            category.setTitle(categoryTitle.getValue());
-            category.setShortCut(categoryShortcut.getValue());
-            category.setDescription(categoryDescription.getValue());
-            category.setShortCutColorCss(shortcutColor.getColor().getCSS());
-            category.setShortCutColorRGB(shortcutColor.getColor().getRGB());
-            thisUser.addCategory(category);
-            repository.save(thisUser);
-            app.getNavigator().navigateTo("ManageCategoriesView");
+            if (binder.isValid()) {
+                AppUI app = (AppUI) UI.getCurrent();
+                String userName = app.getAccessControl().getUsername();
+                Users thisUser = repository.findByUsername(userName).get(0);
+                /**
+                 * All field except for the colorpicker are already set by the
+                 * data binder.
+                 * @param binder
+                 */
+                categoryBean.setShortCutColorCss(shortcutColor.getColor().getCSS());
+                categoryBean.setShortCutColorRGB(shortcutColor.getColor().getRGB());
+                thisUser.addCategory(categoryBean);
+                repository.save(thisUser);
+                app.getNavigator().navigateTo("ManageCategoriesView");
+            }
+            else {
+                binder.validate();
+            }
         };
         CustomButton createButton = new CustomButton("CREATE", listener);
         createButton.addStyleNames("float-right", "next-button");
@@ -256,12 +275,48 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
 
     }
 
+
+    private void setUpDataBinding() {
+        binder.setBean(categoryBean);
+
+        binder.forField(categoryTitle)
+                .withValidator(new StringLengthValidator(
+                        "Title must be between 2 and 20 characters long",
+                        2, 20))
+                .withValidator(new IsAlphabeticalValidator())
+                .bind(Categories::getTitle, Categories::setTitle);
+
+        binder.forField(categoryShortcut)
+                .withValidator(new StringLengthValidator("Shortcut field cant be empty", 1, 20))
+                .bind(Categories::getShortCut, Categories::setShortCut);
+
+        binder.forField(categoryDescription)
+                .bind(Categories::getDescription, Categories::setDescription);
+        /**
+         * Binder not compatible with the colorpicker component
+         * and needs to be evaluated manually before a category will be created.
+         * @param shortcutColor
+         */
+
+        /**
+         * Settings category tags currently not enabled.
+         * @param categoryTags
+         */
+
+
+    }
+
     private void resetDetailFields() {
         categoryTitle.clear();
+        categoryTitle.setComponentError(null);
         categoryShortcut.clear();
+        categoryShortcut.setComponentError(null);
         shortcutColor.setColor(Color.WHITE);
+        shortcutColor.setComponentError(null);
         categoryTags.clear();
+        categoryTags.setComponentError(null);
         categoryDescription.clear();
+        categoryDescription.setComponentError(null);
 
     }
 

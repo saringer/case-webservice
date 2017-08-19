@@ -250,6 +250,7 @@ public class TimeLocationWindow extends Window {
 
     }
 
+
     private CssLayout buildItem(int startHour, int startMin, int endHour, int endMin, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
         CssLayout cssLayout = new CssLayout();
         Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" + endMin + "<br>" + location);
@@ -257,7 +258,7 @@ public class TimeLocationWindow extends Window {
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");
         cssLayout.setHeight(52, Unit.PIXELS);
-        cssLayout.setWidth("24%");
+
 
         CssLayout customDeleteButton = new CssLayout();
         customDeleteButton.setHeight(20, Unit.PIXELS);

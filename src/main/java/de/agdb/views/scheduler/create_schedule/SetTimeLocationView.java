@@ -126,10 +126,11 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         CssLayout cssLayout = new CssLayout();
         Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" + endMin + "<br>" + location);
         label.setContentMode(ContentMode.HTML);
+        label.setWidth("100%");
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");
+        cssLayout.setSizeUndefined();
         cssLayout.setHeight(52, Unit.PIXELS);
-        cssLayout.setWidth("24%");
 
         CssLayout customDeleteButton = new CssLayout();
         customDeleteButton.setWidth(20, Unit.PIXELS);

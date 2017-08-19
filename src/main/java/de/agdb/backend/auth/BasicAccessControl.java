@@ -8,7 +8,6 @@ public class BasicAccessControl implements AccessControl {
             return false;
         } else {
             CurrentUser.set(username);
-            System.out.println(username);
             return true;
         }
 

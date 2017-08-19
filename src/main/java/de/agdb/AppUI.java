@@ -60,12 +60,7 @@ public class AppUI extends UI {
 
         getPage().setTitle("CaSe");
        if (!accessControl.isUserSignedIn()) {
-            setContent(new LoginForm(accessControl, new LoginForm.LoginListener() {
-                @Override
-                public void loginSuccessful() {
-                    showMainView();
-                }
-            }, viewProvider, AppUI.this));
+            setContent(new LoginForm(accessControl, (LoginForm.LoginListener) () -> showMainView(), viewProvider, AppUI.this));
         } else {
             showMainView();
         }
