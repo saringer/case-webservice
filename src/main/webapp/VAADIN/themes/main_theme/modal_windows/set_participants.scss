@@ -1,0 +1,68 @@
+@mixin set-participants-window {
+  .day-header {
+    font-size: 25px;
+    font-weight: 700;
+    color: #2b78e4;
+    margin-bottom: 10px;
+  }
+
+  .column-header {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2b78e4;
+  }
+
+  .status-grey {
+    font-size: 50px;
+    color: grey;
+  }
+
+  .status-green {
+    font-size: 50px;
+  }
+
+  .category-header {
+    background: rgba(43, 120, 228, 0.2);
+  }
+  .add-participant-field-blue {
+    background: rgba(43, 120, 228, 0.2);
+    color: #2b78e4;
+    cursor: pointer;
+  }
+  .add-participant-field-clickable {
+    cursor: pointer;
+  }
+
+  .location-time-description {
+    color: #2b78e4;
+
+  }
+  .location-time-margin {
+    margin-left: 20px;
+  }
+
+  .select-participants-window-header {
+    font-size: 30px;
+    background: #2b78e4;
+    color: white;
+    text-align: center;
+
+  }
+
+  .set-window-style {
+    .v-window-outerheader {
+      display: none;
+    }
+    .v-window-contents {
+      .v-scrollable::before {
+        display: none;
+      }
+    }
+
+  }
+
+  .back-button-margin {
+    margin-top: 20px;
+  }
+
+}

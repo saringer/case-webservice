@@ -13,7 +13,7 @@ import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;

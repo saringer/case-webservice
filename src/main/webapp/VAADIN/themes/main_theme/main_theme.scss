@@ -64,6 +64,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "views/profileview";
 @import "views/custom_calendar";
 @import "addons";
+@import "modal_windows/set_participants";
 
 
 @mixin main_theme {
@@ -75,6 +76,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   @include profile-view;
   @include meetings_calendar;
   @include addons;
+  @include set-participants-window;
   // login screen - for small screens, see below
   .login-screen {
    // background: $editor-background-color;

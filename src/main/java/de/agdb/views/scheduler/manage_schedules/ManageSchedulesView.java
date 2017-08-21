@@ -7,16 +7,18 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.backend.entities.repositories.CategoriesRepository;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
+import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
-import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 @UIScope
@@ -25,12 +27,21 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "ManageSchedulesView";
     private VerticalLayout schedulesList = new VerticalLayout();
-    CalendarComponent calendar = new CalendarComponent();
+
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
+    @Autowired
+    private CategoriesRepository categoriesRepository;
+    @Autowired
+    private CategoriesWrapperRepository categoriesWrapperRepository;
+    @Autowired
+    private TimeLocationWrapperRepository timeLocationWrapperRepository;
+    private List<HorizontalLayout> scheduleItemsList = new ArrayList<>();
+    private CalendarComponent calendar;
 
     @PostConstruct
     void init() {
+        calendar = new CalendarComponent(categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
         AppUI app = (AppUI) UI.getCurrent();
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -65,21 +76,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
     }
 
     private HorizontalLayout buildContent(AppUI app) {
-        /*HorizontalLayout layout = new HorizontalLayout();
-        layout.setSizeFull();
 
-        CalendarComponent c2 = new CalendarComponent();
-
-        //c2.setMargin(false);
-
-        VerticalLayout l = new VerticalLayout();
-        l.setSizeFull();
-        l.addStyleName("solid-border");
-
-        layout.addComponent(l);
-        layout.addComponent(c2);
-        layout.setExpandRatio(l, 0.4f);
-        layout.setExpandRatio(c2, 0.6f);*/
         HorizontalLayout content = new HorizontalLayout();
         content.setSizeFull();
 
@@ -87,7 +84,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         calendar.setMargin(true);
         calendar.addStyleName("solid-border-grey");
 
-        //c2.setMargin(false);
+
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -96,8 +93,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
         schedulesList.setSizeUndefined();
         schedulesList.setWidth("100%");
-       // l.setSpacing(false);
-     //   l.setMargin(true);
+
         schedulesList.addStyleNames("overflow-auto", "schedule-list");
 
         initSchedules(schedulesList, app);
@@ -111,18 +107,9 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
 
 
-        buildModalWindow();
         return  content;
     }
 
-    private void buildModalWindow(){
-        Window window = new SetParticipantsWindow();
-        window.setWidth("80%");
-        window.setHeight("50%");
-
-        UI.getCurrent().addWindow(window);
-
-    }
 
     private void initSchedules(VerticalLayout schedulesListLayout, AppUI app) {
         schedulesListLayout.removeAllComponents();
@@ -160,7 +147,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         textLayout.setSpacing(false);
 
         Label title = new Label(schedule.getTitle());
-        title.addStyleNames(ValoTheme.LABEL_H3);
+        //title.addStyleNames(ValoTheme.LABEL_H3);
 
         Label description = new Label();
         description.setValue(schedule.getDescription());
@@ -173,10 +160,13 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         wrapperLayout.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             calendar.clearEvents(true);
             for (int i=0;i<schedule.getDays().size(); i++) {
-                calendar.addEvent(schedule.getDays().get(i).getDay(), schedule.getTitle());
+                calendar.addEvent(schedule.getDays().get(i), schedule.getTitle());
             }
+            setActiveView(wrapperLayout );
 
         });
+
+        scheduleItemsList.add(wrapperLayout);
 
         return wrapperLayout;
 
@@ -215,5 +205,13 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
         //horizontalLayout.setExpandRatio(generalBar, 1);
         return horizontalLayout;
+    }
+
+    public void setActiveView(HorizontalLayout e) {
+       for (int i=0;i<scheduleItemsList.size();i++){
+           scheduleItemsList.get(i).removeStyleName("schedule-list-item-selected");
+           scheduleItemsList.get(i).setStyleName("schedule-list-item");
+       }
+       e.setStyleName("schedule-list-item-selected");
     }
 }

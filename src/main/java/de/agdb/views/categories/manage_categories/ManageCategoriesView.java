@@ -18,7 +18,7 @@ import com.vaadin.v7.shared.ui.colorpicker.Color;
 import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
@@ -39,7 +39,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
     private TextField categoryTags;
     private TextArea categoryDescription;
     private Label categoryDetailsLabel;
-    CssLayout header;
+    private CssLayout detailsHeaderLayout;
 
 
     @Autowired
@@ -96,7 +96,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         wrapperLayout.setSpacing(false);
         wrapperLayout.setMargin(false);
 
-        header = new CssLayout();
+        CssLayout header = new CssLayout();
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
@@ -157,11 +157,6 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
                 boolean somethingSelected = !grid.getSelectedItems().isEmpty();
                 if (somethingSelected) {
                     Categories category = event.getFirstSelectedItem().get();
-                    if (!category.getShortCut().isEmpty()) {
-                        Page.Styles styles = Page.getCurrent().getStyles();
-                        // inject the new font size as a style. We need .v-app to override Vaadin's default styles here
-                        styles.add(".managecontacts-header { background:" + category.getShortCutColorCss() + "; }");
-                    }
                     categoryDetailsLabel.setValue(category.getTitle());
                     categoryTitle.setValue(category.getTitle());
                     categoryShortcut.setValue(category.getShortCut());
@@ -171,9 +166,12 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
                     // Get the stylesheet of the page
                     Page.Styles styles = Page.getCurrent().getStyles();
                     // inject the new color as a style
-                    styles.add(".headerLabel2 { background-color:" + category.getShortCutColorCss() + "; }");
-                    addStyleName("headerLabel2");
-                    header.setStyleName("headerLabel2");
+                    Color c = new Color(category.getShortCutColorRGB());
+                    Color complementaryColor = new Color(255-c.getRed(),255-c.getGreen(),255-c.getBlue());
+                    styles.add(".headerLabel2 { background-color:" + complementaryColor.getCSS() + "; padding-top: 7px; " +
+                            "padding-left:20px; color: "+ c.getCSS() + "; border-bottom: 1px solid black; }");
+
+                    detailsHeaderLayout.setStyleName("headerLabel2");
 
 
                 }
@@ -196,17 +194,17 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         wrapperLayout.setSpacing(false);
         wrapperLayout.setMargin(false);
 
-        CssLayout header = new CssLayout();
-        header.setWidth("100%");
-        header.setHeight(50, Unit.PIXELS);
-        header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
+        detailsHeaderLayout = new CssLayout();
+        detailsHeaderLayout.setWidth("100%");
+        detailsHeaderLayout.setHeight(50, Unit.PIXELS);
+        detailsHeaderLayout.addStyleNames("managecontacts-header");
+        detailsHeaderLayout.addStyleNames("solid-border");
         categoryDetailsLabel = new Label("");
         //label.setWidth("100%");
         categoryDetailsLabel.addStyleNames("headerLabel");
         //label.addStyleNames(ValoTheme.LABEL_H3);
         //label.addStyleNames(ValoTheme.LABEL_COLORED);
-        header.addComponent(categoryDetailsLabel);
+        detailsHeaderLayout.addComponent(categoryDetailsLabel);
 
         FormLayout detailsForm = new FormLayout();
         detailsForm.setMargin(true);
@@ -268,7 +266,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         bottomNav.addComponents(saveButton, deleteButton);
 
 
-        wrapperLayout.addComponent(header);
+        wrapperLayout.addComponent(detailsHeaderLayout);
         wrapperLayout.addComponent(detailsForm);
         wrapperLayout.addComponent(bottomNav);
         wrapperLayout.addStyleName("solid-border");

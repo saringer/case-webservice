@@ -1,7 +1,6 @@
 package de.agdb.backend.auth;
 
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

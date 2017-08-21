@@ -1,6 +1,5 @@
 package de.agdb.views.scheduler.create_schedule;
 
-import com.vaadin.data.Binder;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -9,36 +8,37 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.ScheduleRepository;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.entities.schedule_wrapper_objects.CategoriesWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.addons.*;
+import org.vaadin.addons.builder.ToastBuilder;
 import org.vaadin.risto.stepper.IntStepper;
 
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
+
+import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
 
 @UIScope
 @SpringView(name = SetCategoriesView.VIEW_NAME)
-public class SetCategoriesView extends VerticalLayout implements View {
+public class SetCategoriesView extends VerticalLayout implements View, ToastrListener {
 
     public static final String VIEW_NAME = "SetCategoriesView";
     private FormLayout content;
+    Toastr toastr = new Toastr();
+
 
     @Autowired
     UsersRepository usersRepository;
@@ -46,6 +46,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
 
     @PostConstruct
     void init() {
+        toastr.registerToastrListener(this);
+
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setWidth(1150, Unit.PIXELS);
@@ -79,6 +81,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         //formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
         formWrapper.setExpandRatio(content, 1);
+        formWrapper.addComponent(toastr);
+
     }
 
     private FormLayout buildContent(DayWrapper day) {
@@ -110,13 +114,13 @@ public class SetCategoriesView extends VerticalLayout implements View {
             plusButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    Window setCategories = new Window();
-                    setCategories.setModal(true);
-                    setCategories.setResizable(false);
-                    setCategories.setClosable(false);
-                    setCategories.setWidth(400, Unit.PIXELS);
+                    Window setCategoriesWindow = new Window();
+                    setCategoriesWindow.setModal(true);
+                    setCategoriesWindow.setResizable(false);
+                    setCategoriesWindow.setClosable(false);
+                    setCategoriesWindow.setWidth(400, Unit.PIXELS);
                     //  setTimeLocationWindow.setHeight(800, Unit.PIXELS);
-                    setCategories.setCaption("Add a category");
+                    setCategoriesWindow.setCaption("Add a category");
 
                     VerticalLayout wrapperLayout = new VerticalLayout();
                     wrapperLayout.setSpacing(false);
@@ -215,7 +219,42 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     HorizontalLayout buttonLayout = new HorizontalLayout();
                     buttonLayout.setWidth("100%");
 
-                    LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> setCategories.close();
+                    LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+                        setCategoriesWindow.close();
+                        toastr.toast(ToastBuilder.warning("Warning World!").build());
+                        toastr.toast(
+                                ToastBuilder.of(ToastType.valueOf("Info"), "9 unread invitations")
+                                        //.caption("Title")
+                                        .options(having()
+                                                .closeButton(true)
+                                                .debug(false)
+                                                .preventDuplicates(false)
+                                                .newestOnTop(true)
+                                                .tapToDismiss(false)
+                                                .position(ToastPosition.Top_Right)
+                                                .rightToLeft(false)
+                                                //.showEasing(ToastEasing.find(showEasingField.getValue()).orElse(ToastEasing.Swing))
+                                                //.hideEasing(ToastEasing.find(hideEasingField.getValue()).orElse(ToastEasing.Linear))
+                                                //.showDuration(Integer.valueOf(showDurationField.getValue()))
+                                                //.hideDuration(Integer.valueOf(hideDurationField.getValue()))
+                                                .showMethod(ToastDisplayMethod.find("fadeIn").orElse(ToastDisplayMethod.FadeIn))
+                                                .hideMethod(ToastDisplayMethod.find("fadeOut").orElse(ToastDisplayMethod.FadeOut))
+                                                //.timeOut(Integer.valueOf(timeOutField.getValue()))
+                                                //.extendedTimeOut(Integer.valueOf(extendedTimeOutField.getValue()))
+                                                .build())
+                                        .build());
+                        toastr.toast(ToastBuilder.warning("Warning World!").build());
+
+                        toastr.toast(ToastBuilder.warning("Warning World!").build());
+
+                        toastr.toast(ToastBuilder.warning("Warning World!").build());
+
+
+
+
+
+
+                    };
                     CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
                     cancelButton.addStyleName("cancel-button");
                     cancelButton.setHeight(40, Unit.PIXELS);
@@ -227,7 +266,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
                         CategoriesWrapper categoryWrapper = new CategoriesWrapper(intStepper.getValue(), categoryTitle);
                         day.getTimeAndLocationList().get(index).addCategory(categoryWrapper);
                         itemLayout.addComponent(buildItem(intStepper.getValue(), categoryTitle, itemLayout, categoryWrapper, day.getTimeAndLocationList().get(index)));
-                        setCategories.close();
+                        setCategoriesWindow.close();
                     });
                     CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
                     okayButton.addStyleName("next-button");
@@ -248,9 +287,9 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     wrapperLayout.addComponent(setCategoryLayout);
                     wrapperLayout.addComponent(buttonLayout);
 
-                    setCategories.setContent(wrapperLayout);
+                    setCategoriesWindow.setContent(wrapperLayout);
 
-                    UI.getCurrent().addWindow(setCategories);
+                    UI.getCurrent().addWindow(setCategoriesWindow);
 
 
                 }
@@ -264,7 +303,7 @@ public class SetCategoriesView extends VerticalLayout implements View {
             for (int x = 0; x < day.getTimeAndLocationList().get(index).getCategoriesList().size(); x++) {
                 TimeLocationWrapper timeLocationWrapper = day.getTimeAndLocationList().get(index);
                 CategoriesWrapper object = timeLocationWrapper.getCategoriesList().get(x);
-                itemLayout.addComponent(buildItem(object.getNumberParticipants(), object.getCategory(), itemLayout, object, timeLocationWrapper));
+                itemLayout.addComponent(buildItem(object.getNumberParticipants(), object.getCategoryTitle(), itemLayout, object, timeLocationWrapper));
             }
 
             HorizontalLayout horizontalWrapperLayout = new HorizontalLayout();
@@ -273,18 +312,15 @@ public class SetCategoriesView extends VerticalLayout implements View {
             horizontalWrapperLayout.setMargin(false);
 
             TimeLocationWrapper object = day.getTimeAndLocationList().get(i);
-            int startHour = object.getStartHour();
-            int startMin = object.getStartMin();
-            int endHour = object.getEndHour();
-            int endMin = object.getEndMin();
+            String startTime = object.getFormattedStartTime();
+            String endTime = object.getFormattedEndTime();
             String address = object.getLocation();
 
             VerticalLayout timeLocationHeader = new VerticalLayout();
             timeLocationHeader.setSizeUndefined();
             timeLocationHeader.setHeight("100%");
             timeLocationHeader.addStyleName("item-box");
-            Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" +
-                    endMin + "<br>" + address);
+            Label label = new Label(startTime + " - " + endTime + "<br>" + address);
             label.setSizeUndefined();
             label.setContentMode(ContentMode.HTML);
             timeLocationHeader.addComponent(label);
@@ -470,6 +506,27 @@ public class SetCategoriesView extends VerticalLayout implements View {
         return nav;
 
     }
+
+    @Override
+    public void onShown() {
+
+    }
+
+    @Override
+    public void onHidden() {
+
+    }
+
+    @Override
+    public void onClick() {
+        Notification.show("ANGEKLICKT YIPPI");
+    }
+
+    @Override
+    public void onCloseButtonClick() {
+
+    }
+
 
     public class Bean implements Serializable {
         Double number = 1d;

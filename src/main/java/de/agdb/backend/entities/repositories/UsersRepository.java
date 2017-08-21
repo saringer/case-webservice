@@ -1,5 +1,7 @@
-package de.agdb.backend.entities;
+package de.agdb.backend.entities.repositories;
 
+import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;

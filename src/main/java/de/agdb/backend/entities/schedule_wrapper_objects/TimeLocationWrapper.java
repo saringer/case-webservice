@@ -14,13 +14,15 @@ public class TimeLocationWrapper {
     @Column(name = "TIMELOCATION_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    int startHour;
-    int startMin;
-    int endHour;
-    int endMin;
-    String location;
+    private int startHour;
+    private int startMin;
+    private int endHour;
+    private int endMin;
+    private String formattedStartTime;
+    private String formattedEndTime;
+    private String location;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = CategoriesWrapper.class)
-    @JoinTable(name = "TIMELOCATION_CATEGORYSETUP", joinColumns = { @JoinColumn(name = "TIMELOCATION_ID") }, inverseJoinColumns = { @JoinColumn(name = "CATEGORYSETUP_ID") })
+    @JoinTable(name = "TIMELOCATION_CATEGORYSETUP", joinColumns = {@JoinColumn(name = "TIMELOCATION_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORYSETUP_ID")})
     List<CategoriesWrapper> categoriesList;
 
 
@@ -28,7 +30,9 @@ public class TimeLocationWrapper {
 
     }
 
-    public TimeLocationWrapper(int startHour, int startMin, int endHour, int endMin, String location) {
+    public TimeLocationWrapper(String formattedStartTime, String formattedEndTime, int startHour, int startMin, int endHour, int endMin, String location) {
+        this.formattedStartTime = formattedStartTime;
+        this.formattedEndTime = formattedEndTime;
         this.startHour = startHour;
         this.startMin = startMin;
         this.endHour = endHour;
@@ -56,7 +60,6 @@ public class TimeLocationWrapper {
     }
 
 
-
     public List<CategoriesWrapper> getCategoriesList() {
         return this.categoriesList;
     }
@@ -65,9 +68,13 @@ public class TimeLocationWrapper {
         this.categoriesList = categoriesList;
     }
 
-    public long getId() { return id; }
+    public long getId() {
+        return id;
+    }
 
-    public void setId(long id) { this.id = id; }
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public int getStartHour() {
         return startHour;
@@ -99,6 +106,22 @@ public class TimeLocationWrapper {
 
     public void setEndMin(int endMin) {
         this.endMin = endMin;
+    }
+
+    public String getFormattedStartTime() {
+        return formattedStartTime;
+    }
+
+    public void setFormattedStartTime(String formattedStartTime) {
+        this.formattedStartTime = formattedStartTime;
+    }
+
+    public String getFormattedEndTime() {
+        return formattedEndTime;
+    }
+
+    public void setFormattedEndTime(String formattedEndTime) {
+        this.formattedEndTime = formattedEndTime;
     }
 
 }

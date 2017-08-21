@@ -8,9 +8,8 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 

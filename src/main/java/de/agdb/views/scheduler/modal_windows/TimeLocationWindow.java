@@ -156,24 +156,24 @@ public class TimeLocationWindow extends Window {
 
            // changeListener.valueChange(weightField.new ValueChangeEvent(weightField));
 
-
+            startTime.validate();
             endTime.validate();
             if (startTime.getComponentError()==null && endTime.getComponentError()==null && startTime.isValid()) {
 
                 if (ltf.getValue() != null) {
                     String address = ltf.getValue().getGeocodedAddress();
-                    TimeLocationWrapper timeLocationWrapper = new TimeLocationWrapper(startTime.getHours(), startTime.getMinutes(), endTime.getHours(), endTime.getMinutes(), address);
+                    TimeLocationWrapper timeLocationWrapper = new TimeLocationWrapper(startTime.getFormattedValue(), endTime.getFormattedValue(), startTime.getHours(), startTime.getMinutes(), endTime.getHours(), endTime.getMinutes(), address);
                     /*
                             Remove the plus button and add it again at the end of the item layout
                      */
                     itemLayout.removeComponent(plusButtonLayout);
-                    itemLayout.addComponent(buildItem(startTime.getHours(), startTime.getMinutes(), endTime.getHours(), endTime.getMinutes(), address, itemLayout, timeLocationWrapper, day));
+                    itemLayout.addComponent(buildItem(startTime.getFormattedValue(), endTime.getFormattedValue(), address, itemLayout, timeLocationWrapper, day));
                     itemLayout.addComponent(plusButtonLayout);
                     day.addTimeLocation(timeLocationWrapper);
                     close();
                 }
                 else {
-                    ltf.setComponentError(new UserError("Please pick a location from the list"));
+                    ltf.setComponentError(new UserError("Please pick a location from the proposed list"));
                 }
 
             }
@@ -251,9 +251,9 @@ public class TimeLocationWindow extends Window {
     }
 
 
-    private CssLayout buildItem(int startHour, int startMin, int endHour, int endMin, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
+    private CssLayout buildItem(String startTime, String endTime, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
         CssLayout cssLayout = new CssLayout();
-        Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" + endMin + "<br>" + location);
+        Label label = new Label(startTime + " - " + endTime + "<br>" + location);
         label.setContentMode(ContentMode.HTML);
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");

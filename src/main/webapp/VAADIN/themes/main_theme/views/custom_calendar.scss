@@ -12,7 +12,15 @@
       color:white;
     }
 
-    .v-calendar-event-month:hover {
+    .v-calendar-event-time {
+      display: none;
+    }
+
+    .v-calendar-event-month::before {
+      display: none;
+    }
+
+   /* .v-calendar-event-month:hover {
       position: absolute;
       width: inherit;
       height: 230px;
@@ -26,7 +34,7 @@
       margin-left: 15px;
 
       opacity:0;
-      opacity: 1 \9; /*just in case ie*/
+    //  opacity: 1 \9; just in case ie
       -webkit-animation:fadeIn ease-in 1;
       -moz-animation:fadeIn ease-in 1;
       animation:fadeIn ease-in 1;
@@ -54,9 +62,17 @@
         content: "";
       }
     }
+    */
 
     .v-calendar-month-day-today {
-      background: none;
+     // background: none;
+      //border: 1px solid black;
+      border-left: 1px solid #60a0ea;
+      border-right: 1px solid #60a0ea;
+      border-bottom: 1px solid #60a0ea;
+      .v-calendar-day-number {
+        border-top: 1px solid #60a0ea;
+      }
     }
     .v-calendar-month-day-today .v-calendar-day-number {
       background: #eef3f8;
@@ -74,6 +90,17 @@
     */
     .v-calendar-header-day {
       font-size: 14px;
+    }
+
+    /**
+    Hiding the first and last td field which handle the forward and backward navigation of the calendar
+    due to providing a custom navigation
+     */
+    .v-calendar-header-month {
+      tr td:first-child,
+      tr td:last-child {
+        display: none;
+      }
     }
 
     .v-calendar-header-day-today {
@@ -111,6 +138,7 @@
         background-color: rgba(190, 239, 190, 0.65);
       }
     }
+
 
   }
 }

@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @SpringViewDisplay: Stereotype annotation for a bean (implementing either ViewDisplay, SingleComponentContainer
  * or ComponentContainer) that should act as a view display for Vaadin Navigator.
- There should only be one bean annotated as the view display in the scope of a UI.
+ * There should only be one bean annotated as the view display in the scope of a UI.
  */
 @SpringViewDisplay
 
@@ -77,7 +77,6 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         menu.addComponent(menuLabel);*/
 
 
-
         viewContainer = new CssLayout();
         viewContainer.addStyleName("valo-content");
         viewContainer.addStyleName("overflow-auto");
@@ -101,29 +100,27 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
          */
         // SCHEDULE
         menu.addView(new SchedulerMainView(), SchedulerMainView.VIEW_NAME, "Schedule", null);
-        menu.addSubView(new SetGeneralView(), SetGeneralView.VIEW_NAME, "Create Schedule");
         menu.addSubView(new ManageSchedulesView(), ManageSchedulesView.VIEW_NAME, "Manage schedules");
+        menu.addSubView(new SetGeneralView(), SetGeneralView.VIEW_NAME, "Add event");
         menu.addDetailsView(new SetDateView(), SetDateView.VIEW_NAME);
         menu.addDetailsView(new SetTimeLocationView(), SetTimeLocationView.VIEW_NAME);
         menu.addDetailsView(new SetCategoriesView(), SetCategoriesView.VIEW_NAME);
 
         // CATEGORIES
         menu.addView(new CategoriesMainView(), CategoriesMainView.VIEW_NAME, "Categories", null);
-        menu.addSubView(new AssignCategoriesView(), AssignCategoriesView.VIEW_NAME, "Assign categories");
         menu.addSubView(new ManageCategoriesView(), ManageCategoriesView.VIEW_NAME, "Manage categories");
+        menu.addSubView(new AssignCategoriesView(), AssignCategoriesView.VIEW_NAME, "Assign categories");
         menu.addDetailsView(new AddCategoryView(), AddCategoryView.VIEW_NAME);
 
         // CONTACTS
         menu.addView(new ContactsMainView(), ContactsMainView.VIEW_NAME, "Contacts", null);
-        menu.addSubView(new SynchronizeContactsView(), SynchronizeContactsView.VIEW_NAME, "Synchronize contacts");
         menu.addSubView(new ManageContactsView(), ManageContactsView.VIEW_NAME, "Manage contacts");
+        menu.addSubView(new SynchronizeContactsView(), SynchronizeContactsView.VIEW_NAME, "Synchronize contacts");
         menu.addDetailsView(new AddContactView(), AddContactView.VIEW_NAME);
 
 
         // PROFILE
         menu.addView(new ProfileView(), ProfileView.VIEW_NAME, "Profile", null);
-
-        menu.addDetailsView(new ServletView(), ServletView.VIEW_NAME);
 
 
         addComponent(menu);

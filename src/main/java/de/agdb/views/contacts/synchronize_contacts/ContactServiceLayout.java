@@ -7,7 +7,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Token;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.oauth2.OAuthListener;
 import de.agdb.backend.oauth2.OAuthPopupButton;
 import de.agdb.backend.oauth2.OAuthPopupConfig;

@@ -4,6 +4,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.dnd.DropEffect;
@@ -14,11 +15,13 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.GridDragSource;
 import com.vaadin.ui.components.grid.GridDragStartEvent;
 import com.vaadin.ui.dnd.DropTargetExtension;
+import com.vaadin.ui.dnd.event.DropEvent;
+import com.vaadin.ui.dnd.event.DropListener;
+import com.vaadin.v7.shared.ui.colorpicker.Color;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.*;
+import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import elemental.json.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addons.popupextension.PopupExtension;
@@ -27,6 +30,7 @@ import org.vaadin.anna.dndscroll.PanelAutoScrollExtension;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +54,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     @Autowired
     UsersRepository usersRepository;
+    @Autowired
+    CategoriesRepository categoriesRepository;
 
     @PostConstruct
     void init() {
@@ -85,16 +91,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         wrapperLayout.setSpacing(false);
         wrapperLayout.setMargin(false);
 
-        CssLayout cssLayout = dropLayout();
-        cssLayout.setWidth("100%");
-        Button test = new Button("Categories:");
-        test.setSizeUndefined();
-        //cssLayout.addComponent(createCategoriesStrip());
-
-
-        test.addStyleNames("assign-category-header");
-        test.setSizeUndefined();
-        cssLayout.addComponent(test);
 
         TextField searchbar = new TextField();
         searchbar.setWidth("100%");
@@ -219,38 +215,24 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     }
 
-    private CssLayout dropLayout() {
-        CssLayout dropTargetLayout = new CssLayout();
 
-        // make the layout accept drops
-        DropTargetExtension<CssLayout> dropTarget = new DropTargetExtension<>(dropTargetLayout);
+    private void handleMyDragData(Categories category) {
+        try {
+            Iterator iter = draggedItems.iterator();
+            while (iter.hasNext()) {
+                Contact contact = (Contact) iter.next();
+                category.addContact(contact);
 
-// the drop effect must match the allowed effect in the drag source for a successful drop
-        dropTarget.setDropEffect(DropEffect.MOVE);
 
+            }
+            categoriesRepository.save(category);
+            Notification.show("Contacts successfully assigned","empty", Notification.Type.HUMANIZED_MESSAGE);
+        }
+        catch (Exception e) {
+            Notification.show("Assignment failed", e.getLocalizedMessage(),  Notification.Type.ERROR_MESSAGE);
 
-// catch the drops
-        dropTarget.addDropListener(event -> {
-            Notification.show("TEst");
-            handleMyDragData(event.getMouseEventDetails().getClientX(), event.getMouseEventDetails().getClientY());
-        });
+        }
 
-        return dropTargetLayout;
-    }
-
-    private void handleMyDragData(int x, int y) {
-        Contact data = draggedItems.iterator().next();
-
-        Window window = new Window();
-        window.setModal(true);
-        window.center();
-        window.setResizable(false);
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.addComponent(new Label(data.getFirstName() + " " + data.getLastName()));
-        window.setContent(verticalLayout);
-        window.setPosition(x, y);
-
-        UI.getCurrent().addWindow(window);
 
     }
 
@@ -341,7 +323,40 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
         List<Categories> categories = user.getCategoriesStartingWith(firstLetter);
         for (int i = 0; i < categories.size(); i++) {
-            content.addComponent(new Label(categories.get(i).getShortCut()));
+            final int v = i;
+
+
+
+
+
+
+            CssLayout wrapperLayout = new CssLayout();
+            wrapperLayout.setWidth("100%");
+
+            Label categoryLabel = new Label(categories.get(i).getShortCut());
+            categoryLabel.setWidth("100%");
+            // make the label accept drops
+            DropTargetExtension<Label> dropTarget = new DropTargetExtension<>(categoryLabel);
+            // the drop effect must match the allowed effect in the drag source for a successful drop
+            dropTarget.setDropEffect(DropEffect.MOVE);
+            // catch the drops
+            dropTarget.addDropListener(new DropListener<Label>() {
+                @Override
+                public void drop(DropEvent<Label> dropEvent) {
+                    handleMyDragData(categories.get(v));
+                }
+            });
+
+            Page.Styles styles = Page.getCurrent().getStyles();
+            Color c = new Color(categories.get(i).getShortCutColorRGB());
+            Color complementaryColor = new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+            styles.add(".headerLabel" + i + " { background-color:" + complementaryColor.getCSS() + "; " + "color: " + c.getCSS() + "; " +
+                    "border: 1px solid; border-radius: 5px; padding-left: 5px; }");
+            categoryLabel.setStyleName("headerLabel" + i);
+            // wrapperLayout.addComponent(categoryLabel);
+            // wrapperLayout.addStyleName("header");
+
+            content.addComponent(categoryLabel);
         }
 
         listPanel.setContent(content);

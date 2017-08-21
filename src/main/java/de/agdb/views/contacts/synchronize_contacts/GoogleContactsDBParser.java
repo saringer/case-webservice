@@ -9,8 +9,7 @@ import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.agdb.backend.entities.repositories.UsersRepository;
 
 
 import java.io.IOException;

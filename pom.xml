@@ -231,6 +231,11 @@
 			<version>0.5.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>vaadin-toastr</artifactId>
+			<version>1.0.7</version>
+		</dependency>
 
     </dependencies>
 

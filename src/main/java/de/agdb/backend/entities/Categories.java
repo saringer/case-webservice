@@ -1,9 +1,13 @@
 package de.agdb.backend.entities;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,19 +32,19 @@ public class Categories implements Serializable {
     private String shortCut;
     private String shortCutColorCss;
     private int shortCutColorRGB;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
     @JoinTable(name = "CATEGORY_CONTACTS", joinColumns = { @JoinColumn(name = "CATEGORY_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONTACT_ID") })
-    private Set<Contact> contacts;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Contact> contacts;
 
 
-    public Set<Contact> getContacts() {
+    public List<Contact> getContacts() {
         return contacts;
     }
 
-    public void setContacts(Set<Contact> contacts) {
+    public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
-
 
     public String getShortCut() {
         return shortCut;
@@ -82,7 +86,17 @@ public class Categories implements Serializable {
     }
 
     public void addContact(Contact contact) {
-        this.contacts.add(contact);
+        boolean flag = true;
+        for (int i=0;i<this.contacts.size();i++) {
+            if (contact.getEmail().equals(this.contacts.get(i).getEmail())) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            this.contacts.add(contact);
+
+        }
     }
 
     public String getShortCutColorCss() {

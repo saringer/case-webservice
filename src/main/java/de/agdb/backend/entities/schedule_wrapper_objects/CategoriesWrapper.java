@@ -1,6 +1,11 @@
 package de.agdb.backend.entities.schedule_wrapper_objects;
 
+import de.agdb.backend.entities.Contact;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "categorysetup")
@@ -12,15 +17,43 @@ public class CategoriesWrapper {
     @Column(name = "CATEGORYSETUP_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    int numberParticipants;
-    String category;
+    private int numberParticipants;
+    private String categoryTitle;
+
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
+    @JoinTable(name = "CATEGORYSETUP_CONTACTS", joinColumns = { @JoinColumn(name = "CATEGORYSETUP_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONTACT_ID") })
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Contact> assignedContactsList;
 
     public CategoriesWrapper() {
     }
 
+    public List<Contact> getAssignedContactsList() {
+        return assignedContactsList;
+    }
+
+    public void setAssignedContactsList(List<Contact> assignedContactsList) {
+        this.assignedContactsList = assignedContactsList;
+    }
+
+    public void addAssignedContact(Contact contact) {
+        boolean flag = true;
+        for (int i=0;i<assignedContactsList.size();i++) {
+            if (assignedContactsList.get(i).getEmail().equals(contact.getEmail())) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            this.assignedContactsList.add(contact);
+
+        }
+    }
+
     public CategoriesWrapper(int numberParticipants, String category) {
         this.numberParticipants = numberParticipants;
-        this.category = category;
+        this.categoryTitle = category;
     }
 
     public int getNumberParticipants() {
@@ -30,11 +63,11 @@ public class CategoriesWrapper {
         this.numberParticipants = numberParticipants;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryTitle() {
+        return this.categoryTitle;
     }
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryTitle(String categoryTitle) {
+        this.categoryTitle = categoryTitle;
     }
 
     public long getId() {

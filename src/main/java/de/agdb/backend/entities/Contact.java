@@ -3,6 +3,7 @@ package de.agdb.backend.entities;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import javax.jdo.annotations.Unique;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -43,6 +44,7 @@ public class Contact implements Serializable {
     @Column(name = "STATUS")
     private String status;
 
+    @Unique
     @Column(name = "EMAIL")
     private String email = "";
 
@@ -52,31 +54,31 @@ public class Contact implements Serializable {
     @Column(name = "FUNCTION")
     private String function;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+   /* @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
     @JoinTable(name = "CONTACT_CATEGORY", joinColumns = {@JoinColumn(name = "CONTACT_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<String> assignedCategories;
+    private List<Categories> assignedCategories;
 
-    public List<String> getAssignedCategories() {
+    public List<Categories> getAssignedCategories() {
         return this.assignedCategories;
     }
 
-    public void setAssignedCategories(List<String> list) {
+    public void setAssignedCategories(List<Categories> list) {
         this.assignedCategories = list;
     }
 
-    public void addCategory(String categoryTitle) {
-        this.assignedCategories.add(categoryTitle);
+    public void addCategory(Categories category) {
+        this.assignedCategories.add(category);
     }
 
     public void removeCategory(String categoryTitle) {
         for (int i=0;i<assignedCategories.size();i++) {
-            if (assignedCategories.get(i).equals(categoryTitle)) {
+            if (assignedCategories.get(i).getTitle().equals(categoryTitle)) {
                 assignedCategories.remove(assignedCategories.get(i));
                 break;
             }
         }
-    }
+    }*/
 
     public int getAge() {
         return age;

@@ -4,15 +4,18 @@ import com.vaadin.ui.*;
 
 import de.agdb.AppUI;
 
+import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
+import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
 import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
 
+import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
 import org.vaadin.addon.calendar.Calendar;
 import org.vaadin.addon.calendar.item.BasicItemProvider;
 import org.vaadin.addon.calendar.handler.BasicWeekClickHandler;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 import java.text.DateFormatSymbols;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -39,7 +42,9 @@ public class CalendarComponent extends VerticalLayout {
     private MeetingDataProvider eventProvider;
     private AppUI app;
     private boolean readonly = false;
-
+    private CategoriesRepository categoriesRepository;
+    private CategoriesWrapperRepository categoriesWrapperRepository;
+    private TimeLocationWrapperRepository timeLocationWrapperRepository;
 
     public CalendarComponent() {
         this.readonly = true;
@@ -58,6 +63,20 @@ public class CalendarComponent extends VerticalLayout {
         setSpacing(true);
         initContent();
 
+    }
+
+    public CalendarComponent(CategoriesRepository categoriesRepository,
+                             CategoriesWrapperRepository categoriesWrapperRepository,
+                             TimeLocationWrapperRepository timeLocationWrapperRepository) {
+        this.timeLocationWrapperRepository = timeLocationWrapperRepository;
+        this.readonly = true;
+        this.categoriesRepository = categoriesRepository;
+        this.categoriesWrapperRepository = categoriesWrapperRepository;
+        setSizeFull();
+        //setHeight("500px");
+        //setMargin(true);
+        //setSpacing(true);
+        initContent();
     }
 
     private void initContent() {
@@ -229,11 +248,17 @@ public class CalendarComponent extends VerticalLayout {
             calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler) null);
             calendarComponent.setHandler(this::onCalendarClick);
             calendarComponent.setHandler(this::onCalendarRangeSelect);
+            calendarComponent.setHandler((CalendarComponentEvents.ForwardHandler) null);
+            calendarComponent.setHandler((CalendarComponentEvents.BackwardHandler) null);
+
+
         } else {
             calendarComponent.setHandler((BasicWeekClickHandler) null);
             calendarComponent.setHandler((CalendarComponentEvents.DateClickHandler) null);
             calendarComponent.setHandler(this::onCalendarClick);
             calendarComponent.setHandler((CalendarComponentEvents.RangeSelectHandler) null);
+            calendarComponent.setHandler((CalendarComponentEvents.ForwardHandler) null);
+            calendarComponent.setHandler((CalendarComponentEvents.BackwardHandler) null);
         }
     }
 
@@ -243,7 +268,12 @@ public class CalendarComponent extends VerticalLayout {
 
         final Meeting meeting = item.getMeeting();
 
-        Notification.show(meeting.getName(), meeting.getDetails(), Notification.Type.HUMANIZED_MESSAGE);
+        Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
+        window.setWidth("70%");
+        window.setHeight(700, Unit.PIXELS);
+
+        UI.getCurrent().addWindow(window);
+
     }
 
     private void onCalendarRangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
@@ -287,18 +317,17 @@ public class CalendarComponent extends VerticalLayout {
         return eventProvider.isEmpty();
     }
 
-    public void addEvent(ZonedDateTime startTime, String title) {
+    public void addEvent(DayWrapper day, String scheduleTitle) {
         Meeting meeting = new Meeting();
 
-        meeting.setStart(startTime);
-        meeting.setEnd(startTime);
-        meeting.setName("A Name");
-        meeting.setDetails(title);
-
+        meeting.setStart(day.getDay());
+        meeting.setEnd(day.getDay());
+        meeting.setName(scheduleTitle);
+        meeting.setDetails("details");
+        meeting.setDayObject(day);
 
         MeetingItem item = new MeetingItem(meeting);
         item.setAllDay(true);
-        item.setStyleName("color1");
         eventProvider.addItem(item);
     }
 

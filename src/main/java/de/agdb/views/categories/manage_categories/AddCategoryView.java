@@ -16,7 +16,7 @@ import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.UsersRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.field_validators.IsAlphabeticalValidator;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
