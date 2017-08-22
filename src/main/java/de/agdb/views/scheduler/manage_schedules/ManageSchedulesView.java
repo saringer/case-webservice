@@ -82,13 +82,12 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
 
         calendar.setMargin(true);
-        calendar.addStyleName("solid-border-grey");
 
 
 
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.addStyleName("schedule-list");
+        Panel scheduleListPanel = new Panel();
+        scheduleListPanel.setSizeFull();
+        scheduleListPanel.addStyleNames("schedule-list", "solid-border");
 
 
         schedulesList.setSizeUndefined();
@@ -98,12 +97,24 @@ public class ManageSchedulesView extends VerticalLayout implements View {
 
         initSchedules(schedulesList, app);
 
-        panel.setContent(schedulesList);
+        scheduleListPanel.setContent(schedulesList);
 
-        content.addComponent(panel);
-        content.addComponent(calendar);
-        content.setExpandRatio(panel, 0.4f);
-        content.setExpandRatio(calendar, 0.6f);
+
+        calendar.setSizeUndefined();
+        calendar.setWidth("100%");
+        calendar.setHeight("90%");
+        calendar.setMargin(true);
+        calendar.setSpacing(true);
+        Panel calendarPanel = new Panel();
+        calendarPanel.addStyleName("solid-border");
+        calendarPanel.setSizeFull();
+        calendarPanel.setContent(calendar);
+
+
+        content.addComponent(scheduleListPanel);
+        content.addComponent(calendarPanel);
+        content.setExpandRatio(scheduleListPanel, 0.4f);
+        content.setExpandRatio(calendarPanel, 0.6f);
 
 
 

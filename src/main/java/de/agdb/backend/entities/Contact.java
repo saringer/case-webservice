@@ -33,10 +33,10 @@ public class Contact implements Serializable {
     private Long id;
 
     @Column(name = "FIRSTNAME")
-    private String firstName = "";
+    private String firstName;
 
     @Column(name = "LASTNAME")
-    private String lastName = "";
+    private String lastName;
 
     @Column(name = "BIRTHDATE")
     private LocalDate birthDate;
@@ -46,10 +46,14 @@ public class Contact implements Serializable {
 
     @Unique
     @Column(name = "EMAIL")
-    private String email = "";
+    private String email;
+
+
+
+    private String mobile;
 
     @Column(name = "AGE")
-    private int age;
+    private Integer age;
 
     @Column(name = "FUNCTION")
     private String function;
@@ -80,11 +84,11 @@ public class Contact implements Serializable {
         }
     }*/
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
@@ -197,6 +201,14 @@ public class Contact implements Serializable {
 
     public boolean compareEmailAddress(String email) {
         return this.email.equals(email);
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
 

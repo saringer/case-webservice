@@ -1,5 +1,6 @@
 package de.agdb.views.scheduler.create_schedule;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -145,14 +146,34 @@ public class SetGeneralView extends VerticalLayout implements View {
         section.addStyleName("colored");
         HorizontalLayout recurrencyOptions = new HorizontalLayout();
 
-        NativeSelect<String> dropDownMenu = new NativeSelect();
+        ComboBox<String> dropDownMenu = new ComboBox<>();
+        dropDownMenu.setTextInputAllowed(false);
+        dropDownMenu.setEmptySelectionAllowed(false);
+        dropDownMenu.setItems("weekly","montly");
+        dropDownMenu.setSelectedItem("monthly");
+        dropDownMenu.setEnabled(false);
+
+     /*   NativeSelect<String> dropDownMenu = new NativeSelect();
         dropDownMenu.setEmptySelectionAllowed(false);
         dropDownMenu.setItems("weekly", "monthly");
-        dropDownMenu.setSelectedItem("monthly");
+        dropDownMenu.setSelectedItem("monthly");*/
+        //dropDownMenu.setEnabled(false);
         recurrencyOptions.addComponent(dropDownMenu);
         recurrencyOptions.addComponent(new Label("until"));
-        recurrencyOptions.addComponent(new DateField());
+        DateField dateField = new DateField();
+        dateField.setEnabled(false);
+        recurrencyOptions.addComponent(dateField);
         CheckBox activateRecurrency = new CheckBox("Make this a recurrying event", false);
+        activateRecurrency.addValueChangeListener((HasValue.ValueChangeListener<Boolean>) event -> {
+              if (activateRecurrency.getValue()) {
+                  dropDownMenu.setEnabled(true);
+                  dateField.setEnabled(true);
+              }
+              else {
+                  dropDownMenu.setEnabled(false);
+                  dateField.setEnabled(false);
+              }
+        });
         form.addComponent(section);
         form.addComponent(recurrencyOptions);
         form.addComponent(activateRecurrency);

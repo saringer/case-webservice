@@ -58,6 +58,7 @@ public class CalendarComponent extends VerticalLayout {
     public CalendarComponent(AppUI app) {
         this.app = app;
         setSizeFull();
+        this.readonly = false;
         //setHeight("500px");
         setMargin(true);
         setSpacing(true);
@@ -263,16 +264,18 @@ public class CalendarComponent extends VerticalLayout {
     }
 
     private void onCalendarClick(CalendarComponentEvents.ItemClickEvent event) {
+        if (readonly) {
 
-        MeetingItem item = (MeetingItem) event.getCalendarItem();
+            MeetingItem item = (MeetingItem) event.getCalendarItem();
 
-        final Meeting meeting = item.getMeeting();
+            final Meeting meeting = item.getMeeting();
 
-        Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
-        window.setWidth("70%");
-        window.setHeight(700, Unit.PIXELS);
+            Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
+            window.setWidth("70%");
+            window.setHeight(700, Unit.PIXELS);
 
-        UI.getCurrent().addWindow(window);
+            UI.getCurrent().addWindow(window);
+        }
 
     }
 
@@ -286,8 +289,8 @@ public class CalendarComponent extends VerticalLayout {
 
             meeting.setStart(event.getStart());
             meeting.setEnd(event.getStart());
-            meeting.setName("A Name");
-            meeting.setDetails("Selected Day");
+            meeting.setName(app.getGlobalScheduleWrapper().getDescription());
+            meeting.setDetails(app.getGlobalScheduleWrapper().getTitle());
 
             MeetingItem item = new MeetingItem(meeting);
             item.setAllDay(true);
@@ -322,8 +325,8 @@ public class CalendarComponent extends VerticalLayout {
 
         meeting.setStart(day.getDay());
         meeting.setEnd(day.getDay());
-        meeting.setName(scheduleTitle);
-        meeting.setDetails("details");
+        meeting.setName("");
+        meeting.setDetails(scheduleTitle);
         meeting.setDayObject(day);
 
         MeetingItem item = new MeetingItem(meeting);

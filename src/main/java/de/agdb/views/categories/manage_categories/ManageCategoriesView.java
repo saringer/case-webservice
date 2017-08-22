@@ -40,6 +40,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
     private TextArea categoryDescription;
     private Label categoryDetailsLabel;
     private CssLayout detailsHeaderLayout;
+    private CustomButton userProfileButton;
 
 
     @Autowired
@@ -109,7 +110,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         header.addComponent(label);
 
         TextField searchField = new TextField();
-        searchField.setDescription("search...");
+        searchField.setPlaceholder("search...");
         searchField.setValue("search...");
         searchField.setIcon(VaadinIcons.SEARCH);
         searchField.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
@@ -262,6 +263,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         saveButton.addStyleNames("float-right", "save-button");
         saveButton.setHeight(40, Unit.PIXELS);
         saveButton.setWidth(115, Unit.PIXELS);
+
 
         bottomNav.addComponents(saveButton, deleteButton);
 

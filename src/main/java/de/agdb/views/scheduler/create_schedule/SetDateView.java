@@ -10,10 +10,12 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @UIScope
 @SpringView(name = SetDateView.VIEW_NAME)
@@ -174,7 +176,15 @@ public class SetDateView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        calendar.setComponentError(null);
+        calendar.clearEvents(true);
+
+
+        AppUI app = (AppUI) UI.getCurrent();
+        List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+        for (int i=0; i<days.size();i++) {
+            calendar.addEvent(days.get(i), app.getGlobalScheduleWrapper().getTitle());
+        }
+
 
     }
 }

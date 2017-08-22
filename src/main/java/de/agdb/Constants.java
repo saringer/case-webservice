@@ -22,6 +22,10 @@ public class Constants {
     // Scope for accessing Google Contacts API
     public static final String googleScope = "https://www.googleapis.com/auth/contacts.readonly";
 
+    /*
+        Google Maps API Key (Local Host Development)
+     */
+    public static final String googleMapsApiKey = "AIzaSyDmcnkMKoB-xqSaZ6VdqT-k-G8bnHbO-wQ";
 
 
     /*

@@ -18,6 +18,7 @@
   }
 
   .status-green {
+    color: #40b527;
     font-size: 50px;
   }
 
@@ -27,6 +28,12 @@
   .add-participant-field-blue {
     background: rgba(43, 120, 228, 0.2);
     color: #2b78e4;
+    cursor: pointer;
+  }
+
+  .add-participant-field-green {
+    background: rgba(124,252,0,0.2);
+    color: #40b527;
     cursor: pointer;
   }
   .add-participant-field-clickable {

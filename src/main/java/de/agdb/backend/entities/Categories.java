@@ -99,6 +99,15 @@ public class Categories implements Serializable {
         }
     }
 
+    public void removeContact(Contact contact) {
+        for (int i=0; i<contacts.size(); i++) {
+            if (contacts.get(i).getEmail().equals(contact.getEmail())) {
+                contacts.remove(i);
+                break;
+            }
+        }
+    }
+
     public String getShortCutColorCss() {
         return shortCutColorCss;
     }

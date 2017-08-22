@@ -151,6 +151,15 @@ public class Users implements Serializable {
         this.contacts.add(contact);
     }
 
+    public void removeContact(Contact contact) {
+        for (int i=0; i<contacts.size();i++) {
+            if (contacts.get(i).getId().equals(contact.getId())) {
+                contacts.remove(i);
+                break;
+            }
+        }
+    }
+
     public void addCategory(Categories category) {
         this.categories.add(category);
     }

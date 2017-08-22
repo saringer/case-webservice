@@ -51,6 +51,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
             "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     private String mouseOverLetter = "";
     CssLayout categoriesStripLayout = new CssLayout();
+    private Label general;
+    private Label unassigned;
 
     @Autowired
     UsersRepository usersRepository;
@@ -216,16 +218,18 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     }
 
 
-    private void handleMyDragData(Categories category) {
+    private void handleDragData(Categories category) {
+        Categories updatedCategory = categoriesRepository.findByTitle(category.getTitle()).get(0);
+
         try {
             Iterator iter = draggedItems.iterator();
             while (iter.hasNext()) {
                 Contact contact = (Contact) iter.next();
-                category.addContact(contact);
+                updatedCategory.addContact(contact);
 
 
             }
-            categoriesRepository.save(category);
+            categoriesRepository.save(updatedCategory);
             Notification.show("Contacts successfully assigned","empty", Notification.Type.HUMANIZED_MESSAGE);
         }
         catch (Exception e) {
@@ -263,13 +267,15 @@ public class AssignCategoriesView extends VerticalLayout implements View {
             topHeader.addStyleName("passive-header");
             categoriesStripLayout.addComponent(topHeader);
 
-            topHeader = new Label("General");
-            topHeader.addStyleName("active-header");
-            categoriesStripLayout.addComponent(topHeader);
+            general = new Label("<span onclick=\"customClickListener('" + "General" + "')\")> " + "General" + "</span>");
+            general.addStyleNames("active-header", "currently-selected");
+            general.setContentMode(ContentMode.HTML);
+            categoriesStripLayout.addComponent(general);
 
-            topHeader = new Label("Unassigned");
-            topHeader.addStyleName("active-header");
-            categoriesStripLayout.addComponent(topHeader);
+            unassigned = new Label("<span onclick=\"customClickListener('" + "Unassigned" + "')\")> " + "Unassigned" + "</span>");
+            unassigned.setContentMode(ContentMode.HTML);
+            unassigned.addStyleName("active-header");
+            categoriesStripLayout.addComponent(unassigned);
 
             for (int i = 0; i < letters.length; i++) {
 
@@ -284,7 +290,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
                     dropTarget.setDropEffect(DropEffect.MOVE);
                     label.addStyleName("active-letter");
                 } else {
-                    label.setValue("<span onclick=\"customClickListener('" + letters[i] + "')\")> " + letters[i] + "</span>");
+                    //label.setValue("<span onclick=\"customClickListener('" + letters[i] + "')\")> " + letters[i] + "</span>");
+                    label.setValue(letters[i]);
                     label.addStyleName("passive-letter");
                 }
                 popUpViewslist.add(label);
@@ -343,7 +350,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
             dropTarget.addDropListener(new DropListener<Label>() {
                 @Override
                 public void drop(DropEvent<Label> dropEvent) {
-                    handleMyDragData(categories.get(v));
+                    handleDragData(categories.get(v));
                 }
             });
 
@@ -371,7 +378,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     }
 
     private void addJavaScriptClickListener(Grid grid, List<Label> labelList, Users user) {
-        JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user));
+        JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user, general, unassigned, categoriesRepository, usersRepository));
 
     }
 

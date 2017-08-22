@@ -124,19 +124,19 @@ public class Menu extends CssLayout {
      */
     public void addView(View view, final String name, String caption,
                         Resource icon) {
-        navigator.addView(name, view);
+        //navigator.addView(name, view);
         createViewButton(name, caption, icon);
     }
 
 
     public void addSubView(View view, final String name, String caption) {
-        navigator.addView(name, view);
+        //navigator.addView(name, view);
         createSubViewButton(name, caption);
     }
 
 
     public void addDetailsView(View view, final String name) {
-        navigator.addView(name, view);
+        //navigator.addView(name, view);
     }
 
 

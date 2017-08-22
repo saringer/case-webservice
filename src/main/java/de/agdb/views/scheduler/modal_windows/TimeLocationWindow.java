@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import static de.agdb.Constants.googleMapsApiKey;
+
 public class TimeLocationWindow extends Window {
 
     private NativeSelect startTime = new NativeSelect();
@@ -163,11 +165,15 @@ public class TimeLocationWindow extends Window {
                 if (ltf.getValue() != null) {
                     String address = ltf.getValue().getGeocodedAddress();
                     TimeLocationWrapper timeLocationWrapper = new TimeLocationWrapper(startTime.getFormattedValue(), endTime.getFormattedValue(), startTime.getHours(), startTime.getMinutes(), endTime.getHours(), endTime.getMinutes(), address);
+                    String street = ltf.getValue().getRoute();
+                    String streetNumber = ltf.getValue().getStreetNumber();
+                    timeLocationWrapper.setStreet(street);
+                    timeLocationWrapper.setStreetNumber(streetNumber);
                     /*
                             Remove the plus button and add it again at the end of the item layout
                      */
                     itemLayout.removeComponent(plusButtonLayout);
-                    itemLayout.addComponent(buildItem(startTime.getFormattedValue(), endTime.getFormattedValue(), address, itemLayout, timeLocationWrapper, day));
+                    itemLayout.addComponent(buildItem(startTime.getFormattedValue(), endTime.getFormattedValue(), street + " " + streetNumber, itemLayout, timeLocationWrapper, day));
                     itemLayout.addComponent(plusButtonLayout);
                     day.addTimeLocation(timeLocationWrapper);
                     close();
@@ -216,7 +222,7 @@ public class TimeLocationWindow extends Window {
         //ltf.setAutoSelectionEnabled(false);
 
 
-        GoogleMap googleMap = new GoogleMap("AIzaSyDmcnkMKoB-xqSaZ6VdqT-k-G8bnHbO-wQ", null, "english");
+        GoogleMap googleMap = new GoogleMap(googleMapsApiKey, null, "english");
         googleMap.setSizeFull();
         googleMap.setHeight(300, Unit.PIXELS);
         googleMap.setMinZoom(14);
@@ -258,6 +264,7 @@ public class TimeLocationWindow extends Window {
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");
         cssLayout.setHeight(52, Unit.PIXELS);
+        cssLayout.setWidth("24%");
 
 
         CssLayout customDeleteButton = new CssLayout();

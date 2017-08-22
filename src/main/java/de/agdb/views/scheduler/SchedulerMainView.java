@@ -9,8 +9,21 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
+import de.agdb.backend.entities.Users;
+import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
+import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
+import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.addon.calendar.Calendar;
+import org.vaadin.addons.Toastr;
+import org.vaadin.addons.builder.ToastBuilder;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
 
 
 @UIScope
@@ -18,11 +31,20 @@ import org.vaadin.addon.calendar.Calendar;
 public class SchedulerMainView extends VerticalLayout implements View {
     // Empty view name as this will be the initially loaded view
     public static final String VIEW_NAME = "";
-    Calendar cal;
+    private Toastr toastr = new Toastr();
+    private CalendarComponent calendar;
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    CategoriesRepository categoriesRepository;
+    @Autowired
+    CategoriesWrapperRepository categoriesWrapperRepository;
+    @Autowired
+    TimeLocationWrapperRepository timeLocationWrapperRepository;
 
 
-
-    public SchedulerMainView() {
+    @PostConstruct
+    void init() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setSizeFull();
@@ -30,23 +52,19 @@ public class SchedulerMainView extends VerticalLayout implements View {
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
 
-
-
-
-
         HorizontalLayout bottomNav = createBottomNav();
         bottomNav.setSizeUndefined();
         bottomNav.setWidth("100%");
 
 
-       VerticalLayout form = new VerticalLayout();
-       form.setWidth("80%");
-       form.setHeight("80%");
-       form.setMargin(false);
-       form.setSpacing(false);
-       //form.addStyleNames("solid-border");
+        VerticalLayout form = new VerticalLayout();
+        form.setWidth("80%");
+        form.setHeight("80%");
+        form.setMargin(false);
+        form.setSpacing(false);
+        //form.addStyleNames("solid-border");
 
-        CalendarComponent calendar = new CalendarComponent();
+        calendar = new CalendarComponent(categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
         calendar.setSizeUndefined();
         calendar.setWidth("100%");
         calendar.setHeight("90%");
@@ -56,24 +74,23 @@ public class SchedulerMainView extends VerticalLayout implements View {
         panel.addStyleName("solid-border");
         panel.setSizeFull();
         panel.setContent(calendar);
-       // calendar.setHeight(500, Unit.PIXELS);
-       form.addComponent(panel);
-       form.addComponent(bottomNav);
-       form.setExpandRatio(panel, 1);
-      //form.setExpandRatio(bottomNav, 0.2f);
+        // calendar.setHeight(500, Unit.PIXELS);
+        form.addComponent(panel);
+        form.addComponent(bottomNav);
+        form.setExpandRatio(panel, 1);
+        //form.setExpandRatio(bottomNav, 0.2f);
 
 //        form.setComponentAlignment(bottomNav, Alignment.TOP_CENTER);
-
 
 
         formWrapper.setMargin(false);
         formWrapper.setSpacing(false);
         formWrapper.addComponent(form);
         formWrapper.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
+        setExpandRatio(formWrapper, 1);
 
 
-
-
+        addComponent(toastr);
 
 
 
@@ -82,6 +99,31 @@ public class SchedulerMainView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        AppUI app = (AppUI) UI.getCurrent();
+
+        if (event.getParameters().length() > 0) {
+            toastr.toast(ToastBuilder.success("Event created").build());
+
+        }
+
+        if (!usersRepository.findByUsername(app.getAccessControl().getUsername()).isEmpty()) {
+            calendar.clearEvents(true);
+            Users user = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            List<ScheduleWrapper> schedules = user.getSchedules();
+            for (int i = 0; i < schedules.size(); i++) {
+                for (int x = 0; x < schedules.get(i).getDays().size(); x++) {
+                    calendar.addEvent(schedules.get(i).getDays().get(x), schedules.get(i).getTitle());
+                }
+            }
+        }
+        /**
+         *  1
+         When you do navigator.addView(Views.USERLIST, UserlistView.class);
+         It creates a StaticViewProvider which is not handled by Spring and creates a view using 'new'. So no spring autowiring happens for 'addView' If you use springViewProvider Autowiring is handled by Spring.
+         So do not do navigator.addView(), instead rely on springViewProvider when using Spring+Vaadin.
+         */
+
+
 
     }
 
@@ -114,7 +156,7 @@ public class SchedulerMainView extends VerticalLayout implements View {
         buttonRight.addStyleName(ValoTheme.LABEL_LARGE);
         manageSchedulesButton.addComponent(buttonRight);
         manageSchedulesButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-                UI.getCurrent().getNavigator().navigateTo("ManageSchedulesView");
+            UI.getCurrent().getNavigator().navigateTo("ManageSchedulesView");
         });
 
         nav.addComponent(createSchedulesButton);
@@ -122,8 +164,9 @@ public class SchedulerMainView extends VerticalLayout implements View {
         nav.setMargin(false);
         nav.setSpacing(false);
         //nav.setExpandRatio(createSchedulesButton, 1);
-       // nav.setExpandRatio(manageSchedulesButton, 1);
+        // nav.setExpandRatio(manageSchedulesButton, 1);
         return nav;
     }
+
 
 }

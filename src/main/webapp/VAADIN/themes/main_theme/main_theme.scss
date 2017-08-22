@@ -66,7 +66,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 @import "addons";
 @import "modal_windows/set_participants";
 
-
 @mixin main_theme {
   @include valo;
   @include register-view;
@@ -79,10 +78,9 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   @include set-participants-window;
   // login screen - for small screens, see below
   .login-screen {
-   // background: $editor-background-color;
+    // background: $editor-background-color;
 
     //background: #1e5799; /* Old browsers */
-
 
     @if $login-background-image {
       background-image: url(#{$login-background-image});
@@ -98,11 +96,10 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       border: none;
       padding: $v-layout-margin;
       @include valo-animate-in-fade($duration: 1s);
-      background-color: rgba(7,55,99,0.5);
+      background-color: rgba(7, 55, 99, 0.5);
       border: 1px solid black;
 
     }
-
 
     .centering-layout {
       display: inline-block;
@@ -115,10 +112,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
 
-
-
-
-
   // Move logout button to the bottom of the menu on large screens
   .v-ui[width-range~="801px-"] .valo-menu-part {
     .user-menu {
@@ -127,8 +120,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       margin-bottom: 0;
     }
   }
-
-
 
   // Style rules for smaller display sizes
 
@@ -179,12 +170,8 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
 
-
-
-
   //  should take whole browser width when we are under 550px in width.
   .v-ui[width-range~="0-550px"] {
-
 
     // Remove margins around the grid and reduce top bar margins on small screens
     .crud-view .crud-main-layout {
@@ -200,7 +187,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
       }
     }
 
-
   }
 
   // Override valo default narrow menu button on small screens to have the full logout text visible
@@ -210,8 +196,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     }
   }
 
-
-   .align-right {
+  .align-right {
     text-align: right;
   }
 
@@ -231,9 +216,6 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     font-weight: bold;
 
   }
-
-
-
 
   .coloredBorder {
     border: 0.1em solid #333739;
@@ -334,7 +316,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     text-align: center;
     align-content: center;
     .v-label {
-      color:white;
+      color: white;
       text-align: center;
     }
 
@@ -347,7 +329,7 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
     text-align: center;
     align-content: center;
     .v-label {
-      color:white;
+      color: white;
       text-align: center;
     }
 
@@ -361,12 +343,11 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   }
 
   .general-background-color-grey {
-   background-color: #eceae5;
+    background-color: #eceae5;
   }
   .general-background-color-white {
     background-color: white;;
   }
-
 
   .float-left {
     float: left;
@@ -392,6 +373,19 @@ $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
   .bigger-caption {
     font-size: 18px;
     margin-top: 10px;
+  }
+
+  .onoffswitch-slider.on {
+    background-color: #40b527;
+    border-color: #40b527;
+  }
+
+  .onoffswitch-slider.on:before {
+    border-color: #40b527;
+  }
+
+  .h-popupextension {
+    padding:0px;
   }
 
 }

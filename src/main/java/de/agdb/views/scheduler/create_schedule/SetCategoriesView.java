@@ -221,8 +221,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
                     LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
                         setCategoriesWindow.close();
-                        toastr.toast(ToastBuilder.warning("Warning World!").build());
-                        toastr.toast(
+                       /* toastr.toast(
                                 ToastBuilder.of(ToastType.valueOf("Info"), "9 unread invitations")
                                         //.caption("Title")
                                         .options(having()
@@ -243,11 +242,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                                                 //.extendedTimeOut(Integer.valueOf(extendedTimeOutField.getValue()))
                                                 .build())
                                         .build());
-                        toastr.toast(ToastBuilder.warning("Warning World!").build());
-
-                        toastr.toast(ToastBuilder.warning("Warning World!").build());
-
-                        toastr.toast(ToastBuilder.warning("Warning World!").build());
+                     */
 
 
 
@@ -296,7 +291,8 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             });
             plusButtonLayout.addComponent(plusButton);
             plusButtonLayout.addStyleName("add-button");
-            plusButtonLayout.setHeight(52, Unit.PIXELS);
+            //plusButtonLayout.setHeight(52, Unit.PIXELS);
+            plusButtonLayout.setHeight("100%");
             plusButtonLayout.setWidth("24%");
 
         /* init already selected categories */
@@ -314,13 +310,14 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             TimeLocationWrapper object = day.getTimeAndLocationList().get(i);
             String startTime = object.getFormattedStartTime();
             String endTime = object.getFormattedEndTime();
-            String address = object.getLocation();
+            String street = object.getStreet();
+            String streetNumber = object.getStreetNumber();
 
             VerticalLayout timeLocationHeader = new VerticalLayout();
             timeLocationHeader.setSizeUndefined();
             timeLocationHeader.setHeight("100%");
             timeLocationHeader.addStyleName("item-box");
-            Label label = new Label(startTime + " - " + endTime + "<br>" + address);
+            Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
             label.setSizeUndefined();
             label.setContentMode(ContentMode.HTML);
             timeLocationHeader.addComponent(label);
@@ -329,6 +326,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
             wrapperLayout.addComponent(itemLayout);
             wrapperLayout.addComponent(plusButtonLayout);
+            //itemLayout.addComponent(plusButtonLayout);
 
 
             horizontalWrapperLayout.addComponents(timeLocationHeader);
@@ -370,7 +368,8 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         textLabel.setContentMode(ContentMode.HTML);
         cssLayout.addComponent(textLabel);
         cssLayout.setStyleName("item-box");
-        cssLayout.setHeight(52, Unit.PIXELS);
+        //cssLayout.setHeight(52, Unit.PIXELS);
+        cssLayout.setHeight("100%");
         cssLayout.setWidth("24%");
 
         CssLayout customDeleteButton = new CssLayout();
@@ -478,7 +477,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
                 // Clear the ScheduleWrapper
                 app.resetGlobalScheduleWrapper();
-                app.getNavigator().navigateTo("");
+                app.getNavigator().navigateTo(""+ '/' + "true");
             }
         };
 

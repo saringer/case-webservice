@@ -21,6 +21,8 @@ public class TimeLocationWrapper {
     private String formattedStartTime;
     private String formattedEndTime;
     private String location;
+    private String street;
+    private String streetNumber;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = CategoriesWrapper.class)
     @JoinTable(name = "TIMELOCATION_CATEGORYSETUP", joinColumns = {@JoinColumn(name = "TIMELOCATION_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORYSETUP_ID")})
     List<CategoriesWrapper> categoriesList;
@@ -123,5 +125,22 @@ public class TimeLocationWrapper {
     public void setFormattedEndTime(String formattedEndTime) {
         this.formattedEndTime = formattedEndTime;
     }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getStreetNumber() {
+        return streetNumber;
+    }
+
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
+    }
+
 
 }

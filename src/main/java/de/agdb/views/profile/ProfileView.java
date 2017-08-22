@@ -53,6 +53,8 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
     @Autowired
     UsersRepository usersRepository;
 
+
+
     @PostConstruct
     void init() {
         allowedMimeTypes.add("image/jpeg");

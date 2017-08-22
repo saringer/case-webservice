@@ -2,6 +2,7 @@ package de.agdb.views.scheduler.modal_windows;
 
 
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
+import com.vaadin.data.HasValue;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
@@ -49,38 +50,43 @@ public class SetParticipantsWindow extends Window {
         rootLayout.setMargin(false);
         rootLayout.setSpacing(false);
 
-        CssLayout cssLayout = createWindowHeader();
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight(50, Sizeable.Unit.PIXELS);
+        CssLayout headerLayout = createWindowHeader();
+        headerLayout.setWidth("100%");
+        headerLayout.setHeight(50, Sizeable.Unit.PIXELS);
 
-        VerticalLayout innerLayout = new VerticalLayout();
-        innerLayout.setMargin(true);
-        innerLayout.setSpacing(true);
-        innerLayout.setHeight("80%");
-        innerLayout.setWidth("90%");
+        VerticalLayout contentLayout = new VerticalLayout();
+        contentLayout.setMargin(true);
+        contentLayout.setSpacing(true);
+        contentLayout.setHeight("80%");
+        contentLayout.setWidth("90%");
 
         GridLayout gridLayout = setUpGridLayout();
         gridLayout.setSizeUndefined();
         gridLayout.setWidth("100%");
         Label dayLabel = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy")));
         dayLabel.addStyleName("day-header");
-        innerLayout.addComponent(dayLabel);
-        innerLayout.addComponent(gridLayout);
+        contentLayout.addComponent(dayLabel);
+        contentLayout.addComponent(gridLayout);
+
+
+        contentLayout.setExpandRatio(gridLayout, 1);
+        contentLayout.addStyleName("overflow-auto");
 
         CustomButton backButton = createBackButton();
         backButton.setWidth(167, Unit.PIXELS);
         backButton.setHeight(40, Unit.PIXELS);
-        innerLayout.addComponent(backButton);
-        innerLayout.setExpandRatio(gridLayout, 0.9f);
-        innerLayout.setExpandRatio(backButton, 0.1f);
-        innerLayout.addStyleName("overflow-auto");
+        CssLayout buttonLayout = new CssLayout();
+        buttonLayout.setWidth("90%");
+        buttonLayout.addComponent(backButton);
 
 
-        rootLayout.addComponent(cssLayout);
-        rootLayout.addComponent(innerLayout);
+        rootLayout.addComponent(headerLayout);
+        rootLayout.addComponent(contentLayout);
+        rootLayout.addComponent(buttonLayout);
 
-        rootLayout.setComponentAlignment(innerLayout, Alignment.MIDDLE_CENTER);
-        rootLayout.setExpandRatio(innerLayout, 1);
+        rootLayout.setComponentAlignment(contentLayout, Alignment.MIDDLE_CENTER);
+        rootLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_CENTER);
+        rootLayout.setExpandRatio(contentLayout, 1);
 
 
         setContent(rootLayout);
@@ -178,6 +184,19 @@ public class SetParticipantsWindow extends Window {
             wrapperLayout.setSpacing(false);
             wrapperLayout.setMargin(false);
             OnOffSwitch onOffSwitch = new OnOffSwitch(false);
+            onOffSwitch.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
+                @Override
+                public void valueChange(HasValue.ValueChangeEvent<Boolean> event) {
+                            if (event.getValue() == true) {
+
+                                calendarIconLabel.setStyleName("status-green");
+                            }
+                            else {
+
+                                calendarIconLabel.setStyleName("status-grey");
+                            }
+                }
+            });
             wrapperLayout.addComponent(onOffSwitch);
             wrapperLayout.setComponentAlignment(onOffSwitch, Alignment.MIDDLE_CENTER);
             wrapperLayout.addStyleName("solid-border-grey");
@@ -228,7 +247,7 @@ public class SetParticipantsWindow extends Window {
                 VerticalLayout clickableFieldLayout = new VerticalLayout();
                 clickableFieldLayout.addStyleNames("solid-border-grey", "add-participant-field-blue");
                 clickableFieldLayout.setHeight(50, Unit.PIXELS);
-                clickableFieldLayout.setWidth("15%");
+                clickableFieldLayout.setWidth("20%");
                 clickableFieldLayout.setSpacing(false);
                 clickableFieldLayout.setMargin(false);
                 Label user = new Label(FontAwesome.USER_PLUS.getHtml(), ContentMode.HTML);
@@ -243,6 +262,8 @@ public class SetParticipantsWindow extends Window {
 
                         VerticalLayout wrapperLayout = new VerticalLayout();
                         wrapperLayout.setSizeFull();
+                        wrapperLayout.setSpacing(false);
+                        wrapperLayout.setMargin(false);
 
                         Grid<Contact> contactsGrid = new Grid<>(Contact.class);
 

@@ -100,9 +100,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         /* init already selected times & locations */
         for (int i = 0; i < day.getTimeAndLocationList().size(); i++) {
             TimeLocationWrapper object = day.getTimeAndLocationList().get(i);
-            String address = object.getLocation();
-            itemLayout.addComponent(buildItem(object.getStartHour(), object.getStartMin(),
-                    object.getEndHour(), object.getEndMin(), address, itemLayout, object, day));
+            itemLayout.addComponent(buildItem(object.getFormattedStartTime(), object.getFormattedEndTime(), object.getStreet(), object.getStreetNumber(), itemLayout, object, day));
         }
 
         CssLayout wrapperLayout = new CssLayout();
@@ -122,15 +120,15 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         return formLayout;
     }
 
-    private CssLayout buildItem(int startHour, int startMin, int endHour, int endMin, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
-        CssLayout cssLayout = new CssLayout();
-        Label label = new Label(startHour + ":" + startMin + " - " + endHour + ":" + endMin + "<br>" + location);
+    private CssLayout buildItem(String startTime, String endTime, String street, String streetNumber, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
+       /* CssLayout cssLayout = new CssLayout();
+        Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
         label.setContentMode(ContentMode.HTML);
         label.setWidth("100%");
         cssLayout.addComponent(label);
         cssLayout.setStyleName("item-box");
-        cssLayout.setSizeUndefined();
         cssLayout.setHeight(52, Unit.PIXELS);
+        cssLayout.setWidth("24%");
 
         CssLayout customDeleteButton = new CssLayout();
         customDeleteButton.setWidth(20, Unit.PIXELS);
@@ -144,7 +142,32 @@ public class SetTimeLocationView extends VerticalLayout implements View {
             parentLayout.removeComponent(cssLayout);
             parentWrapper.removeTimeLocation(content);
 
+        });*/
+
+
+        CssLayout cssLayout = new CssLayout();
+        Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
+        label.setContentMode(ContentMode.HTML);
+        cssLayout.addComponent(label);
+        cssLayout.setStyleName("item-box");
+        cssLayout.setHeight(52, Unit.PIXELS);
+        cssLayout.setWidth("24%");
+
+
+        CssLayout customDeleteButton = new CssLayout();
+        customDeleteButton.setHeight(20, Unit.PIXELS);
+        customDeleteButton.setWidth(20, Unit.PIXELS);
+        Label test = new Label(VaadinIcons.CLOSE_SMALL.getHtml());
+        test.setSizeUndefined();
+        test.setContentMode(ContentMode.HTML);
+        customDeleteButton.addComponent(test);
+        customDeleteButton.addStyleNames("topcorner-delete-button");
+        customDeleteButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            parentLayout.removeComponent(cssLayout);
+            parentWrapper.removeTimeLocation(content);
+
         });
+
 
 
         cssLayout.addComponent(customDeleteButton);
