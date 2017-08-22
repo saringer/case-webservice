@@ -216,7 +216,7 @@ public class SetGeneralView extends VerticalLayout implements View {
             }
         };
 
-        CustomButton button = new CustomButton(VaadinIcons.ARROW_CIRCLE_RIGHT_O.getHtml() + " " + "Next", listener);
+        CustomButton button = new CustomButton(VaadinIcons.ARROW_CIRCLE_RIGHT_O.getHtml() + " " + "NEXT", listener);
         button.setWidth("15%");
         button.setHeight(40, Unit.PIXELS);
         button.setWidth(167, Unit.PIXELS);

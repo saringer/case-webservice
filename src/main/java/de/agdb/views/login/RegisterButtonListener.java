@@ -4,6 +4,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
 import de.agdb.views.MainScreen;
 import de.agdb.views.scheduler.SchedulerMainView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,10 @@ public class RegisterButtonListener implements Button.ClickListener {
     }
 
     protected void showMainView() {
+        AppUI app = (AppUI) UI.getCurrent();
+
         UI.getCurrent().addStyleName(ValoTheme.UI_WITH_MENU);
-        UI.getCurrent().setContent(new MainScreen(parent.getUi(),parent.getViewProvider()));
+        UI.getCurrent().setContent(new MainScreen(parent.getUi(),parent.getViewProvider(), app.getToastr()));
         UI.getCurrent().getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 

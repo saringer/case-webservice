@@ -28,6 +28,7 @@ import de.agdb.views.scheduler.create_schedule.SetDateView;
 import de.agdb.views.scheduler.create_schedule.SetTimeLocationView;
 import de.agdb.views.scheduler.manage_schedules.ManageSchedulesView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.addons.Toastr;
 
 /**
  * Content of the UI when the user is logged in.
@@ -65,7 +66,7 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
     };
 
     @Autowired
-    public MainScreen(AppUI ui, SpringViewProvider springViewProvider) {
+    public MainScreen(AppUI ui, SpringViewProvider springViewProvider, Toastr toastr) {
         this.viewProvider = springViewProvider;
         setSizeFull();
 
@@ -128,6 +129,8 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
 
         setExpandRatio(viewContainer, 1);
         setSpacing(false);
+
+        addComponent(toastr);
 
 
     }

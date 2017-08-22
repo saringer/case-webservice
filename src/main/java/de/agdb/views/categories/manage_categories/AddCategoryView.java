@@ -101,7 +101,6 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("Categories");
         //label.setWidth("100%");
         label.addStyleNames("headerLabel");
@@ -141,6 +140,7 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         wrapperLayout.addComponent(searchField);
         wrapperLayout.addComponent(addContactButton);
         wrapperLayout.addComponent(grid);
+        wrapperLayout.addStyleNames("solid-border");
 
         wrapperLayout.setExpandRatio(grid, 1f);
 
@@ -176,7 +176,6 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("addcategory-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("New category");
         //label.setWidth("100%");
         label.addStyleNames("headerLabel");

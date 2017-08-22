@@ -25,6 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import de.agdb.views.login.LoginForm;
+import org.vaadin.addons.Toastr;
 
 
 @SpringUI
@@ -40,6 +41,8 @@ public class AppUI extends UI {
     private ApplicationContext applicationContext;
     private AccessControl accessControl = new BasicAccessControl();
     private ScheduleWrapper globalScheduleWrapper = new ScheduleWrapper();
+    @Autowired
+    private Toastr toastr;
 
     // we can use either constructor autowiring or field autowiring
     @Autowired
@@ -68,11 +71,12 @@ public class AppUI extends UI {
         //showMainView();
 
 
+
     }
 
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
-        setContent(new MainScreen(AppUI.this, viewProvider));
+        setContent(new MainScreen(AppUI.this, viewProvider, toastr));
         getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 
@@ -87,6 +91,9 @@ public class AppUI extends UI {
     public ScheduleWrapper getGlobalScheduleWrapper() {
         return globalScheduleWrapper;
     }
+
+    public Toastr getToastr() {
+        return toastr; }
 
     public void resetGlobalScheduleWrapper() {
         this.globalScheduleWrapper = new ScheduleWrapper();

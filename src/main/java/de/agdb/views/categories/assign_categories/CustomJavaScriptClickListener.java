@@ -9,6 +9,7 @@ import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.ContactRepository;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import elemental.json.JsonArray;
 import org.vaadin.addons.popupextension.PopupExtension;
@@ -29,13 +30,11 @@ public class CustomJavaScriptClickListener implements JavaScriptFunction {
     private Label selectedLabel;
     private String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
             "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-    private CategoriesRepository categoriesRepository;
     private UsersRepository usersRepository;
 
-    public CustomJavaScriptClickListener(Grid grid, List<Label> labelList, Users user, Label general, Label unassigned, CategoriesRepository categoriesRepository,
+    public CustomJavaScriptClickListener(Grid grid, List<Label> labelList, Users user, Label general, Label unassigned,
                                          UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
-        this.categoriesRepository = categoriesRepository;
         this.labelList = labelList;
         this.grid = grid;
         this.user = user;
@@ -53,13 +52,20 @@ public class CustomJavaScriptClickListener implements JavaScriptFunction {
         categoriesGrid.getSelectionModel().addSelectionListener(event -> {
             boolean somethingSelected = !categoriesGrid.getSelectedItems().isEmpty();
             if (somethingSelected) {
-
                 Categories category = (Categories) event.getFirstSelectedItem().get();
-                /*
-                Ensure that we work on an up to date object
-                 */
-                Categories updatedCategory = categoriesRepository.findByTitle(category.getTitle()).get(0);
-                grid.setItems(updatedCategory.getContacts());
+
+                List<Contact> assignedContacts = new ArrayList<>();
+                Users updatedUser = usersRepository.findByUsername(user.getUsername()).get(0);
+
+                for (int i = 0; i < updatedUser.getContacts().size(); i++) {
+                    if (updatedUser.getContacts().get(i).getAssignedCategory() != null) {
+                        if (updatedUser.getContacts().get(i).getAssignedCategory().getTitle().equals(category.getTitle())) {
+                                        assignedContacts.add(updatedUser.getContacts().get(i));
+                        }
+
+                    }
+                }
+                grid.setItems(assignedContacts);
                 window.close();
             }
         });
@@ -112,24 +118,13 @@ public class CustomJavaScriptClickListener implements JavaScriptFunction {
                 setLabelAsSelected(unassigned);
                 List<Contact> unassignedContacts = new ArrayList<>();
                 Users updatedUser = usersRepository.findByUsername(user.getUsername()).get(0);
-
                 for (int i = 0; i < updatedUser.getContacts().size(); i++) {
-                    Contact contact = updatedUser.getContacts().get(i);
-                    boolean flag = true;
-
-                    for (int x = 0; x < updatedUser.getCategories().size(); x++) {
-                        for (int y = 0; y < updatedUser.getCategories().get(x).getContacts().size(); y++) {
-                            if (contact.getEmail().equals(updatedUser.getCategories().get(x).getContacts().get(y).getEmail())) {
-                                flag = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (flag) {
-                        unassignedContacts.add(contact);
+                    if (updatedUser.getContacts().get(i).getAssignedCategory() == null) {
+                        unassignedContacts.add(updatedUser.getContacts().get(i));
                     }
                 }
                 grid.setItems(unassignedContacts);
+
             }
 
             for (int i = 0; i < letters.length; i++) {

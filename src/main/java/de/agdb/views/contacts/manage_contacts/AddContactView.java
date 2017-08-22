@@ -91,7 +91,6 @@ public class AddContactView extends VerticalLayout implements View {
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("Contact list");
         label.addStyleNames("headerLabel");
         header.addComponent(label);
@@ -161,7 +160,6 @@ public class AddContactView extends VerticalLayout implements View {
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("addcategory-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("New contact");
         label.addStyleName("headerLabel");
         header.addComponent(label);
@@ -181,10 +179,13 @@ public class AddContactView extends VerticalLayout implements View {
         age.setCaption("Age");
         mobile = new TextField();
         mobile.setCaption("Mobile");
+        mobile.setWidth("100%");
         home = new TextField();
         home.setCaption("Home");
+        home.setWidth("100%");
         email = new TextField();
         email.setCaption("Email");
+        email.setWidth("100%");
         function = new TextArea();
         function.setRows(3);
         function.setWidth("100%");
@@ -193,6 +194,7 @@ public class AddContactView extends VerticalLayout implements View {
         detailsForm.addComponent(lastName);
         detailsForm.addComponent(age);
         detailsForm.addComponent(mobile);
+        detailsForm.addComponent(home);
         detailsForm.addComponent(email);
         detailsForm.addComponent(function);
 
@@ -219,6 +221,7 @@ public class AddContactView extends VerticalLayout implements View {
             contact.setLastName(lastName.getValue());
             contact.setEmail(email.getValue());
             contact.setMobile(mobile.getValue());
+            contact.setHome(home.getValue());
             contact.setFunction(function.getValue());
             contact.setAge(Integer.parseInt(age.getValue()));
 
@@ -243,7 +246,7 @@ public class AddContactView extends VerticalLayout implements View {
         wrapperLayout.addComponent(detailsForm);
         wrapperLayout.addComponent(bottomNav);
         wrapperLayout.setExpandRatio(detailsForm, 1);
-        wrapperLayout.addStyleName("solid-border");
+        wrapperLayout.addStyleName("details-layout-border");
 
         return wrapperLayout;
 

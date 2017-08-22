@@ -44,9 +44,9 @@ public class TimeLocationWindow extends Window {
 
         VerticalLayout wrapperLayout = new VerticalLayout();
         wrapperLayout.setSpacing(false);
-        wrapperLayout.setMargin(true);
+        wrapperLayout.setMargin(false);
         wrapperLayout.setSizeUndefined();
-        wrapperLayout.setWidth(400, Unit.PIXELS);
+        wrapperLayout.setWidth(350, Unit.PIXELS);
 
                 /* SET UP TIMEPICKER
                 */
@@ -62,7 +62,6 @@ public class TimeLocationWindow extends Window {
         headerLayout.setHeight(30, Unit.PIXELS);
         headerLayout.addComponent(new Label("Set time"));
         headerLayout.addStyleNames("modal-window-header");
-        headerLayout.addStyleName("solid-border");
         CssLayout selectLayout = new CssLayout();
         selectLayout.setWidth("100%");
         selectLayout.setHeight(60, Unit.PIXELS);
@@ -129,8 +128,7 @@ public class TimeLocationWindow extends Window {
         headerLayout.setWidth("100%");
         headerLayout.setHeight(30, Unit.PIXELS);
         headerLayout.addComponent(new Label("Set location"));
-        headerLayout.addStyleNames("modal-window-header");
-        headerLayout.addStyleName("solid-border");
+        headerLayout.addStyleName("modal-window-header");
 
 
         setLocationLayout.addComponent(headerLayout);
@@ -144,12 +142,15 @@ public class TimeLocationWindow extends Window {
 
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
+        buttonLayout.setSpacing(false);
+        buttonLayout.setMargin(false);
 
         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> close();
         CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
         cancelButton.addStyleName("cancel-button");
         cancelButton.setHeight(40, Unit.PIXELS);
-        cancelButton.setWidth(150, Unit.PIXELS);
+        cancelButton.setWidth(116, Unit.PIXELS);
+        //cancelButton.setSizeFull();
 
 
         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
@@ -162,6 +163,7 @@ public class TimeLocationWindow extends Window {
             endTime.validate();
             if (startTime.getComponentError()==null && endTime.getComponentError()==null && startTime.isValid()) {
 
+
                 if (ltf.getValue() != null) {
                     String address = ltf.getValue().getGeocodedAddress();
                     TimeLocationWrapper timeLocationWrapper = new TimeLocationWrapper(startTime.getFormattedValue(), endTime.getFormattedValue(), startTime.getHours(), startTime.getMinutes(), endTime.getHours(), endTime.getMinutes(), address);
@@ -169,9 +171,9 @@ public class TimeLocationWindow extends Window {
                     String streetNumber = ltf.getValue().getStreetNumber();
                     timeLocationWrapper.setStreet(street);
                     timeLocationWrapper.setStreetNumber(streetNumber);
-                    /*
-                            Remove the plus button and add it again at the end of the item layout
-                     */
+
+                    //        Remove the plus button and add it again at the end of the item layout
+
                     itemLayout.removeComponent(plusButtonLayout);
                     itemLayout.addComponent(buildItem(startTime.getFormattedValue(), endTime.getFormattedValue(), street + " " + streetNumber, itemLayout, timeLocationWrapper, day));
                     itemLayout.addComponent(plusButtonLayout);
@@ -187,8 +189,8 @@ public class TimeLocationWindow extends Window {
         CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
         okayButton.addStyleName("next-button");
         okayButton.setHeight(40, Unit.PIXELS);
-        okayButton.setWidth(150, Unit.PIXELS);
-
+        okayButton.setWidth(116, Unit.PIXELS);
+        //okayButton.setSizeFull();
 
         buttonLayout.addComponents(cancelButton, okayButton);
         buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
@@ -198,6 +200,10 @@ public class TimeLocationWindow extends Window {
                 /*
                 ADD COMPONENTS TO WRAPPERLAYOUT
                  */
+
+        buttonLayout.setMargin(false);
+        setLocationLayout.setMargin(false);
+        setTimeLayout.setMargin(false);
 
         wrapperLayout.addComponent(setTimeLayout);
         wrapperLayout.addComponent(setLocationLayout);

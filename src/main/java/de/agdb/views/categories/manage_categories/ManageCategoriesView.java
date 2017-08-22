@@ -104,7 +104,6 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("Categories");
         //label.setWidth("100%");
         label.addStyleNames("headerLabel");
@@ -213,7 +212,6 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         detailsHeaderLayout.setWidth("100%");
         detailsHeaderLayout.setHeight(50, Unit.PIXELS);
         detailsHeaderLayout.addStyleNames("managecontacts-header");
-        detailsHeaderLayout.addStyleNames("solid-border");
         categoryDetailsLabel = new Label("");
         //label.setWidth("100%");
         categoryDetailsLabel.addStyleNames("headerLabel");
@@ -266,7 +264,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
 
         };
         CustomButton deleteButton = new CustomButton(VaadinIcons.TRASH.getHtml() + " " + "DELETE", listener);
-        deleteButton.addStyleNames("cancel-button", "float-right");
+        deleteButton.addStyleNames("delete-button", "float-right");
         deleteButton.setHeight(40, Unit.PIXELS);
         deleteButton.setWidth(115, Unit.PIXELS);
 

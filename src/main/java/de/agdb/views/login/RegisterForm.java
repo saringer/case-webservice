@@ -129,8 +129,10 @@ public class RegisterForm extends CssLayout {
 
 
     protected void showMainView() {
+        AppUI ui = (AppUI) UI.getCurrent();
+
         addStyleName(ValoTheme.UI_WITH_MENU);
-        UI.getCurrent().setContent(new MainScreen(ui, viewProvider));
+        UI.getCurrent().setContent(new MainScreen(ui, viewProvider,ui.getToastr()));
         UI.getCurrent().getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 

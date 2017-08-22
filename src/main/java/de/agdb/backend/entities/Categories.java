@@ -32,19 +32,9 @@ public class Categories implements Serializable {
     private String shortCut;
     private String shortCutColorCss;
     private int shortCutColorRGB;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
-    @JoinTable(name = "CATEGORY_CONTACTS", joinColumns = { @JoinColumn(name = "CATEGORY_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONTACT_ID") })
-    @Fetch(value = FetchMode.SUBSELECT)
-    private List<Contact> contacts;
 
 
-    public List<Contact> getContacts() {
-        return contacts;
-    }
 
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
-    }
 
     public String getShortCut() {
         return shortCut;
@@ -85,29 +75,6 @@ public class Categories implements Serializable {
         this.id = id;
     }
 
-    public boolean addContact(Contact contact) {
-        boolean flag = true;
-        for (int i=0;i<this.contacts.size();i++) {
-            if (contact.getEmail().equals(this.contacts.get(i).getEmail())) {
-                flag = false;
-                break;
-            }
-        }
-        if (flag) {
-            this.contacts.add(contact);
-
-        }
-        return flag;
-    }
-
-    public void removeContact(Contact contact) {
-        for (int i=0; i<contacts.size(); i++) {
-            if (contacts.get(i).getEmail().equals(contact.getEmail())) {
-                contacts.remove(i);
-                break;
-            }
-        }
-    }
 
     public String getShortCutColorCss() {
         return shortCutColorCss;

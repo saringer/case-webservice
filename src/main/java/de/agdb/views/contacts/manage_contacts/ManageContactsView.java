@@ -103,7 +103,6 @@ public class ManageContactsView extends VerticalLayout implements View {
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
         Label label = new Label("Contact list");
         //label.setWidth("100%");
         label.addStyleNames("headerLabel");
@@ -199,6 +198,9 @@ public class ManageContactsView extends VerticalLayout implements View {
                 if (contact.getMobile() != null) {
                     mobile.setValue(contact.getMobile());
                 }
+                if (contact.getHome() != null) {
+                    home.setValue(contact.getHome());
+                }
                 if (contact.getAge() != null) {
                     age.setValue(String.valueOf(contact.getAge()));
                 }
@@ -229,7 +231,6 @@ public class ManageContactsView extends VerticalLayout implements View {
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
         header.addStyleNames("managecontacts-header");
-        header.addStyleNames("solid-border");
         userDetailsHeader = new Label("");
         //label.setWidth("100%");
         userDetailsHeader.addStyleNames("headerLabel");
@@ -249,12 +250,15 @@ public class ManageContactsView extends VerticalLayout implements View {
         age = new TextField();
         age.setCaption("Age");
         mobile = new TextField();
+        mobile.setWidth("100%");
         mobile.setCaption("Mobile");
         home = new TextField();
         home.setCaption("Home");
+        home.setWidth("100%");
         email = new TextField();
         email.setCaption("Email");
         email.setEnabled(false);
+        email.setWidth("100%");
         function = new TextArea();
         function.setRows(3);
         function.setWidth("100%");
@@ -263,6 +267,7 @@ public class ManageContactsView extends VerticalLayout implements View {
         detailsForm.addComponent(lastName);
         detailsForm.addComponent(age);
         detailsForm.addComponent(mobile);
+        detailsForm.addComponent(home);
         detailsForm.addComponent(email);
         detailsForm.addComponent(function);
 
@@ -274,15 +279,9 @@ public class ManageContactsView extends VerticalLayout implements View {
 
                 AppUI app = (AppUI) UI.getCurrent();
                 Users user = repository.findByUsername(app.getAccessControl().getUsername()).get(0);
-                //List<Categories>
-                List<Categories> categoriesList = user.getCategories();
-                for (int i = 0; i < categoriesList.size(); i++) {
-                    categoriesList.get(i).removeContact(selectedContact);
-                }
+
                 user.removeContact(selectedContact);
                 repository.save(user);
-
-                contactRepository.delete(selectedContact.getId());
 
                 selectedContact = null;
                 user = repository.findByUsername(app.getAccessControl().getUsername()).get(0);
@@ -291,7 +290,7 @@ public class ManageContactsView extends VerticalLayout implements View {
 
         };
         CustomButton deleteButton = new CustomButton(VaadinIcons.TRASH.getHtml() + " " + "DELETE", listener);
-        deleteButton.addStyleNames("cancel-button", "float-right");
+        deleteButton.addStyleNames("delete-button", "float-right");
         deleteButton.setHeight(40, Unit.PIXELS);
         deleteButton.setWidth(115, Unit.PIXELS);
 
@@ -302,12 +301,14 @@ public class ManageContactsView extends VerticalLayout implements View {
                 selectedContact.setLastName(lastName.getValue());
                 selectedContact.setAge(Integer.parseInt(age.getValue()));
                 selectedContact.setMobile(mobile.getValue());
+                selectedContact.setHome(home.getValue());
                 selectedContact.setFunction(function.getValue());
                 contactRepository.save(selectedContact);
                 selectedContact = null;
                 AppUI app = (AppUI) UI.getCurrent();
                 Users user = repository.findByUsername(app.getAccessControl().getUsername()).get(0);
                 grid.setItems(user.getContacts());
+                resetFields();
             }
 
 
@@ -342,7 +343,7 @@ public class ManageContactsView extends VerticalLayout implements View {
         wrapperLayout.addComponent(detailsForm);
         wrapperLayout.addComponent(bottomNav);
         wrapperLayout.setExpandRatio(detailsForm, 1);
-        wrapperLayout.addStyleName("solid-border");
+        wrapperLayout.addStyleName("details-layout-border");
 
         return wrapperLayout;
 
@@ -356,6 +357,7 @@ public class ManageContactsView extends VerticalLayout implements View {
         email.setValue("");
         age.setValue("");
         mobile.setValue("");
+        home.setValue("");
         function.setValue("");
         userProfileButton.setVisible(false);
     }

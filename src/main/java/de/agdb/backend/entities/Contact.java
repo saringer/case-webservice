@@ -49,8 +49,11 @@ public class Contact implements Serializable {
     private String email;
 
 
-
+    @Column(name = "MOBILE")
     private String mobile;
+
+    @Column(name = "HOME")
+    private String home;
 
     @Column(name = "AGE")
     private Integer age;
@@ -58,11 +61,13 @@ public class Contact implements Serializable {
     @Column(name = "FUNCTION")
     private String function;
 
-   /* @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
-    @JoinTable(name = "CONTACT_CATEGORY", joinColumns = {@JoinColumn(name = "CONTACT_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
-    @Fetch(value = FetchMode.SUBSELECT)
-    private List<Categories> assignedCategories;
 
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+    @JoinTable(name = "CONTACT_CATEGORY", joinColumns = {@JoinColumn(name = "CONTACT_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
+    private Categories assignedCategory;
+
+    /*
     public List<Categories> getAssignedCategories() {
         return this.assignedCategories;
     }
@@ -83,6 +88,14 @@ public class Contact implements Serializable {
             }
         }
     }*/
+
+    public Categories getAssignedCategory() {
+        return assignedCategory;
+    }
+
+    public void setAssignedCategory(Categories assignedCategory) {
+        this.assignedCategory = assignedCategory;
+    }
 
     public Integer getAge() {
         return age;
@@ -211,7 +224,13 @@ public class Contact implements Serializable {
         this.mobile = mobile;
     }
 
+    public String getHome() {
+        return home;
+    }
 
+    public void setHome(String home) {
+        this.home = home;
+    }
 
 
 }

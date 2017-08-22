@@ -118,15 +118,15 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     setCategoriesWindow.setModal(true);
                     setCategoriesWindow.setResizable(false);
                     setCategoriesWindow.setClosable(false);
-                    setCategoriesWindow.setWidth(400, Unit.PIXELS);
+                    setCategoriesWindow.setWidth(350, Unit.PIXELS);
                     //  setTimeLocationWindow.setHeight(800, Unit.PIXELS);
                     setCategoriesWindow.setCaption("Add a category");
 
                     VerticalLayout wrapperLayout = new VerticalLayout();
                     wrapperLayout.setSpacing(false);
-                    wrapperLayout.setMargin(true);
+                    wrapperLayout.setMargin(false);
                     wrapperLayout.setSizeUndefined();
-                    wrapperLayout.setWidth(400, Unit.PIXELS);
+                    wrapperLayout.setWidth(350, Unit.PIXELS);
 
                 /* SET UP NUMBERPICKER
                 */
@@ -273,7 +273,9 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                         String categoryTitle = categoryItem.getTitle();
                         CategoriesWrapper categoryWrapper = new CategoriesWrapper(intStepper.getValue(), categoryTitle);
                         day.getTimeAndLocationList().get(index).addCategory(categoryWrapper);
+                        itemLayout.removeComponent(plusButtonLayout);
                         itemLayout.addComponent(buildItem(intStepper.getValue(), categoryTitle, itemLayout, categoryWrapper, day.getTimeAndLocationList().get(index)));
+                        itemLayout.addComponent(plusButtonLayout);
                         setCategoriesWindow.close();
                     });
                     CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
@@ -313,11 +315,13 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             plusButtonLayout.setWidth("24%");
 
         /* init already selected categories */
+            itemLayout.removeComponent(plusButtonLayout);
             for (int x = 0; x < day.getTimeAndLocationList().get(index).getCategoriesList().size(); x++) {
                 TimeLocationWrapper timeLocationWrapper = day.getTimeAndLocationList().get(index);
                 CategoriesWrapper object = timeLocationWrapper.getCategoriesList().get(x);
                 itemLayout.addComponent(buildItem(object.getNumberParticipants(), object.getCategoryTitle(), itemLayout, object, timeLocationWrapper));
             }
+            itemLayout.addComponent(plusButtonLayout);
 
             HorizontalLayout horizontalWrapperLayout = new HorizontalLayout();
             horizontalWrapperLayout.setWidth("100%");
@@ -331,7 +335,10 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             String streetNumber = object.getStreetNumber();
 
             VerticalLayout timeLocationHeader = new VerticalLayout();
+            timeLocationHeader.setMargin(false);
+            timeLocationHeader.setSpacing(false);
             timeLocationHeader.setSizeUndefined();
+            timeLocationHeader.setWidth(150, Unit.PIXELS);
             timeLocationHeader.setHeight("100%");
             timeLocationHeader.addStyleName("item-box-blue");
             Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
@@ -342,14 +349,15 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
 
             wrapperLayout.addComponent(itemLayout);
-            wrapperLayout.addComponent(plusButtonLayout);
+           // wrapperLayout.addComponent(plusButtonLayout);++
             //itemLayout.addComponent(plusButtonLayout);
+            itemLayout.addComponent(plusButtonLayout);
 
 
             horizontalWrapperLayout.addComponents(timeLocationHeader);
-            horizontalWrapperLayout.addComponents(wrapperLayout);
-            horizontalWrapperLayout.setExpandRatio(wrapperLayout, 1);
-
+           // horizontalWrapperLayout.addComponents(wrapperLayout);
+            horizontalWrapperLayout.addComponent(itemLayout);
+            horizontalWrapperLayout.setExpandRatio(itemLayout,1);
             //  formLayout.addComponent(wrapperLayout);
             formLayout.addComponent(horizontalWrapperLayout);
 

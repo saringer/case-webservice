@@ -1,14 +1,12 @@
 package de.agdb.views.categories;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 @UIScope
@@ -51,19 +49,19 @@ public class CategoriesMainView extends VerticalLayout implements View {
         /*
         LEFT MENU TILE
          */
-        VerticalLayout syncContactsTile = new VerticalLayout();
-        syncContactsTile.setSpacing(false);
-        syncContactsTile.setMargin(false);
-        syncContactsTile.setSizeFull();
-        syncContactsTile.addStyleName("left-menu-style");
+        VerticalLayout manageCategoriesTile = new VerticalLayout();
+        manageCategoriesTile.setSpacing(false);
+        manageCategoriesTile.setMargin(false);
+        manageCategoriesTile.setSizeFull();
+        manageCategoriesTile.addStyleName("left-menu-style");
 
         Label icon = new Label();
         icon.setContentMode(ContentMode.HTML);
         icon.setValue(VaadinIcons.LIST_OL.getHtml());
-        icon.addStyleNames("tile-icon-font");
+        icon.addStyleName("tile-icon-font");
 
         Label header = new Label("Manage categories");
-        header.addStyleNames(ValoTheme.LABEL_HUGE);
+        header.addStyleNames(ValoTheme.LABEL_HUGE,"label-margin-top");
 
 
         VerticalLayout wrapperLayout = new VerticalLayout();
@@ -77,24 +75,28 @@ public class CategoriesMainView extends VerticalLayout implements View {
         wrapperLayout.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
         wrapperLayout.setComponentAlignment(header, Alignment.MIDDLE_CENTER);
 
-        syncContactsTile.addComponent(wrapperLayout);
-        syncContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        manageCategoriesTile.addComponent(wrapperLayout);
+        manageCategoriesTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        manageCategoriesTile.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("ManageCategoriesView");
+        });
+
 
         /*
         RIGHT MENU TILE
          */
 
-        VerticalLayout manageContactsTile = new VerticalLayout();
-        manageContactsTile.setSizeFull();
-        manageContactsTile.addStyleName("right-menu-style");
+        VerticalLayout assignCategoriesTile = new VerticalLayout();
+        assignCategoriesTile.setSizeFull();
+        assignCategoriesTile.addStyleName("right-menu-style");
 
         icon = new Label();
         icon.setContentMode(ContentMode.HTML);
         icon.setValue(VaadinIcons.TAGS.getHtml());
-        icon.addStyleNames("tile-icon-font");
+        icon.addStyleName("tile-icon-font");
 
         header = new Label("Assign categories");
-        header.addStyleNames(ValoTheme.LABEL_HUGE);
+        header.addStyleNames(ValoTheme.LABEL_HUGE, "label-margin-top");
 
 
         wrapperLayout = new VerticalLayout();
@@ -107,13 +109,16 @@ public class CategoriesMainView extends VerticalLayout implements View {
         wrapperLayout.setHeight("50%");
         wrapperLayout.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
         wrapperLayout.setComponentAlignment(header, Alignment.MIDDLE_CENTER);
-        manageContactsTile.addComponent(wrapperLayout);
-        manageContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        assignCategoriesTile.addComponent(wrapperLayout);
+        assignCategoriesTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        assignCategoriesTile.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("AssignCategoriesView");
+        });
 
 
 
-        form.addComponent(syncContactsTile);
-        form.addComponent(manageContactsTile);
+        form.addComponent(manageCategoriesTile);
+        form.addComponent(assignCategoriesTile);
 
         return form;
 

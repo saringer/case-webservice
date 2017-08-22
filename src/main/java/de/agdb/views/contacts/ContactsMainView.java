@@ -1,5 +1,6 @@
 package de.agdb.views.contacts;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
@@ -65,7 +66,7 @@ public class ContactsMainView extends VerticalLayout implements View {
         icon.addStyleNames("tile-icon-font");
 
         Label header = new Label("Synchronize contacts");
-        header.addStyleNames(ValoTheme.LABEL_HUGE);
+        header.addStyleNames(ValoTheme.LABEL_HUGE,"label-margin-top");
 
 
         VerticalLayout wrapperLayout = new VerticalLayout();
@@ -81,6 +82,9 @@ public class ContactsMainView extends VerticalLayout implements View {
 
         syncContactsTile.addComponent(wrapperLayout);
         syncContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        syncContactsTile.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("SynchronizeContactsView");
+        });
 
         /*
         RIGHT MENU TILE
@@ -96,7 +100,7 @@ public class ContactsMainView extends VerticalLayout implements View {
         icon.addStyleNames("tile-icon-font");
 
         header = new Label("Manage contacts");
-        header.addStyleNames(ValoTheme.LABEL_HUGE);
+        header.addStyleNames(ValoTheme.LABEL_HUGE,"label-margin-top");
 
 
         wrapperLayout = new VerticalLayout();
@@ -111,11 +115,15 @@ public class ContactsMainView extends VerticalLayout implements View {
         wrapperLayout.setComponentAlignment(header, Alignment.BOTTOM_CENTER);
         manageContactsTile.addComponent(wrapperLayout);
         manageContactsTile.setComponentAlignment(wrapperLayout, Alignment.MIDDLE_CENTER);
+        manageContactsTile.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("ManageContactsView");
+        });
 
 
 
-        form.addComponent(syncContactsTile);
         form.addComponent(manageContactsTile);
+        form.addComponent(syncContactsTile);
+
 
         return form;
 

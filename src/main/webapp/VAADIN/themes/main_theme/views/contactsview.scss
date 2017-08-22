@@ -20,6 +20,7 @@
     color: white;
     padding-top: 7px;
     padding-left: 20px;
+    border-bottom: 1px solid black;
   }
 
   .v-label-headerLabel {
@@ -111,6 +112,24 @@
 
   .v-caption-inline {
     display: inline !important;
+  }
+
+  .delete-button {
+    border: solid 1px #cf2a27;
+    background-color: white;
+    color: #cf2a27;
+    font-size: 15px;
+    cursor: pointer;
+    &:hover {
+      background-color: #cf2a27;
+      color: white;
+
+    }
+  }
+  .details-layout-border {
+    border-right: 1px black solid;
+    border-top: 1px black solid;
+    border-bottom: 1px black solid;
   }
 
 

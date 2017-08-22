@@ -10,7 +10,7 @@ public class Constants {
         Location where the user gets redirected after successful OAuth2 authentication in the synchronize contacts
         view
      */
-    public static final String redirectUrl = "https://127.0.0.1:80/";
+    public static final String redirectUrl = "https://127.0.0.1:8843/";
 
     /*
         Application registered on the "Google API Console" via "jim.saringer@gmail.com"

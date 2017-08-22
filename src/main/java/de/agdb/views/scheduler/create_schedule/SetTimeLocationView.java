@@ -87,7 +87,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Window setTimeLocationWindow = new TimeLocationWindow(day, itemLayout, plusButtonLayout);
-                setTimeLocationWindow.setWidth(400, Unit.PIXELS);
+                setTimeLocationWindow.setWidth(350, Unit.PIXELS);
                 //setTimeLocationWindow.setHeight(800, Unit.PIXELS);
                 UI.getCurrent().addWindow(setTimeLocationWindow);
             }
@@ -233,7 +233,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         nav.setMargin(false);
 
         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-            AppUI app = (AppUI) UI.getCurrent();
+             AppUI app = (AppUI) UI.getCurrent();
             List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
 
             Boolean flag = false;

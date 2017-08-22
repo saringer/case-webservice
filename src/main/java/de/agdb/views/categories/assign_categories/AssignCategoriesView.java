@@ -23,6 +23,7 @@ import com.vaadin.v7.shared.ui.colorpicker.Color;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.*;
 import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.ContactRepository;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import elemental.json.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,12 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     private Label unassigned;
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
     @Autowired
     CategoriesRepository categoriesRepository;
-    private Toastr toastr = new Toastr();
+
+    @Autowired
+    private ContactRepository contactRepository;
 
     @PostConstruct
     void init() {
@@ -88,7 +91,6 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         formWrapper.addComponent(content);
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
-        addComponent(toastr);
 
     }
 
@@ -226,22 +228,27 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
 
     private void handleDragData(Categories category) {
-        Categories updatedCategory = categoriesRepository.findByTitle(category.getTitle()).get(0);
+      //  Categories updatedCategory = categoriesRepository.findByTitle(category.getTitle()).get(0);
 
         try {
             Iterator iter = draggedItems.iterator();
             while (iter.hasNext()) {
                 Contact contact = (Contact) iter.next();
-                updatedCategory.addContact(contact);
+                Contact updatedContact = contactRepository.findOne(contact.getId());
+                updatedContact.setAssignedCategory(category);
+                contactRepository.save(updatedContact);
+     //           updatedCategory.addContact(contact);
 
 
             }
-            categoriesRepository.save(updatedCategory);
-            toastr.toast(ToastBuilder.success("Contacts successfully assigned").build());
+       //     categoriesRepository.save(updatedCategory);
+            AppUI app = (AppUI) UI.getCurrent();
+            app.getToastr().toast(ToastBuilder.success("Contacts successfully assigned").build());
 
         }
         catch (Exception e) {
-            toastr.toast(ToastBuilder.warning("Assignment failed").build());
+            AppUI app = (AppUI) UI.getCurrent();
+            app.getToastr().toast(ToastBuilder.warning("Assignment failed").build());
 
 
         }
@@ -387,7 +394,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     }
 
     private void addJavaScriptClickListener(Grid grid, List<Label> labelList, Users user) {
-        JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user, general, unassigned, categoriesRepository, usersRepository));
+        JavaScript.getCurrent().addFunction("customClickListener", new CustomJavaScriptClickListener(grid, labelList, user, general, unassigned, usersRepository));
 
     }
 

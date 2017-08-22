@@ -269,7 +269,7 @@ public class SetParticipantsWindow extends Window {
 
                         contactsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
                         contactsGrid.setColumns("firstName", "lastName");
-                        contactsGrid.setItems(category.getContacts());
+                       // contactsGrid.setItems(category.getContacts());
                         contactsGrid.setWidth(300, Unit.PIXELS);
                         contactsGrid.setHeight(300, Unit.PIXELS);
                         contactsGrid.getSelectionModel().addSelectionListener(event -> {
