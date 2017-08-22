@@ -85,7 +85,7 @@ public class Categories implements Serializable {
         this.id = id;
     }
 
-    public void addContact(Contact contact) {
+    public boolean addContact(Contact contact) {
         boolean flag = true;
         for (int i=0;i<this.contacts.size();i++) {
             if (contact.getEmail().equals(this.contacts.get(i).getEmail())) {
@@ -97,6 +97,7 @@ public class Categories implements Serializable {
             this.contacts.add(contact);
 
         }
+        return flag;
     }
 
     public void removeContact(Contact contact) {

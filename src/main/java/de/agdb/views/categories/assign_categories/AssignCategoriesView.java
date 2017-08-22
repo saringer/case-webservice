@@ -2,6 +2,7 @@ package de.agdb.views.categories.assign_categories;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
@@ -17,6 +18,7 @@ import com.vaadin.ui.components.grid.GridDragStartEvent;
 import com.vaadin.ui.dnd.DropTargetExtension;
 import com.vaadin.ui.dnd.event.DropEvent;
 import com.vaadin.ui.dnd.event.DropListener;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.colorpicker.Color;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.*;
@@ -24,6 +26,8 @@ import de.agdb.backend.entities.repositories.CategoriesRepository;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import elemental.json.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.addons.Toastr;
+import org.vaadin.addons.builder.ToastBuilder;
 import org.vaadin.addons.popupextension.PopupExtension;
 import org.vaadin.anna.dndscroll.PanelAutoScrollExtension;
 
@@ -58,6 +62,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
     UsersRepository usersRepository;
     @Autowired
     CategoriesRepository categoriesRepository;
+    private Toastr toastr = new Toastr();
 
     @PostConstruct
     void init() {
@@ -83,7 +88,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         formWrapper.addComponent(content);
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
-
+        addComponent(toastr);
 
     }
 
@@ -98,6 +103,8 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         searchbar.setWidth("100%");
         searchbar.setPlaceholder("search...");
         searchbar.addValueChangeListener(this::setupGridFilter);
+        searchbar.setIcon(VaadinIcons.SEARCH);
+        searchbar.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
 
 
         // Create a grid bound to the list
@@ -230,10 +237,12 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
             }
             categoriesRepository.save(updatedCategory);
-            Notification.show("Contacts successfully assigned","empty", Notification.Type.HUMANIZED_MESSAGE);
+            toastr.toast(ToastBuilder.success("Contacts successfully assigned").build());
+
         }
         catch (Exception e) {
-            Notification.show("Assignment failed", e.getLocalizedMessage(),  Notification.Type.ERROR_MESSAGE);
+            toastr.toast(ToastBuilder.warning("Assignment failed").build());
+
 
         }
 

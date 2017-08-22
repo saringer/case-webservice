@@ -11,14 +11,20 @@ import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.oauth2.OAuthListener;
 import de.agdb.backend.oauth2.OAuthPopupButton;
 import de.agdb.backend.oauth2.OAuthPopupConfig;
+import org.springframework.stereotype.Service;
+import org.vaadin.addons.Toastr;
+import org.vaadin.addons.builder.ToastBuilder;
 
 import static de.agdb.Constants.*;
 
+
 public class ContactServiceLayout extends HorizontalLayout {
+    private Toastr toastr;
 
 
 
-    public ContactServiceLayout(String flag, String currentUser, UsersRepository usersRepository) {
+    public ContactServiceLayout(String flag,  UsersRepository usersRepository, Toastr toastr) {
+        this.toastr = toastr;
 
         setWidth("100%");
         setHeight(64, Unit.PIXELS);
@@ -57,7 +63,8 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
                             google.addStyleName("green-button");
-                            new GoogleContactsDBParser().storeContactsInDatabase( ((OAuth2AccessToken) token).getAccessToken(),currentUser, usersRepository);
+                            toastr.toast(ToastBuilder.success("Contacts import successful").build());
+                            new GoogleContactsDBParser().storeContactsInDatabase( ((OAuth2AccessToken) token).getAccessToken(), usersRepository);
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -67,7 +74,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                     @Override
                     public void authDenied(String reason) {
                         google.addStyleName("red-button");
-                        Notification.show("Failed to authenticate!", Notification.Type.ERROR_MESSAGE);
+                       toastr.toast(ToastBuilder.error("Contacts import failed").build());
                     }
                 });
 
@@ -114,6 +121,8 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
                             microsoft.addStyleName("green-button");
+                            toastr.toast(ToastBuilder.success("Contacts import successful").build());
+
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -123,7 +132,7 @@ public class ContactServiceLayout extends HorizontalLayout {
                     @Override
                     public void authDenied(String reason) {
                         microsoft.addStyleName("red-button");
-                        Notification.show("Failed to authenticate!" + reason, Notification.Type.ERROR_MESSAGE);
+                        toastr.toast(ToastBuilder.error("Contacts import failed").build());
                     }
                 });
 
@@ -167,6 +176,8 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
                             yahoo.addStyleName("green-button");
+                            toastr.toast(ToastBuilder.success("Contacts import successful").build());
+
                         } else {
                             ((OAuth1AccessToken) token).getToken();
                             ((OAuth1AccessToken) token).getTokenSecret();
@@ -176,7 +187,8 @@ public class ContactServiceLayout extends HorizontalLayout {
                     @Override
                     public void authDenied(String reason) {
                         yahoo.addStyleName("red-button");
-                        Notification.show("Failed to authenticate!" + reason, Notification.Type.ERROR_MESSAGE);
+                        toastr.toast(ToastBuilder.error("Contacts import failed").build());
+
                     }
                 });
 

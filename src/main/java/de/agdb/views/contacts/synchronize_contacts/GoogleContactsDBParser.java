@@ -7,6 +7,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.people.v1.PeopleService;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
+import com.vaadin.ui.UI;
+import de.agdb.AppUI;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.UsersRepository;
@@ -25,7 +27,7 @@ public class GoogleContactsDBParser {
 
     }
 
-    public void storeContactsInDatabase(String token, String userName, UsersRepository usersRepository) {
+    public void storeContactsInDatabase(String token,  UsersRepository usersRepository) {
 
         GoogleCredential credential = new GoogleCredential().setAccessToken(token);
 
@@ -75,7 +77,10 @@ public class GoogleContactsDBParser {
 
             }
 
-            Users user = usersRepository.findByUsername(userName).get(0);
+            AppUI app = (AppUI) UI.getCurrent();
+            String currentUser = app.getAccessControl().getUsername();
+
+            Users user = usersRepository.findByUsername(currentUser).get(0);
             user.addContact(new Contact(firstname, lastname, email));
             usersRepository.save(user);
 

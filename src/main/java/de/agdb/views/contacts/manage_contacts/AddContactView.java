@@ -1,5 +1,8 @@
 package de.agdb.views.contacts.manage_contacts;
 
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -11,6 +14,7 @@ import de.agdb.AppUI;
 import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
@@ -30,7 +34,6 @@ public class AddContactView extends VerticalLayout implements View {
     private TextField home;
     private TextField email;
     private TextArea function;
-    private Label userDetailsHeader;
 
 
     @Autowired
@@ -90,23 +93,21 @@ public class AddContactView extends VerticalLayout implements View {
         header.addStyleNames("managecontacts-header");
         header.addStyleNames("solid-border");
         Label label = new Label("Contact list");
-        //label.setWidth("100%");
         label.addStyleNames("headerLabel");
-        //label.addStyleNames(ValoTheme.LABEL_H3);
-        //label.addStyleNames(ValoTheme.LABEL_COLORED);
         header.addComponent(label);
 
         TextField searchField = new TextField();
-        searchField.setDescription("search...");
-        searchField.setValue("search...");
+        searchField.setPlaceholder("search...");
         searchField.setIcon(VaadinIcons.SEARCH);
         searchField.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
         searchField.setWidth("100%");
+        searchField.setEnabled(false);
 
         Button addContactButton = new Button("Add contact");
         addContactButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
         addContactButton.setIcon(MaterialIcons.GROUP_ADD);
         addContactButton.setWidth("100%");
+        addContactButton.setEnabled(false);
 
         // Create a grid bound to the list
         grid = new Grid<>(Contact.class);
@@ -124,12 +125,15 @@ public class AddContactView extends VerticalLayout implements View {
         wrapperLayout.addComponent(searchField);
         wrapperLayout.addComponent(addContactButton);
         wrapperLayout.addComponent(grid);
+        wrapperLayout.addStyleName("solid-border");
 
         wrapperLayout.setExpandRatio(grid, 1f);
 
 
         return wrapperLayout;
     }
+
+
 
     public void initContactList() {
         AppUI app = (AppUI) UI.getCurrent();
@@ -138,19 +142,7 @@ public class AddContactView extends VerticalLayout implements View {
         if (!repository.findByUsername(userName).isEmpty()) {
             grid.setItems(repository.findByUsername(userName).get(0).getContacts());
         }
-        grid.getSelectionModel().addSelectionListener(event -> {
 
-
-            boolean somethingSelected = !grid.getSelectedItems().isEmpty();
-            if (somethingSelected) {
-                Contact contact = event.getFirstSelectedItem().get();
-                userDetailsHeader.setValue(contact.getFirstName() + " " + contact.getLastName());
-                firstName.setValue(contact.getFirstName());
-                lastName.setValue(contact.getLastName());
-                email.setValue(contact.getEmail());
-            }
-
-        });
     }
 
     @Override
@@ -168,16 +160,16 @@ public class AddContactView extends VerticalLayout implements View {
         CssLayout header = new CssLayout();
         header.setWidth("100%");
         header.setHeight(50, Unit.PIXELS);
-        header.addStyleNames("addcontact-header");
+        header.addStyleNames("addcategory-header");
         header.addStyleNames("solid-border");
-        Label userDetailsHeader = new Label("New contact");
-        userDetailsHeader.addStyleName("headerlabel");
-        header.addComponent(userDetailsHeader);
+        Label label = new Label("New contact");
+        label.addStyleName("headerLabel");
+        header.addComponent(label);
+
 
         FormLayout detailsForm = new FormLayout();
         detailsForm.setMargin(true);
         detailsForm.setSizeFull();
-        detailsForm.addStyleNames("solid-border");
 
         firstName = new TextField();
         firstName.setWidth("100%");
@@ -207,15 +199,18 @@ public class AddContactView extends VerticalLayout implements View {
         CssLayout bottomNav = new CssLayout();
         bottomNav.setWidth("100%");
 
-        Button backButton = new Button("BACK");
-        backButton.addClickListener((Button.ClickListener) clickEvent -> {
-            UI.getCurrent().getNavigator().navigateTo("ManageCategoriesView");
-        });
-        backButton.addStyleName("float-left");
+        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            UI.getCurrent().getNavigator().navigateTo("ManageContactsView");
+
+        };
+        CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
+        backButton.addStyleNames("float-left", "back-button");
+        backButton.setHeight(40, Unit.PIXELS);
+        backButton.setWidth(115, Unit.PIXELS);
 
 
-        Button createButton = new Button("CREATE");
-        createButton.addClickListener((Button.ClickListener) clickEvent -> {
+        listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            //  if (binder.isValid()) {
             AppUI app = (AppUI) UI.getCurrent();
             String userName = app.getAccessControl().getUsername();
             Users thisUser = repository.findByUsername(userName).get(0);
@@ -223,20 +218,32 @@ public class AddContactView extends VerticalLayout implements View {
             contact.setFirstName(firstName.getValue());
             contact.setLastName(lastName.getValue());
             contact.setEmail(email.getValue());
+            contact.setMobile(mobile.getValue());
+            contact.setFunction(function.getValue());
+            contact.setAge(Integer.parseInt(age.getValue()));
 
 
             thisUser.addContact(contact);
             repository.save(thisUser);
             app.getNavigator().navigateTo("ManageContactsView");
-        });
-        createButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        createButton.addStyleName("float-right");
+          /*  }
+            else {
+                binder.validate();
+            }*/
+        };
+        CustomButton createButton = new CustomButton("CREATE", listener);
+        createButton.addStyleNames("float-right", "next-button");
+        createButton.setHeight(40, Unit.PIXELS);
+        createButton.setWidth(115, Unit.PIXELS);
 
         bottomNav.addComponents(backButton, createButton);
 
+
         wrapperLayout.addComponent(header);
         wrapperLayout.addComponent(detailsForm);
+        wrapperLayout.addComponent(bottomNav);
         wrapperLayout.setExpandRatio(detailsForm, 1);
+        wrapperLayout.addStyleName("solid-border");
 
         return wrapperLayout;
 

@@ -115,6 +115,8 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         searchField.setIcon(VaadinIcons.SEARCH);
         searchField.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
         searchField.setWidth("100%");
+        searchField.setEnabled(false);
+
 
         Button addContactButton = new Button("Add category");
         addContactButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
@@ -215,7 +217,7 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         detailsForm.addComponent(categoryTitle);
         detailsForm.addComponent(categoryShortcut);
         detailsForm.addComponent(colorPickerLayout);
-        detailsForm.addComponent(categoryTags);
+        //detailsForm.addComponent(categoryTags);
 
         detailsForm.addComponent(categoryDescription);
 

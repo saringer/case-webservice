@@ -10,6 +10,7 @@ import de.agdb.AppUI;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.vaadin.addons.Toastr;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -22,25 +23,10 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-
-    /**
-     * File for storing user credentials.
-     */
-    private static final java.io.File DATA_STORE_FILE =
-            new File(System.getProperty("user.home"), ".credentials/user-credentials.json");
-
-    /**
-     * Global instance of the {DataStoreFactory}. The best practice is to make it a single
-     * globally shared instance across your application.
-     */
-    private static FileDataStoreFactory dataStoreFactory;
+    private Toastr toastr = new Toastr();
 
 
 
-
-
-    private Button googleButton;
 
     @Autowired
     UsersRepository usersRepository;
@@ -49,8 +35,9 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
     public void init() {
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
-        formWrapper.setWidth("80%");
-        formWrapper.setHeight("75%");
+        formWrapper.setWidth(1150,     Unit.PIXELS);
+        formWrapper.setHeight(650, Unit.PIXELS);
+        //formWrapper.setSizeFull();
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
@@ -71,6 +58,9 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         formWrapper.addComponent(content);
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
+        formWrapper.addComponent(toastr);
+
+       // addComponent(toastr);
     }
 
 
@@ -99,9 +89,9 @@ public class SynchronizeContactsView extends VerticalLayout implements View, But
         AppUI app = (AppUI) UI.getCurrent();
         String currentUser = app.getAccessControl().getUsername();
 
-        HorizontalLayout googleLayout = new ContactServiceLayout("google", currentUser, usersRepository);
-        HorizontalLayout microsoftLayout = new ContactServiceLayout("microsoft", currentUser, usersRepository);
-        HorizontalLayout yahooLayout = new ContactServiceLayout("yahoo", currentUser, usersRepository);
+        HorizontalLayout googleLayout = new ContactServiceLayout("google",  usersRepository, toastr);
+        HorizontalLayout microsoftLayout = new ContactServiceLayout("microsoft",  usersRepository, toastr);
+        HorizontalLayout yahooLayout = new ContactServiceLayout("yahoo",  usersRepository, toastr);
         innerWrapperLayout.addComponents(googleLayout, microsoftLayout, yahooLayout);
 
 

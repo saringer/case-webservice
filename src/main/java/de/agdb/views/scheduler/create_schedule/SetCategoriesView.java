@@ -206,9 +206,25 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
                     selectCategoryLayout.addComponent(selectCategory);
                     selectCategoryLayout.setComponentAlignment(selectCategory, Alignment.MIDDLE_CENTER);
+                    selectCategoryLayout.setMargin(true);
+                    selectCategoryLayout.setSpacing(false);
 
                     setCategoryLayout.addComponent(headerLayout);
                     setCategoryLayout.addComponent(selectCategoryLayout);
+
+                    LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+                        setCategoriesWindow.close();
+                        UI.getCurrent().getNavigator().navigateTo("AddCategoryView");
+                        //Notification.show("asdsd");
+
+                    };
+                    CustomButton createCategoryButton = new CustomButton("Create new category", listener);
+                    createCategoryButton.addStyleName("next-button");
+                    createCategoryButton.setHeight(30, Unit.PIXELS);
+                    // createCategoryButton.setWidth(120, Unit.PIXELS);
+                    createCategoryButton.setWidth("90%");
+                    selectCategoryLayout.addComponent(createCategoryButton);
+                    selectCategoryLayout.setExpandRatio(selectCategory,1);
 
 
                 /*
@@ -217,9 +233,11 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                  */
 
                     HorizontalLayout buttonLayout = new HorizontalLayout();
+                    buttonLayout.setSpacing(false);
+                    buttonLayout.setMargin(false);
                     buttonLayout.setWidth("100%");
 
-                    LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+                    listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
                         setCategoriesWindow.close();
                        /* toastr.toast(
                                 ToastBuilder.of(ToastType.valueOf("Info"), "9 unread invitations")
@@ -243,17 +261,12 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                                                 .build())
                                         .build());
                      */
-
-
-
-
-
-
                     };
                     CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
                     cancelButton.addStyleName("cancel-button");
                     cancelButton.setHeight(40, Unit.PIXELS);
-                    cancelButton.setWidth(150, Unit.PIXELS);
+                    //cancelButton.setWidth(120, Unit.PIXELS);
+                    cancelButton.setWidth("100%");
 
                     listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> selectCategory.getSelectionModel().getFirstSelectedItem().ifPresent(item -> {
                         Categories categoryItem = (Categories) item;
@@ -266,12 +279,16 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
                     okayButton.addStyleName("next-button");
                     okayButton.setHeight(40, Unit.PIXELS);
-                    okayButton.setWidth(150, Unit.PIXELS);
+                    //okayButton.setWidth(120, Unit.PIXELS);
+                    okayButton.setWidth("100%");
+
+
 
 
                     buttonLayout.addComponents(cancelButton, okayButton);
-                    buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
-                    buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
+                  //  buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
+                   // buttonLayout.setComponentAlignment(createCategoryButton, Alignment.MIDDLE_CENTER);
+                   // buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
                     buttonLayout.addStyleNames("modal-window-margin");
 
                 /*
@@ -316,7 +333,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             VerticalLayout timeLocationHeader = new VerticalLayout();
             timeLocationHeader.setSizeUndefined();
             timeLocationHeader.setHeight("100%");
-            timeLocationHeader.addStyleName("item-box");
+            timeLocationHeader.addStyleName("item-box-blue");
             Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
             label.setSizeUndefined();
             label.setContentMode(ContentMode.HTML);

@@ -1,5 +1,7 @@
 package de.agdb.views.contacts.manage_contacts;
 
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -114,6 +116,7 @@ public class ManageContactsView extends VerticalLayout implements View {
         searchField.setIcon(VaadinIcons.SEARCH);
         searchField.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
         searchField.setWidth("100%");
+        searchField.addValueChangeListener(this::setupGridFilter);
 
         Button addContactButton = new Button("Add contact");
         addContactButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
@@ -145,6 +148,25 @@ public class ManageContactsView extends VerticalLayout implements View {
 
 
         return wrapperLayout;
+    }
+
+    private void setupGridFilter(HasValue.ValueChangeEvent<String> event) {
+        ListDataProvider<Contact> dataProvider = (ListDataProvider<Contact>) grid.getDataProvider();
+        dataProvider.clearFilters();
+        String filterText = event.getValue();
+        dataProvider.setFilter(Contact ->
+                caseInsensitiveContains(Contact.getFirstName(), filterText) ||
+                        caseInsensitiveContains(Contact.getLastName(), filterText) ||
+                        caseInsensitiveContains(Contact.getEmail(), filterText) ||
+                        caseInsensitiveContains(Contact.getFunction(), filterText));
+    }
+
+    private Boolean caseInsensitiveContains(String fullText, String filterText) {
+        if (fullText == null && filterText != null) {
+            return false;
+        } else {
+            return fullText.toLowerCase().contains(filterText.toLowerCase());
+        }
     }
 
     public void initContactList() {

@@ -1,5 +1,7 @@
 package de.agdb.views.categories.manage_categories;
 
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -18,6 +20,7 @@ import com.vaadin.v7.shared.ui.colorpicker.Color;
 import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Categories;
+import de.agdb.backend.entities.Contact;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,10 +114,11 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
 
         TextField searchField = new TextField();
         searchField.setPlaceholder("search...");
-        searchField.setValue("search...");
         searchField.setIcon(VaadinIcons.SEARCH);
         searchField.addStyleNames(ValoTheme.TEXTFIELD_INLINE_ICON);
         searchField.setWidth("100%");
+        searchField.addValueChangeListener(this::setupGridFilter);
+
 
         Button addCategoryButton = new Button("Add category");
         addCategoryButton.addClickListener((Button.ClickListener) clickEvent -> {
@@ -138,7 +142,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         wrapperLayout.addComponent(searchField);
         wrapperLayout.addComponent(addCategoryButton);
         wrapperLayout.addComponent(grid);
-
+        wrapperLayout.addStyleName("solid-border");
         wrapperLayout.setExpandRatio(grid, 1f);
 
 
@@ -181,6 +185,16 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
 
 
         }
+    }
+
+    private void setupGridFilter(HasValue.ValueChangeEvent<String> event) {
+       /* ListDataProvider<Contact> dataProvider = (ListDataProvider<Contact>) grid.getDataProvider();
+        dataProvider.clearFilters();
+        String filterText = event.getValue();
+        dataProvider.setFilter(Contact ->
+                caseInsensitiveContains(Contact.getFirstName(), filterText) ||
+                        caseInsensitiveContains(Contact.getLastName(), filterText) ||
+                        caseInsensitiveContains(Contact.getEmail(), filterText));*/
     }
 
     @Override
@@ -240,7 +254,7 @@ public class ManageCategoriesView extends VerticalLayout implements View, ViewCh
         detailsForm.addComponent(categoryTitle);
         detailsForm.addComponent(categoryShortcut);
         detailsForm.addComponent(colorPickerLayout);
-        detailsForm.addComponent(categoryTags);
+        //detailsForm.addComponent(categoryTags);
 
         detailsForm.addComponent(categoryDescription);
 
