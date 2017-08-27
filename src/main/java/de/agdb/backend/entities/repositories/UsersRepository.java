@@ -16,9 +16,12 @@ import java.util.List;
     T save(T entity);
 }*/
 
-public interface UsersRepository extends JpaRepository<Users, Long>{
+public interface UsersRepository extends JpaRepository<Users, Long> {
 
     List<Users> findByUsername(String username);
+
+    Users findByEmail(String email);
+
     Users save(Users user);
 
     @Query(value = "select * from  u where cast(letters as char) like :letters%", nativeQuery = true)

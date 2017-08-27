@@ -19,6 +19,8 @@ public class SetGeneralView extends VerticalLayout implements View {
     public static final String VIEW_NAME = "GeneralView";
     private TextField scheduleTitle;
     private TextArea scheduleDescription;
+    private DateField dateField;
+    private CheckBox activateRecurrency;
 
     public SetGeneralView() {
         setSizeFull();
@@ -30,6 +32,7 @@ public class SetGeneralView extends VerticalLayout implements View {
 
 
         FormLayout content = buildContent();
+        content.addStyleName("general-view-formlayout");
         content.setSpacing(true);
         content.setMargin(true);
         content.setHeight("80%");
@@ -41,16 +44,13 @@ public class SetGeneralView extends VerticalLayout implements View {
         HorizontalLayout bottomNavBar = createBottomNav();
 
         formWrapper.addComponent(topNavBar);
-        //centeringLayout.setExpandRatio(topNavBar, 1);
         formWrapper.addStyleName("solid-border");
         //formWrapper.addStyleName("overflow-auto");
         formWrapper.setSpacing(false);
         formWrapper.setMargin(false);
         formWrapper.addComponent(content);
-        //centeringLayout.addComponent(new Label("sadsdd"));
         formWrapper.addComponent(bottomNavBar);
-        formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
-        //formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
+        formWrapper.setComponentAlignment(content, Alignment.TOP_CENTER);
         formWrapper.setExpandRatio(content, 1);
 
     }
@@ -149,7 +149,7 @@ public class SetGeneralView extends VerticalLayout implements View {
         ComboBox<String> dropDownMenu = new ComboBox<>();
         dropDownMenu.setTextInputAllowed(false);
         dropDownMenu.setEmptySelectionAllowed(false);
-        dropDownMenu.setItems("weekly","montly");
+        dropDownMenu.setItems("weekly", "montly");
         dropDownMenu.setSelectedItem("monthly");
         dropDownMenu.setEnabled(false);
 
@@ -160,19 +160,18 @@ public class SetGeneralView extends VerticalLayout implements View {
         //dropDownMenu.setEnabled(false);
         recurrencyOptions.addComponent(dropDownMenu);
         recurrencyOptions.addComponent(new Label("until"));
-        DateField dateField = new DateField();
+        dateField = new DateField();
         dateField.setEnabled(false);
         recurrencyOptions.addComponent(dateField);
-        CheckBox activateRecurrency = new CheckBox("Make this a recurrying event", false);
+        activateRecurrency = new CheckBox("Make this a recurrying event", false);
         activateRecurrency.addValueChangeListener((HasValue.ValueChangeListener<Boolean>) event -> {
-              if (activateRecurrency.getValue()) {
-                  dropDownMenu.setEnabled(true);
-                  dateField.setEnabled(true);
-              }
-              else {
-                  dropDownMenu.setEnabled(false);
-                  dateField.setEnabled(false);
-              }
+            if (activateRecurrency.getValue()) {
+                dropDownMenu.setEnabled(true);
+                dateField.setEnabled(true);
+            } else {
+                dropDownMenu.setEnabled(false);
+                dateField.setEnabled(false);
+            }
         });
         form.addComponent(section);
         form.addComponent(recurrencyOptions);
@@ -200,12 +199,16 @@ public class SetGeneralView extends VerticalLayout implements View {
         LayoutEvents.LayoutClickListener listener = new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
-                if (scheduleTitle.isEmpty()) {
+                if (scheduleTitle.getValue().length() <= 1) {
                     scheduleTitle.setComponentError(new UserError("Please enter a title foryour schedule"));
                 }
 
-                if (scheduleDescription.isEmpty()) {
+                if (scheduleDescription.getValue().length() <= 1) {
                     scheduleDescription.setComponentError(new UserError("Please enter a description for your schedule"));
+                }
+                if (activateRecurrency.getValue() && dateField.getComponentError() != null) {
+                    // dateField handles validation automatically
+
                 } else {
                     AppUI app = (AppUI) UI.getCurrent();
                     app.getGlobalScheduleWrapper().setTitle(scheduleTitle.getValue());

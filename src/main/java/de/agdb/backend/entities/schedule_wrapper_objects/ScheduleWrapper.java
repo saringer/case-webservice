@@ -1,7 +1,5 @@
 package de.agdb.backend.entities.schedule_wrapper_objects;
 
-import de.agdb.backend.entities.Contact;
-
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -19,17 +17,17 @@ public class ScheduleWrapper {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = DayWrapper.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = DateWrapper.class)
     @JoinTable(name = "SCHEDULE_DAY", joinColumns = { @JoinColumn(name = "SCHEDULE_ID") }, inverseJoinColumns = { @JoinColumn(name = "DAY_ID") })
-    private List<DayWrapper> days;
+    private List<DateWrapper> days;
     private String title;
     private String description;
 
-    public void setDays(List<DayWrapper> days) {
+    public void setDays(List<DateWrapper> days) {
         this.days = days;
     }
 
-    public List<DayWrapper> getDays() {
+    public List<DateWrapper> getDays() {
         return this.days;
     }
 
@@ -46,7 +44,7 @@ public class ScheduleWrapper {
             days = new ArrayList<>();
     }
 
-    public void addDay(DayWrapper e) {
+    public void addDay(DateWrapper e) {
         days.add(e);
         System.out.println("Day added" +  e.getDay());
     }

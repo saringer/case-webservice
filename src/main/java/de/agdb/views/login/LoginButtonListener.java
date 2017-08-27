@@ -2,6 +2,9 @@ package de.agdb.views.login;
 
 
 
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.ui.UI;
+import de.agdb.AppUI;
 import de.agdb.backend.auth.AccessControl;
 import de.agdb.backend.auth.AuthManager;
 import com.vaadin.server.Page;
@@ -15,11 +18,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
+@SpringComponent
 public class LoginButtonListener implements Button.ClickListener {
 
     @Autowired
     private AuthManager authManager;
+
 
     @Override
     public void buttonClick(Button.ClickEvent event) {
@@ -39,6 +43,8 @@ public class LoginButtonListener implements Button.ClickListener {
                 SecurityContext context = SecurityContextHolder.getContext();
                 Authentication authentication = context.getAuthentication();
                 if (authentication != null && authentication.isAuthenticated()) {
+                    AppUI app = (AppUI) UI.getCurrent();
+                    app.setCurrentUsername(username);
                     parent.getLoginListener().loginSuccessful();
 
                     parent.getAccessControl().signIn(username, password);

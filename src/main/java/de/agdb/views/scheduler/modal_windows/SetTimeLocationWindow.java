@@ -8,10 +8,8 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.Field;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import de.agdb.views.scheduler.create_schedule.timefield_component.AbstractTimeField;
@@ -28,13 +26,13 @@ import java.util.Locale;
 
 import static de.agdb.Constants.googleMapsApiKey;
 
-public class TimeLocationWindow extends Window {
+public class SetTimeLocationWindow extends Window {
 
     private NativeSelect startTime = new NativeSelect();
     private NativeSelect endTime = new NativeSelect();
     LocationTextField<GeocodedLocation> ltf;
 
-    public TimeLocationWindow(DayWrapper day, CssLayout itemLayout, CssLayout plusButtonLayout) {
+    public SetTimeLocationWindow(DateWrapper day, CssLayout itemLayout, CssLayout plusButtonLayout) {
 
 
         setModal(true);
@@ -104,11 +102,8 @@ public class TimeLocationWindow extends Window {
         endTime.addStyleName("endtime");
         selectLayout.addComponent(endTime);
 
-        System.out.println(endTime.getResolution().getCalendarField());
-
 
         selectLayout.addStyleNames("modal-window-content");
-        selectLayout.addStyleNames("solid-border");
 
         setTimeLayout.addComponent(headerLayout);
         setTimeLayout.addComponent(selectLayout);
@@ -149,7 +144,8 @@ public class TimeLocationWindow extends Window {
         CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
         cancelButton.addStyleName("cancel-button");
         cancelButton.setHeight(40, Unit.PIXELS);
-        cancelButton.setWidth(116, Unit.PIXELS);
+        //cancelButton.setWidth(116, Unit.PIXELS);
+        cancelButton.setWidth("100%");
         //cancelButton.setSizeFull();
 
 
@@ -189,12 +185,13 @@ public class TimeLocationWindow extends Window {
         CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
         okayButton.addStyleName("next-button");
         okayButton.setHeight(40, Unit.PIXELS);
-        okayButton.setWidth(116, Unit.PIXELS);
+        //okayButton.setWidth(116, Unit.PIXELS);
+        okayButton.setWidth("100%");
         //okayButton.setSizeFull();
 
         buttonLayout.addComponents(cancelButton, okayButton);
-        buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
-        buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
+        //buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
+        //buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
         buttonLayout.addStyleNames("modal-window-margin");
 
                 /*
@@ -255,7 +252,7 @@ public class TimeLocationWindow extends Window {
 
         verticalLayout.addComponent(ltf);
         verticalLayout.addComponent(googleMap);
-        verticalLayout.addStyleNames("modal-window-content", "solid-border", "padding-text");
+        verticalLayout.addStyleNames("modal-window-content", "padding-text");
 
         return verticalLayout;
 
@@ -263,7 +260,7 @@ public class TimeLocationWindow extends Window {
     }
 
 
-    private CssLayout buildItem(String startTime, String endTime, String location, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
+    private CssLayout buildItem(String startTime, String endTime, String location, CssLayout parentLayout, TimeLocationWrapper content, DateWrapper parentWrapper) {
         CssLayout cssLayout = new CssLayout();
         Label label = new Label(startTime + " - " + endTime + "<br>" + location);
         label.setContentMode(ContentMode.HTML);

@@ -66,6 +66,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
 
     @Autowired
     private ContactRepository contactRepository;
+    private Toastr toastr = new Toastr();
 
     @PostConstruct
     void init() {
@@ -91,6 +92,7 @@ public class AssignCategoriesView extends VerticalLayout implements View {
         formWrapper.addComponent(content);
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         formWrapper.setExpandRatio(content, 1);
+        content.addComponent(toastr);
 
     }
 
@@ -240,15 +242,19 @@ public class AssignCategoriesView extends VerticalLayout implements View {
      //           updatedCategory.addContact(contact);
 
 
+
             }
        //     categoriesRepository.save(updatedCategory);
-            AppUI app = (AppUI) UI.getCurrent();
-            app.getToastr().toast(ToastBuilder.success("Contacts successfully assigned").build());
+
+            /**
+             * TOASTER HIER HIN
+             *
+             */
+            toastr.toast(ToastBuilder.success("Contacts successfully assigned").build());
 
         }
         catch (Exception e) {
-            AppUI app = (AppUI) UI.getCurrent();
-            app.getToastr().toast(ToastBuilder.warning("Assignment failed").build());
+
 
 
         }

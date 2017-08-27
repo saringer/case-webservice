@@ -45,6 +45,8 @@ public class AppConfig {
     }
 
 
+
+
     // will use random salt and generate a string of length 60
     @Bean
     public PasswordEncoder passwordEncoder() {

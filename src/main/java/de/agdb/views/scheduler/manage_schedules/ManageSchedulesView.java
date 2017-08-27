@@ -8,11 +8,8 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.backend.entities.repositories.*;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
-import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
-import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +28,15 @@ public class ManageSchedulesView extends VerticalLayout implements View {
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
-    private CategoriesRepository categoriesRepository;
-    @Autowired
     private CategoriesWrapperRepository categoriesWrapperRepository;
     @Autowired
-    private TimeLocationWrapperRepository timeLocationWrapperRepository;
+    private DailyEventRepository dailyEventRepository;
     private List<HorizontalLayout> scheduleItemsList = new ArrayList<>();
     private CalendarComponent calendar;
 
     @PostConstruct
     void init() {
-        calendar = new CalendarComponent(categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
+        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository);
         AppUI app = (AppUI) UI.getCurrent();
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -205,7 +200,10 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         header = new Label("Invitations");
         header.setSizeUndefined();
         invitationsTab.addComponent(header);
-        invitationsTab.setStyleName("nav-top-inactive");
+        invitationsTab.setStyleName("manage-schedules-nav-top-inactive");
+        invitationsTab.addLayoutClickListener((LayoutEvents.LayoutClickListener) event -> {
+            UI.getCurrent().getNavigator().navigateTo("InvitationsView");
+        });
 
 
 

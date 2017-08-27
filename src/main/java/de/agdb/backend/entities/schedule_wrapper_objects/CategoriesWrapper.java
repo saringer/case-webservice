@@ -5,6 +5,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,41 +20,44 @@ public class CategoriesWrapper {
     private long id;
     private int numberParticipants;
     private String categoryTitle;
+    private long categoryId;
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Contact.class)
-    @JoinTable(name = "CATEGORYSETUP_CONTACTS", joinColumns = { @JoinColumn(name = "CATEGORYSETUP_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONTACT_ID") })
+
+    public List<AssignedContact> getAssignedContacts() {
+        return this.assignedContacts;
+    }
+
+
+    public void addAssignedContact(AssignedContact ac) {
+        this.assignedContacts.add(ac);
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = AssignedContact.class)
+    @JoinTable(name = "CATEGORYSETUP_ASSIGNEDCONTACT", joinColumns = { @JoinColumn(name = "CATEGORYSETUP_ID") }, inverseJoinColumns = { @JoinColumn(name = "ASSIGNEDCONTACT_ID") })
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<Contact> assignedContactsList;
+    private List<AssignedContact> assignedContacts;
 
     public CategoriesWrapper() {
     }
 
-    public List<Contact> getAssignedContactsList() {
-        return assignedContactsList;
-    }
 
-    public void setAssignedContactsList(List<Contact> assignedContactsList) {
-        this.assignedContactsList = assignedContactsList;
-    }
 
-    public void addAssignedContact(Contact contact) {
-        boolean flag = true;
-        for (int i=0;i<assignedContactsList.size();i++) {
-            if (assignedContactsList.get(i).getEmail().equals(contact.getEmail())) {
-                flag = false;
+    public void removeAssignedContact(Long contactId) {
+        for (int i=0;i<assignedContacts.size();i++) {
+            if (contactId.equals(assignedContacts.get(i).getContact().getId())) {
+                assignedContacts.remove(i);
                 break;
             }
         }
-        if (flag) {
-            this.assignedContactsList.add(contact);
-
-        }
     }
 
-    public CategoriesWrapper(int numberParticipants, String category) {
+
+
+    public CategoriesWrapper(int numberParticipants, String categoryTitle, long categoryId) {
         this.numberParticipants = numberParticipants;
-        this.categoryTitle = category;
+        this.categoryTitle = categoryTitle;
+        this.categoryId = categoryId;
     }
 
     public int getNumberParticipants() {
@@ -76,6 +80,14 @@ public class CategoriesWrapper {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
     }
 
 }

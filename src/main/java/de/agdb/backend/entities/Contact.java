@@ -63,7 +63,7 @@ public class Contact implements Serializable {
 
 
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Categories.class)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER, targetEntity = Categories.class)
     @JoinTable(name = "CONTACT_CATEGORY", joinColumns = {@JoinColumn(name = "CONTACT_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORY_ID")})
     private Categories assignedCategory;
 

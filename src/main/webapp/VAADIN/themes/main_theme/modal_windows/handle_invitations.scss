@@ -1,0 +1,22 @@
+@mixin handle-invitations-window {
+
+  .invitation-item-layout {
+      font-size :13px;
+    min-height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: rgba(43, 120, 228, 0.2);
+    color: #2b78e4;
+  }
+
+  .invitations-window-header {
+    font-size: 20px;
+    background: #2b78e4;
+    color: white;
+    text-align: center;
+    padding-top: 5px;
+    padding-right: 530px;
+
+  }
+
+}

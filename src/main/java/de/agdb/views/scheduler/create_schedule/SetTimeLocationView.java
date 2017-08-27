@@ -11,8 +11,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.views.scheduler.CustomButton;
-import de.agdb.views.scheduler.modal_windows.TimeLocationWindow;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.views.scheduler.modal_windows.SetTimeLocationWindow;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import org.vaadin.addons.locationtextfield.GeocodedLocation;
@@ -68,7 +68,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
     }
 
-    private FormLayout buildContent(DayWrapper day) {
+    private FormLayout buildContent(DateWrapper day) {
 
         FormLayout formLayout = new FormLayout();
         formLayout.setWidth("100%");
@@ -86,7 +86,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         plusButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Window setTimeLocationWindow = new TimeLocationWindow(day, itemLayout, plusButtonLayout);
+                Window setTimeLocationWindow = new SetTimeLocationWindow(day, itemLayout, plusButtonLayout);
                 setTimeLocationWindow.setWidth(350, Unit.PIXELS);
                 //setTimeLocationWindow.setHeight(800, Unit.PIXELS);
                 UI.getCurrent().addWindow(setTimeLocationWindow);
@@ -120,7 +120,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         return formLayout;
     }
 
-    private CssLayout buildItem(String startTime, String endTime, String street, String streetNumber, CssLayout parentLayout, TimeLocationWrapper content, DayWrapper parentWrapper) {
+    private CssLayout buildItem(String startTime, String endTime, String street, String streetNumber, CssLayout parentLayout, TimeLocationWrapper content, DateWrapper parentWrapper) {
        /* CssLayout cssLayout = new CssLayout();
         Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
         label.setContentMode(ContentMode.HTML);
@@ -234,7 +234,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
 
         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
              AppUI app = (AppUI) UI.getCurrent();
-            List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+            List<DateWrapper> days = app.getGlobalScheduleWrapper().getDays();
 
             Boolean flag = false;
             for (int i = 0; i < days.size(); i++
@@ -284,7 +284,7 @@ public class SetTimeLocationView extends VerticalLayout implements View {
         ScheduleWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
         content.removeAllComponents();
 
-        List<DayWrapper> days = globalScheduleWrapper.getDays();
+        List<DateWrapper> days = globalScheduleWrapper.getDays();
         for (int i = 0; i < days.size(); i++) {
             content.addComponent(buildContent(days.get(i)));
         }

@@ -127,12 +127,16 @@ public class RegisterForm extends CssLayout {
         return password;
     }
 
+    public TextField getTxtEmail() {
+        return email;
+    }
+
 
     protected void showMainView() {
         AppUI ui = (AppUI) UI.getCurrent();
 
         addStyleName(ValoTheme.UI_WITH_MENU);
-        UI.getCurrent().setContent(new MainScreen(ui, viewProvider,ui.getToastr()));
+        UI.getCurrent().setContent(new MainScreen(ui, viewProvider));
         UI.getCurrent().getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 

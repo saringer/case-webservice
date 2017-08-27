@@ -4,13 +4,11 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 
@@ -180,7 +178,7 @@ public class SetDateView extends VerticalLayout implements View {
 
 
         AppUI app = (AppUI) UI.getCurrent();
-        List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+        List<DateWrapper> days = app.getGlobalScheduleWrapper().getDays();
         for (int i=0; i<days.size();i++) {
             calendar.addEvent(days.get(i), app.getGlobalScheduleWrapper().getTitle());
         }

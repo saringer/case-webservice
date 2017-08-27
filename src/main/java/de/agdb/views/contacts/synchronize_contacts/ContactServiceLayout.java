@@ -2,9 +2,9 @@ package de.agdb.views.contacts.synchronize_contacts;
 
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LiveApi;
-import com.github.scribejava.core.model.OAuth1AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.model.*;
+import com.github.scribejava.core.oauth.OAuth20Service;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import de.agdb.backend.entities.repositories.UsersRepository;
@@ -14,6 +14,11 @@ import de.agdb.backend.oauth2.OAuthPopupConfig;
 import org.springframework.stereotype.Service;
 import org.vaadin.addons.Toastr;
 import org.vaadin.addons.builder.ToastBuilder;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.concurrent.ExecutionException;
 
 import static de.agdb.Constants.*;
 
@@ -122,6 +127,43 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getExpiresIn();
                             microsoft.addStyleName("green-button");
                             toastr.toast(ToastBuilder.success("Contacts import successful").build());
+                            final OAuth20Service service = new ServiceBuilder(microsoftClientId)
+                                    .apiSecret(microsoftClientSecret)
+                                    .scope(microsoftScope)
+                                    .callback(redirectUrl)
+                                    .build(LiveApi.instance());
+                            OAuth2AccessToken testtoken = (OAuth2AccessToken) token;
+
+                            final String PROTECTED_RESOURCE_URL = "https://apis.live.net/v5.0/me/contacts";
+                            final OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+                            service.signRequest((OAuth2AccessToken) token, request);
+                            final Response response;
+                            System.out.println("Got the Access Token!");
+                            System.out.println("(if your curious it looks like this: " + testtoken.getAccessToken());
+                            System.out.println();
+
+                            try {
+                                response = service.execute(request);
+                                System.out.println("Got it! Lets see what we found...");
+                                BufferedReader in = new BufferedReader(
+                                        new InputStreamReader(response.getStream()));
+                                String inputLine;
+                                StringBuffer content = new StringBuffer();
+                                while ((inputLine = in.readLine()) != null) {
+                                    content.append(inputLine);
+                                }
+                                System.out.println(content);
+                                in.close();
+
+
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
 
                         } else {
                             ((OAuth1AccessToken) token).getToken();

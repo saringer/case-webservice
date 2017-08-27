@@ -11,6 +11,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.backend.auth.AccessControl;
 import de.agdb.backend.auth.BasicAccessControl;
+import de.agdb.backend.entities.Users;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
 import de.agdb.views.scheduler.SchedulerMainView;
@@ -18,16 +20,29 @@ import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.annotation.WebServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+
 import de.agdb.views.login.LoginForm;
+import org.vaadin.addons.ToastEasing;
+import org.vaadin.addons.ToastPosition;
+import org.vaadin.addons.ToastType;
 import org.vaadin.addons.Toastr;
+import org.vaadin.addons.builder.ToastBuilder;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
+
+/*
+Add @UIScope. That will ensure you get one instance of this class per session
+ */
 @SpringUI
 @Theme("main_theme")
 @Widgetset("WidgetSet")
@@ -39,14 +54,18 @@ public class AppUI extends UI {
      */
     private static final long serialVersionUID = 1L;
     private ApplicationContext applicationContext;
+
     private AccessControl accessControl = new BasicAccessControl();
     private ScheduleWrapper globalScheduleWrapper = new ScheduleWrapper();
-    @Autowired
-    private Toastr toastr;
+    private Toastr toastr = new Toastr();
+    private String currentUsername;
+    private ConnectorTracker tracker;
 
     // we can use either constructor autowiring or field autowiring
     @Autowired
     private SpringViewProvider viewProvider;
+    @Autowired
+    private UsersRepository usersRepository;
 
 
     @Override
@@ -62,7 +81,7 @@ public class AppUI extends UI {
 
 
         getPage().setTitle("CaSe");
-       if (!accessControl.isUserSignedIn()) {
+        if (!accessControl.isUserSignedIn()) {
             setContent(new LoginForm(accessControl, (LoginForm.LoginListener) () -> showMainView(), viewProvider, AppUI.this));
         } else {
             showMainView();
@@ -71,12 +90,11 @@ public class AppUI extends UI {
         //showMainView();
 
 
-
     }
 
     protected void showMainView() {
         addStyleName(ValoTheme.UI_WITH_MENU);
-        setContent(new MainScreen(AppUI.this, viewProvider, toastr));
+        setContent(new MainScreen(AppUI.this, viewProvider));
         getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 
@@ -92,8 +110,20 @@ public class AppUI extends UI {
         return globalScheduleWrapper;
     }
 
-    public Toastr getToastr() {
-        return toastr; }
+    public Toastr getGlobalToastr() {
+        return toastr;
+    }
+
+    public String getCurrentUsername() {
+        return this.currentUsername;
+    }
+
+    public void setCurrentUsername(String userName) {
+        this.currentUsername = userName;
+    }
+
+
+
 
     public void resetGlobalScheduleWrapper() {
         this.globalScheduleWrapper = new ScheduleWrapper();
@@ -103,4 +133,27 @@ public class AppUI extends UI {
     @VaadinServletConfiguration(ui = AppUI.class, productionMode = false)
     public static class MyUIServlet extends SpringVaadinServlet {
     }
+
+    @Override
+    public ConnectorTracker getConnectorTracker() {
+        if (this.tracker == null) {
+            this.tracker = new ConnectorTracker(this) {
+
+                @Override
+                public void registerConnector(ClientConnector connector) {
+                    try {
+                        super.registerConnector(connector);
+                    } catch (RuntimeException e) {
+                        System.out.println("Failed Connector" + connector.getClass().getSimpleName());
+                        Logger.getLogger("").log(Level.SEVERE, "Failed connector: {0}", connector.getClass().getSimpleName());
+                        throw e;
+                    }
+                }
+
+            };
+        }
+
+        return tracker;
+    }
 }
+

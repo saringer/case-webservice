@@ -9,35 +9,43 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.repositories.CategoriesRepository;
+import de.agdb.AppUI;
+import de.agdb.backend.entities.DailyEvent;
+import de.agdb.backend.entities.Users;
+import de.agdb.backend.entities.repositories.*;
 import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
-import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
+import de.agdb.backend.entities.schedule_wrapper_objects.AssignedContact;
 import de.agdb.backend.entities.schedule_wrapper_objects.CategoriesWrapper;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import org.vaadin.addons.popupextension.PopupExtension;
 
+
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class SetParticipantsWindow extends Window {
-    private DayWrapper day;
-    private CategoriesRepository categoriesRepository;
-    private Contact contact;
+    private DateWrapper day;
     private CategoriesWrapperRepository categoriesWrapperRepository;
-    private TimeLocationWrapperRepository timeLocationWrapperRepository;
+    private UsersRepository usersRepository;
+    private DailyEventRepository dailyEventRepository;
+    private List<List<AssignedContact>> gridContacts = new ArrayList<>();
+    private Contact selectedContact;
 
 
-    public SetParticipantsWindow(DayWrapper day, CategoriesRepository categoriesRepository,
+
+
+    public SetParticipantsWindow(DateWrapper day,
                                  CategoriesWrapperRepository categoriesWrapperRepository,
-                                 TimeLocationWrapperRepository timeLocationWrapperRepository) {
-        this.timeLocationWrapperRepository = timeLocationWrapperRepository;
-        this.categoriesRepository = categoriesRepository;
+
+                                 UsersRepository usersRepository, DailyEventRepository dailyEventRepository) {
         this.categoriesWrapperRepository = categoriesWrapperRepository;
+        this.usersRepository = usersRepository;
+        this.dailyEventRepository = dailyEventRepository;
+
         this.day = day;
         addStyleName("set-window-style");
         setModal(true);
@@ -75,9 +83,13 @@ public class SetParticipantsWindow extends Window {
         CustomButton backButton = createBackButton();
         backButton.setWidth(167, Unit.PIXELS);
         backButton.setHeight(40, Unit.PIXELS);
-        CssLayout buttonLayout = new CssLayout();
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setHeight(60, Unit.PIXELS);
         buttonLayout.setWidth("90%");
+        buttonLayout.setMargin(false);
+        buttonLayout.setSpacing(false);
         buttonLayout.addComponent(backButton);
+        buttonLayout.setComponentAlignment(backButton, Alignment.TOP_LEFT);
 
 
         rootLayout.addComponent(headerLayout);
@@ -187,14 +199,13 @@ public class SetParticipantsWindow extends Window {
             onOffSwitch.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<Boolean> event) {
-                            if (event.getValue() == true) {
+                    if (event.getValue() == true) {
 
-                                calendarIconLabel.setStyleName("status-green");
-                            }
-                            else {
+                        calendarIconLabel.setStyleName("status-green");
+                    } else {
 
-                                calendarIconLabel.setStyleName("status-grey");
-                            }
+                        calendarIconLabel.setStyleName("status-grey");
+                    }
                 }
             });
             wrapperLayout.addComponent(onOffSwitch);
@@ -215,9 +226,14 @@ public class SetParticipantsWindow extends Window {
         addParticipantsLayout.setSpacing(false);
         addParticipantsLayout.setSizeUndefined();
         addParticipantsLayout.setWidth("100%");
-        List<CategoriesWrapper> categoriesList = timeLocationWrapper.getCategoriesList();
+        List<CategoriesWrapper> categoriesWrapperList = timeLocationWrapper.getCategoriesList();
 
-        for (int x = 0; x < categoriesList.size(); x++) {
+        for (int x = 0; x < categoriesWrapperList.size(); x++) {
+            System.out.println("x:" + x);
+            int categoriesListIndex = x;
+            System.out.println("categoriesListIndex" + categoriesListIndex);
+
+
             // CategoryLayout
             VerticalLayout wrapperLayout = new VerticalLayout();
             wrapperLayout.setWidth("100%");
@@ -229,7 +245,7 @@ public class SetParticipantsWindow extends Window {
             headerLayout.setMargin(false);
             headerLayout.setSpacing(false);
             headerLayout.setWidth("100%");
-            Label categoryTitle = new Label(categoriesList.get(x).getCategoryTitle());
+            Label categoryTitle = new Label(categoriesWrapperList.get(x).getCategoryTitle());
             categoryTitle.setSizeUndefined();
             headerLayout.addComponent(categoryTitle);
             headerLayout.setComponentAlignment(categoryTitle, Alignment.MIDDLE_CENTER);
@@ -240,73 +256,225 @@ public class SetParticipantsWindow extends Window {
             participantsLayout.setSizeUndefined();
             participantsLayout.setWidth("100%");
 
-            for (int y = 0; y < categoriesList.get(x).getNumberParticipants(); y++) {
+            gridContacts.add(new ArrayList<>());
+            for (int y = 0; y < categoriesWrapperList.get(categoriesListIndex).getNumberParticipants(); y++) {
+                AssignedContact placeHolderObject = null;
+                gridContacts.get(categoriesListIndex).add(placeHolderObject);
+//                    gridContacts.get(x).set(y, placeHolderObject);
 
-                int categoriesListIndex = x;
 
-                VerticalLayout clickableFieldLayout = new VerticalLayout();
-                clickableFieldLayout.addStyleNames("solid-border-grey", "add-participant-field-blue");
-                clickableFieldLayout.setHeight(50, Unit.PIXELS);
-                clickableFieldLayout.setWidth("20%");
-                clickableFieldLayout.setSpacing(false);
-                clickableFieldLayout.setMargin(false);
-                Label user = new Label(FontAwesome.USER_PLUS.getHtml(), ContentMode.HTML);
-                user.addStyleName("add-participant-field-clickable");
-                clickableFieldLayout.addComponent(user);
-                clickableFieldLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+                VerticalLayout clickableUserField = new VerticalLayout();
+                clickableUserField.addStyleNames("solid-border-grey", "add-participant-field-blue");
+                clickableUserField.setHeight(50, Unit.PIXELS);
+                clickableUserField.setWidth("20%");
+                clickableUserField.setSpacing(false);
+                clickableUserField.setMargin(false);
+                Label userField = new Label(FontAwesome.USER_PLUS.getHtml(), ContentMode.HTML);
+                userField.addStyleName("add-participant-field-clickable");
+                /**
+                 * init already set users fields from the db
+                 */
+                /*System.out.println("AssignedContactsListSize" + categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId()).getAssignedContacts().size());
+                if (categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId()).getAssignedContacts().size() > 0) {
+                    CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId());
+                    AssignedContact assignedContact = categoriesWrapperObject.getAssignedContacts().get(y);
+                    System.out.println("assignedContact" + assignedContact.getContact().getFirstName());
+                }*/
+
+               // int categoriesListIndex = x;
+                int numberParticipantsIndex = y;
+
+                try {
+                    CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(categoriesListIndex).getId());
+                    AssignedContact assignedContact = categoriesWrapperObject.getAssignedContacts().get(y);
+                    gridContacts.get(categoriesListIndex).set(y, assignedContact);
+                    userField.setValue(assignedContact.getContact().getFirstName() + "<br>" + assignedContact.getContact().getLastName());
+
+                } catch (Exception e) {
+                    /**
+                     * reaching this exception means not all user field have been set up yet
+                     */
+                }
+
+
+                clickableUserField.addComponent(userField);
+
+                clickableUserField.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
                     @Override
                     public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
-                        PopupExtension popupExtension = PopupExtension.extend(user);
-                        List<Categories> list = categoriesRepository.findByTitle(categoriesList.get(categoriesListIndex).getCategoryTitle());
-                        Categories category = list.get(0);
+                        PopupExtension popupExtension = PopupExtension.extend(userField);
+                        popupExtension.addPopupVisibilityListener(new PopupExtension.PopupVisibilityListener() {
+                            @Override
+                            public void visibilityChanged(boolean isOpened) {
+                                if (!isOpened) {
+                                    selectedContact = null;
+                                }
+                            }
+                        });
 
                         VerticalLayout wrapperLayout = new VerticalLayout();
                         wrapperLayout.setSizeFull();
                         wrapperLayout.setSpacing(false);
                         wrapperLayout.setMargin(false);
 
-                        Grid<Contact> contactsGrid = new Grid<>(Contact.class);
+                        AppUI app = (AppUI) UI.getCurrent();
+                        Users currentUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+                        List<Contact> contactList = new ArrayList<>();
+                        /**
+                         * Iterate through user contacts and only select contacts which are assigned to current category
+                         */
 
-                        contactsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-                        contactsGrid.setColumns("firstName", "lastName");
-                       // contactsGrid.setItems(category.getContacts());
-                        contactsGrid.setWidth(300, Unit.PIXELS);
-                        contactsGrid.setHeight(300, Unit.PIXELS);
+                        List<Contact> contacts = currentUser.getContacts();
+
+                        for (int k = 0; k < contacts.size(); k++) {
+                            if (contacts.get(k).getAssignedCategory() != null) {
+                                if (contacts.get(k).getAssignedCategory().getId() == categoriesWrapperList.get(categoriesListIndex).getCategoryId()) {
+
+
+                                    /**
+                                     * filter contacts which are already selected
+                                     */
+                                    boolean flag = true;
+                                    CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(categoriesListIndex).getId());
+                                    List<AssignedContact> alreadyAssignedContacts = categoriesWrapperObject.getAssignedContacts();
+                                    for (int a = 0; a < alreadyAssignedContacts.size(); a++) {
+                                        if (contacts.get(k).getId().equals(alreadyAssignedContacts.get(a).getContact().getId())) {
+
+                                            flag = false;
+                                            break;
+                                        }
+                                    }
+                                    if (flag) {
+                                        contactList.add(contacts.get(k));
+                                    }
+
+                                }
+                            }
+                        }
+
+                        Grid<Contact> contactsGrid = setUpContactsGrid();
+                        contactsGrid.setItems(contactList);
                         contactsGrid.getSelectionModel().addSelectionListener(event -> {
 
                             boolean somethingSelected = !contactsGrid.getSelectedItems().isEmpty();
                             if (somethingSelected) {
-                                contact = event.getFirstSelectedItem().get();
+                                selectedContact = event.getFirstSelectedItem().get();
                             }
-
                         });
+
+
                         CssLayout buttonsLayout = new CssLayout();
                         buttonsLayout.setWidth("100%");
                         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent12 -> {
+                            selectedContact = null;
                             popupExtension.close();
+
                         };
                         CustomButton cancelButton = new CustomButton("Cancel", listener);
                         cancelButton.setWidth("50%");
                         cancelButton.setHeight("100%");
                         cancelButton.addStyleNames("cancel-button");
+
                         listener = (LayoutEvents.LayoutClickListener) layoutClickEvent1 -> {
-                            System.out.println(contact.getFirstName());
-                            if (contact == null) {
+
+                            if (selectedContact == null) {
                                 Notification.show("No contact selected",
                                         "Please select a contact before you continue",
                                         Notification.Type.WARNING_MESSAGE);
                             } else {
-                                user.setValue(contact.getFirstName() + "<br>" + contact.getLastName());
-                                /**
-                                 * We are fetching the categoriesWrapperObject from the db in order to ensure
-                                 * that we are always working with an up to date object
-                                 */
-                                CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findById(categoriesList.get(categoriesListIndex).getId()).get(0);
 
-                                categoriesWrapperObject.addAssignedContact(contact);
-                                categoriesWrapperRepository.save(categoriesWrapperObject);
-                                //timeLocationWrapperRepository.save(timeLocationWrapper);
-                                popupExtension.close();
+                                if (usersRepository.findByEmail(selectedContact.getEmail()) != null) {
+                                    /**
+                                     * We are fetching the categoriesWrapperObject from the db in order to ensure
+                                     * that we are always working with an up to date object
+                                     */
+                                    CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(categoriesListIndex).getId());
+                                    System.out.println("CategoriesWrapperID = " + categoriesWrapperObject.getId());
+
+                                    /**
+                                     * If a participant was already picked for this slot we have to remove his
+                                     * link to the event.
+                                     */
+                                    if (gridContacts.get(categoriesListIndex).get(numberParticipantsIndex) != null) {
+                                        System.out.println("GridContact Name + Assigned ID = " + gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getFirstName() + " " + gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getId());
+
+                                        Users updatedUserObject = usersRepository.findByEmail(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getEmail());
+                                        DailyEvent dailyEvent = updatedUserObject.findDailyEvent(day.getId());
+                                        /**
+                                         * When timeLocationList isn't of size 1 user is still added to a meeting at this day
+                                         * TODO: REMOVE ASSIGNEDCONTACT ENTRY FROM DB
+                                         */
+                                        if (dailyEvent.getTimeLocationList().size() > 1) {
+                                            dailyEvent.removeTimeLocationID(timeLocationWrapper.getId());
+                                            dailyEvent.removeCategoryID(categoriesWrapperObject.getId());
+                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
+                                            usersRepository.save(updatedUserObject);
+
+                                        }
+                                        /**
+                                         * When timeLocationList is of size 1 user isn't added to a single meeting and the event
+                                         * for the user can be removed from the user and the db
+                                         */
+                                        else {
+                                            updatedUserObject.removeDailyEvent(dailyEvent.getId());
+                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
+                                            usersRepository.save(updatedUserObject);
+                                            dailyEventRepository.delete(dailyEvent.getId());
+
+
+                                        }
+
+                                    }
+                                    AssignedContact newAssignedContact = new AssignedContact(selectedContact);
+                                    categoriesWrapperObject.addAssignedContact(newAssignedContact);
+                                    categoriesWrapperRepository.save(categoriesWrapperObject);
+
+
+                                    /**
+                                     *
+                                     */
+                                    userField.setValue(selectedContact.getFirstName() + "<br>" + selectedContact.getLastName());
+                                    System.out.println("CategoryListIndex: " + categoriesListIndex + " NumberParticipantsIndex: " + numberParticipantsIndex);
+                                    gridContacts.get(categoriesListIndex).set(numberParticipantsIndex, newAssignedContact);
+                                    /**
+                                     * Create the event for the selected user so that he receives the invitation
+                                     */
+                                    Users targetUser = usersRepository.findByEmail(selectedContact.getEmail());
+                                    if (targetUser != null) {
+                                        DailyEvent dailyEvent = targetUser.findDailyEvent(day.getId());
+
+                                        /**
+                                         * User not part of any timeLocationWrapper of this daily event
+                                         */
+                                        if (dailyEvent == null) {
+                                            DailyEvent newDailyEvent = new DailyEvent();
+                                            newDailyEvent.setDateWrapperId(day.getId());
+                                            newDailyEvent.addTimeLocationId(timeLocationWrapper.getId());
+                                            newDailyEvent.addCategoriesWrapperId(categoriesWrapperObject.getId());
+                                            targetUser.addDailyEvent(newDailyEvent);
+                                            usersRepository.save(targetUser);
+                                        }
+
+                                        /**
+                                         * User already part of this dailyevent with at least one timeLocationWrapper
+                                         */
+                                        else {
+                                            dailyEvent.addTimeLocationId(timeLocationWrapper.getId());
+                                            dailyEvent.addCategoriesWrapperId(categoriesWrapperObject.getId());
+                                            usersRepository.save(targetUser);
+                                        }
+                                    }
+
+                                    /**
+                                     * Reset the selected contact placeholder object and close the popup
+                                     */
+                                    selectedContact = null;
+                                    popupExtension.close();
+                                } else {
+                                    Notification.show("No such user",
+                                            "This contact is not yet registered",
+                                            Notification.Type.WARNING_MESSAGE);
+                                }
 
                             }
                         };
@@ -324,8 +492,8 @@ public class SetParticipantsWindow extends Window {
                     }
                 });
 
-                clickableFieldLayout.setComponentAlignment(user, Alignment.MIDDLE_CENTER);
-                participantsLayout.addComponent(clickableFieldLayout);
+                clickableUserField.setComponentAlignment(userField, Alignment.MIDDLE_CENTER);
+                participantsLayout.addComponent(clickableUserField);
             }
 
 
@@ -352,8 +520,26 @@ public class SetParticipantsWindow extends Window {
         };
 
         CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
-        backButton.addStyleNames("back-button", "back-button-margin");
+        backButton.addStyleNames("back-button");
+        //back-button-margin
         return backButton;
+    }
+
+    private Grid setUpContactsGrid() {
+        Grid<Contact> contactsGrid = new Grid<>(Contact.class);
+
+        contactsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        contactsGrid.removeAllColumns();
+        String id = contactsGrid.addColumn(contact -> {
+            // put your calculations for the column here
+            return contact.getFirstName() + " " + contact.getLastName();
+        }).getId();
+        contactsGrid.removeHeaderRow(0);
+//        contactsGrid.sort(id);
+        contactsGrid.setWidth(200, Unit.PIXELS);
+        contactsGrid.setHeight(200, Unit.PIXELS);
+
+        return contactsGrid;
     }
 
 

@@ -5,6 +5,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.backend.entities.Users;
+import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.MainScreen;
 import de.agdb.views.scheduler.SchedulerMainView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class RegisterButtonListener implements Button.ClickListener {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    UsersRepository usersRepository;
+
+    @Autowired
     private JdbcTemplate jdbcTemp;
 
     RegisterForm parent;
@@ -35,14 +40,20 @@ public class RegisterButtonListener implements Button.ClickListener {
             parent = (RegisterForm) source.getParent().getParent().getParent().getParent().getParent();
             TextField userName = parent.getTxtUsername();
             PasswordField password = parent.getTxtPassword();
+            TextField email = parent.getTxtEmail();
 
 
             if (!userName.isEmpty() && !password.isEmpty()) {
                 final String encodedPassword = passwordEncoder.encode(password.getValue());
 
-                jdbcTemp.update(
+               /* jdbcTemp.update(
                         "insert into users (username, password) values (?, ?)",
-                        userName.getValue(), encodedPassword);
+                        userName.getValue(), encodedPassword);*/
+                Users newUser = new Users();
+                newUser.setUsername(userName.getValue());
+                newUser.setPassword(encodedPassword);
+                newUser.setEmail(email.getValue());
+                usersRepository.save(newUser);
 
                 UI.getCurrent().setContent(new LoginForm(parent.getAccessControl(), new LoginForm.LoginListener() {
                     @Override
@@ -70,10 +81,9 @@ public class RegisterButtonListener implements Button.ClickListener {
     }
 
     protected void showMainView() {
-        AppUI app = (AppUI) UI.getCurrent();
 
         UI.getCurrent().addStyleName(ValoTheme.UI_WITH_MENU);
-        UI.getCurrent().setContent(new MainScreen(parent.getUi(),parent.getViewProvider(), app.getToastr()));
+        UI.getCurrent().setContent(new MainScreen(parent.getUi(),parent.getViewProvider()));
         UI.getCurrent().getNavigator().navigateTo(SchedulerMainView.VIEW_NAME);
     }
 

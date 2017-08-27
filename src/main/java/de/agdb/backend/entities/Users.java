@@ -54,6 +54,11 @@ public class Users implements Serializable {
     @JoinTable(name = "USER_SCHEDULE", joinColumns = {@JoinColumn(name = "USER_ID")}, inverseJoinColumns = {@JoinColumn(name = "SCHEDULE_ID")})
     private List<ScheduleWrapper> schedules;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = DailyEvent.class)
+    @JoinTable(name = "USER_DAILYEVENT", joinColumns = {@JoinColumn(name = "USER_ID")}, inverseJoinColumns = {@JoinColumn(name = "DAILYEVENT_ID")})
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<DailyEvent> dailyEvents;
+
 
     // Public methods
     public Users() {
@@ -168,8 +173,32 @@ public class Users implements Serializable {
         this.schedules.add(schedule);
     }
 
-    public void removeSchedule(ScheduleWrapper schedule) {
-        this.schedules.remove(schedule);
+    public List<DailyEvent> getEvents() {
+        return dailyEvents;
+    }
+
+    public void addDailyEvent(DailyEvent event) {
+        this.dailyEvents.add(event);
+    }
+
+    public DailyEvent findDailyEvent(Long dateWrapperId) {
+        DailyEvent result = null;
+        for (int i=0; i<dailyEvents.size();i++) {
+            if (dateWrapperId.equals(dailyEvents.get(i).getDateWrapperId())) {
+                result = dailyEvents.get(i);
+                break;
+            }
+        }
+        return result;
+    }
+
+    public void removeDailyEvent(Long dailyEventId) {
+        for (int i=0; i<dailyEvents.size();i++) {
+            if (dailyEventId.equals(dailyEvents.get(i).getId())) {
+                dailyEvents.remove(i);
+                break;
+            }
+        }
     }
 
 

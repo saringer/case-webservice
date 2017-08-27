@@ -4,10 +4,8 @@ import com.vaadin.ui.*;
 
 import de.agdb.AppUI;
 
-import de.agdb.backend.entities.repositories.CategoriesRepository;
-import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
-import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.repositories.*;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 
 import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
 import org.vaadin.addon.calendar.Calendar;
@@ -19,11 +17,13 @@ import java.text.DateFormatSymbols;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class CalendarComponent extends VerticalLayout {
 
     Button nextButton;
     Button prevButton;
+    Button todayButton;
     GregorianCalendar calendar;
     private Date currentMonthsFirstDate;
     Calendar<MeetingItem> calendarComponent;
@@ -42,16 +42,13 @@ public class CalendarComponent extends VerticalLayout {
     private MeetingDataProvider eventProvider;
     private AppUI app;
     private boolean readonly = false;
-    private CategoriesRepository categoriesRepository;
     private CategoriesWrapperRepository categoriesWrapperRepository;
-    private TimeLocationWrapperRepository timeLocationWrapperRepository;
+    private DailyEventRepository dailyEventRepository;
+    private UsersRepository usersRepository;
 
     public CalendarComponent() {
         this.readonly = true;
         setSizeFull();
-        //setHeight("500px");
-        //setMargin(true);
-        //setSpacing(true);
         initContent();
     }
 
@@ -59,24 +56,20 @@ public class CalendarComponent extends VerticalLayout {
         this.app = app;
         setSizeFull();
         this.readonly = false;
-        //setHeight("500px");
         setMargin(true);
         setSpacing(true);
         initContent();
 
     }
 
-    public CalendarComponent(CategoriesRepository categoriesRepository,
-                             CategoriesWrapperRepository categoriesWrapperRepository,
-                             TimeLocationWrapperRepository timeLocationWrapperRepository) {
-        this.timeLocationWrapperRepository = timeLocationWrapperRepository;
+    public CalendarComponent(
+            CategoriesWrapperRepository categoriesWrapperRepository,
+            UsersRepository usersRepository, DailyEventRepository dailyEventRepository) {
+        this.usersRepository = usersRepository;
+        this.dailyEventRepository = dailyEventRepository;
         this.readonly = true;
-        this.categoriesRepository = categoriesRepository;
         this.categoriesWrapperRepository = categoriesWrapperRepository;
         setSizeFull();
-        //setHeight("500px");
-        //setMargin(true);
-        //setSpacing(true);
         initContent();
     }
 
@@ -90,6 +83,8 @@ public class CalendarComponent extends VerticalLayout {
 
     private void initLayoutContent() {
         initNavigationButtons();
+        todayButton.addStyleNames("float-left");
+
         HorizontalLayout hl = new HorizontalLayout();
         hl.setWidth("100%");
         hl.setSpacing(true);
@@ -112,6 +107,7 @@ public class CalendarComponent extends VerticalLayout {
         eventProvider = new MeetingDataProvider();
 
         calendarComponent = new Calendar(eventProvider);
+        calendarComponent.setLocale(Locale.UK);
         calendarComponent.addStyleName("meetings");
         calendarComponent.setSizeFull();
         calendarComponent.setResponsive(true);
@@ -179,6 +175,10 @@ public class CalendarComponent extends VerticalLayout {
                 previousMonth();
             }
         });
+
+        todayButton = new Button("Today") {
+
+        };
     }
 
     private void nextMonth() {
@@ -270,7 +270,7 @@ public class CalendarComponent extends VerticalLayout {
 
             final Meeting meeting = item.getMeeting();
 
-            Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
+            Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesWrapperRepository, usersRepository, dailyEventRepository);
             window.setWidth("70%");
             window.setHeight(700, Unit.PIXELS);
 
@@ -283,7 +283,7 @@ public class CalendarComponent extends VerticalLayout {
 
         List<MeetingItem> meetingItemList = eventProvider.getItems(event.getStart(), event.getStart());
         if (meetingItemList.size() == 0) {
-            app.getGlobalScheduleWrapper().addDay(new DayWrapper(event.getStart()));
+            app.getGlobalScheduleWrapper().addDay(new DateWrapper(event.getStart()));
 
             Meeting meeting = new Meeting();
 
@@ -320,7 +320,7 @@ public class CalendarComponent extends VerticalLayout {
         return eventProvider.isEmpty();
     }
 
-    public void addEvent(DayWrapper day, String scheduleTitle) {
+    public void addEvent(DateWrapper day, String scheduleTitle) {
         Meeting meeting = new Meeting();
 
         meeting.setStart(day.getDay());

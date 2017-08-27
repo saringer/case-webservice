@@ -1,5 +1,10 @@
 package de.agdb.backend.auth;
 
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
+
+@SpringComponent
+@UIScope
 public class BasicAccessControl implements AccessControl {
 
     @Override

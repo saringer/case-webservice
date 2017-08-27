@@ -1,6 +1,6 @@
 package de.agdb.views.scheduler.create_schedule.calendar_component;
 
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 
 import java.time.ZonedDateTime;
 
@@ -26,7 +26,7 @@ public class Meeting {
     private State state = empty;
 
 
-    private DayWrapper dayObject;
+    private DateWrapper dayObject;
 
     public Meeting() {
 
@@ -76,11 +76,11 @@ public class Meeting {
         return state != State.confirmed;
     }
 
-    public DayWrapper getDayObject() {
+    public DateWrapper getDayObject() {
         return dayObject;
     }
 
-    public void setDayObject(DayWrapper dayObject) {
+    public void setDayObject(DateWrapper dayObject) {
         this.dayObject = dayObject;
     }
 

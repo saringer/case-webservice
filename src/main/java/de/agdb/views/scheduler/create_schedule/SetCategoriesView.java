@@ -14,39 +14,33 @@ import de.agdb.backend.entities.Categories;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.backend.entities.schedule_wrapper_objects.CategoriesWrapper;
-import de.agdb.backend.entities.schedule_wrapper_objects.DayWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.backend.entities.schedule_wrapper_objects.TimeLocationWrapper;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.*;
-import org.vaadin.addons.builder.ToastBuilder;
 import org.vaadin.risto.stepper.IntStepper;
 
 
 import javax.annotation.PostConstruct;
-import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
-
 @UIScope
 @SpringView(name = SetCategoriesView.VIEW_NAME)
-public class SetCategoriesView extends VerticalLayout implements View, ToastrListener {
+public class SetCategoriesView extends VerticalLayout implements View {
 
     public static final String VIEW_NAME = "SetCategoriesView";
     private FormLayout content;
-    Toastr toastr = new Toastr();
+
 
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
 
     @PostConstruct
     void init() {
-        toastr.registerToastrListener(this);
 
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -81,11 +75,10 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         formWrapper.setComponentAlignment(content, Alignment.MIDDLE_CENTER);
         //formWrapper.setComponentAlignment(button,Alignment.BOTTOM_RIGHT);
         formWrapper.setExpandRatio(content, 1);
-        formWrapper.addComponent(toastr);
 
     }
 
-    private FormLayout buildContent(DayWrapper day) {
+    private FormLayout buildContent(DateWrapper day) {
 
         FormLayout formLayout = new FormLayout();
         formLayout.setWidth("100%");
@@ -142,7 +135,6 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     headerLayout.setHeight(30, Unit.PIXELS);
                     headerLayout.addComponent(new Label("Set the number of participants"));
                     headerLayout.addStyleNames("modal-window-header");
-                    headerLayout.addStyleName("solid-border");
                     VerticalLayout selectLayout = new VerticalLayout();
                     selectLayout.setWidth("100%");
                     selectLayout.setHeight(60, Unit.PIXELS);
@@ -162,7 +154,6 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     selectLayout.addComponent(intStepper);
                     selectLayout.setComponentAlignment(intStepper, Alignment.MIDDLE_LEFT);
                     selectLayout.addStyleNames("modal-window-content");
-                    selectLayout.addStyleNames("solid-border");
 
 
                     setNumberOfParticipants.addComponent(headerLayout);
@@ -184,12 +175,11 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     headerLayout.setHeight(30, Unit.PIXELS);
                     headerLayout.addComponent(new Label("Select category"));
                     headerLayout.addStyleNames("modal-window-header");
-                    headerLayout.addStyleName("solid-border");
 
 
                     VerticalLayout selectCategoryLayout = new VerticalLayout();
                     selectCategoryLayout.setSizeFull();
-                    selectCategoryLayout.addStyleNames("modal-window-content", "solid-border");
+                    selectCategoryLayout.addStyleNames("modal-window-content");
 
 
                     Grid selectCategory = new Grid(Categories.class);
@@ -271,7 +261,8 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
                     listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> selectCategory.getSelectionModel().getFirstSelectedItem().ifPresent(item -> {
                         Categories categoryItem = (Categories) item;
                         String categoryTitle = categoryItem.getTitle();
-                        CategoriesWrapper categoryWrapper = new CategoriesWrapper(intStepper.getValue(), categoryTitle);
+                        Long categoryId = categoryItem.getId();
+                        CategoriesWrapper categoryWrapper = new CategoriesWrapper(intStepper.getValue(), categoryTitle, categoryId);
                         day.getTimeAndLocationList().get(index).addCategory(categoryWrapper);
                         itemLayout.removeComponent(plusButtonLayout);
                         itemLayout.addComponent(buildItem(intStepper.getValue(), categoryTitle, itemLayout, categoryWrapper, day.getTimeAndLocationList().get(index)));
@@ -312,14 +303,15 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             plusButtonLayout.addStyleName("add-button");
             //plusButtonLayout.setHeight(52, Unit.PIXELS);
             plusButtonLayout.setHeight("100%");
-            plusButtonLayout.setWidth("24%");
+            plusButtonLayout.setWidth(239, Unit.PIXELS);
 
         /* init already selected categories */
             itemLayout.removeComponent(plusButtonLayout);
             for (int x = 0; x < day.getTimeAndLocationList().get(index).getCategoriesList().size(); x++) {
                 TimeLocationWrapper timeLocationWrapper = day.getTimeAndLocationList().get(index);
                 CategoriesWrapper object = timeLocationWrapper.getCategoriesList().get(x);
-                itemLayout.addComponent(buildItem(object.getNumberParticipants(), object.getCategoryTitle(), itemLayout, object, timeLocationWrapper));
+                CssLayout categoryItem = buildItem(object.getNumberParticipants(), object.getCategoryTitle(), itemLayout, object, timeLocationWrapper);
+                itemLayout.addComponent(categoryItem);
             }
             itemLayout.addComponent(plusButtonLayout);
 
@@ -338,7 +330,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             timeLocationHeader.setMargin(false);
             timeLocationHeader.setSpacing(false);
             timeLocationHeader.setSizeUndefined();
-            timeLocationHeader.setWidth(150, Unit.PIXELS);
+            timeLocationHeader.setWidth(239, Unit.PIXELS);
             timeLocationHeader.setHeight("100%");
             timeLocationHeader.addStyleName("item-box-blue");
             Label label = new Label(startTime + " - " + endTime + "<br>" + street + " " + streetNumber);
@@ -348,13 +340,11 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
             timeLocationHeader.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 
 
-            wrapperLayout.addComponent(itemLayout);
-           // wrapperLayout.addComponent(plusButtonLayout);++
-            //itemLayout.addComponent(plusButtonLayout);
+
             itemLayout.addComponent(plusButtonLayout);
 
 
-            horizontalWrapperLayout.addComponents(timeLocationHeader);
+            horizontalWrapperLayout.addComponent(timeLocationHeader);
            // horizontalWrapperLayout.addComponents(wrapperLayout);
             horizontalWrapperLayout.addComponent(itemLayout);
             horizontalWrapperLayout.setExpandRatio(itemLayout,1);
@@ -378,7 +368,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         ScheduleWrapper globalScheduleWrapper = app.getGlobalScheduleWrapper();
         content.removeAllComponents();
 
-        List<DayWrapper> days = globalScheduleWrapper.getDays();
+        List<DateWrapper> days = globalScheduleWrapper.getDays();
         for (int i = 0; i < days.size(); i++) {
             content.addComponent(buildContent(days.get(i)));
         }
@@ -393,9 +383,9 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         textLabel.setContentMode(ContentMode.HTML);
         cssLayout.addComponent(textLabel);
         cssLayout.setStyleName("item-box");
-        //cssLayout.setHeight(52, Unit.PIXELS);
-        cssLayout.setHeight("100%");
-        cssLayout.setWidth("24%");
+        cssLayout.setHeight(54, Unit.PIXELS);
+        //cssLayout.setHeight("100%");
+        cssLayout.setWidth(239,Unit.PIXELS);
 
         CssLayout customDeleteButton = new CssLayout();
         customDeleteButton.setWidth(20, Unit.PIXELS);
@@ -404,7 +394,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         test.setSizeUndefined();
         test.setContentMode(ContentMode.HTML);
         customDeleteButton.addComponent(test);
-        customDeleteButton.addStyleNames("topcorner-delete-button", "solid-border");
+        customDeleteButton.addStyleNames("topcorner-delete-button");
         customDeleteButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             itemLayout.removeComponent(cssLayout);
             timeLocationWrapper.removeCategory(object);
@@ -476,7 +466,7 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
         nav.setMargin(false);
         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             AppUI app = (AppUI) UI.getCurrent();
-            List<DayWrapper> days = app.getGlobalScheduleWrapper().getDays();
+            List<DateWrapper> days = app.getGlobalScheduleWrapper().getDays();
 
             Boolean flag = true;
 
@@ -531,40 +521,8 @@ public class SetCategoriesView extends VerticalLayout implements View, ToastrLis
 
     }
 
-    @Override
-    public void onShown() {
-
-    }
-
-    @Override
-    public void onHidden() {
-
-    }
-
-    @Override
-    public void onClick() {
-        Notification.show("ANGEKLICKT YIPPI");
-    }
-
-    @Override
-    public void onCloseButtonClick() {
-
-    }
 
 
-    public class Bean implements Serializable {
-        Double number = 1d;
-
-        public Double getNumber() {
-            return number;
-        }
-
-        public void setNumber(Double number) {
-            this.number = number;
-        }
-
-
-    }
 
 
 }

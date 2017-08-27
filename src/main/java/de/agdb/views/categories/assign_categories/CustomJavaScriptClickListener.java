@@ -48,6 +48,7 @@ public class CustomJavaScriptClickListener implements JavaScriptFunction {
         categoriesGrid.removeHeaderRow(0);
 
         categoriesGrid.setItems(user.getCategories());
+        categoriesGrid.sort("title");
         categoriesGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
         categoriesGrid.getSelectionModel().addSelectionListener(event -> {
             boolean somethingSelected = !categoriesGrid.getSelectedItems().isEmpty();

@@ -10,13 +10,10 @@ public class Constants {
         Location where the user gets redirected after successful OAuth2 authentication in the synchronize contacts
         view
      */
-    public static final String redirectUrl = "https://127.0.0.1:8843/";
-
+    public static final String redirectUrl = "https://127.0.0.1:80/";
     /*
         Application registered on the "Google API Console" via "jim.saringer@gmail.com"
      */
-    //public static final String googleClientId = "833038328979-iglf2mm0jap840b0vaq4jvo1miqvtkb4.apps.googleusercontent.com";
-   // public static final String googleClientSecret = "Q_Pb1hvhGs1hH1CIsqYv1S1M";
     public static final String googleClientId = "10783402561-trps0deukc9tbqlub7hv3uvljge1cds9.apps.googleusercontent.com";
     public static final String googleClientSecret = "AEHxKva-Sw9FtvJ3N9ArguA4";
     // Scope for accessing Google Contacts API
@@ -34,7 +31,7 @@ public class Constants {
     public static final String microsoftClientId = "79ca92bd-c42e-4d1e-b591-99df76f6832f";
     public static final String microsoftClientSecret = "qCz61Eb3S1tpPqdGpDxv000";
     // Scope for accessing Microsoft Contacts API
-    public static final String microsoftScope = "wl.basic";
+    public static final String microsoftScope = "wl.contacts_emails";
 
     /*
 

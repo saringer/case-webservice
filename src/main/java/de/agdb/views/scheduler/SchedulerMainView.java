@@ -11,27 +11,27 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.CategoriesRepository;
-import de.agdb.backend.entities.repositories.CategoriesWrapperRepository;
-import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.entities.repositories.*;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.vaadin.addon.calendar.Calendar;
-import org.vaadin.addons.Toastr;
+import org.vaadin.addons.*;
 import org.vaadin.addons.builder.ToastBuilder;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
+
 
 @UIScope
 @SpringView(name = SchedulerMainView.VIEW_NAME)
-public class SchedulerMainView extends VerticalLayout implements View {
+public class SchedulerMainView extends VerticalLayout implements View, ToastrListener {
     // Empty view name as this will be the initially loaded view
     public static final String VIEW_NAME = "";
-    private Toastr toastr = new Toastr();
+    private Toastr toastr;
     private CalendarComponent calendar;
     @Autowired
     private UsersRepository usersRepository;
@@ -41,10 +41,15 @@ public class SchedulerMainView extends VerticalLayout implements View {
     CategoriesWrapperRepository categoriesWrapperRepository;
     @Autowired
     TimeLocationWrapperRepository timeLocationWrapperRepository;
+    @Autowired
+    DailyEventRepository dailyEventRepository;
 
 
     @PostConstruct
     void init() {
+        AppUI app = (AppUI) UI.getCurrent();
+        this.toastr = app.getGlobalToastr();
+
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setSizeFull();
@@ -64,7 +69,7 @@ public class SchedulerMainView extends VerticalLayout implements View {
         form.setSpacing(false);
         //form.addStyleNames("solid-border");
 
-        calendar = new CalendarComponent(categoriesRepository, categoriesWrapperRepository, timeLocationWrapperRepository);
+        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository);
         calendar.setSizeUndefined();
         calendar.setWidth("100%");
         calendar.setHeight("90%");
@@ -89,26 +94,69 @@ public class SchedulerMainView extends VerticalLayout implements View {
         formWrapper.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
         setExpandRatio(formWrapper, 1);
 
+        toastr.registerToastrListener(this);
 
-        addComponent(toastr);
+        form.addComponent(toastr);
 
-
+        //initCalendarEvents();
 
 
     }
 
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        AppUI app = (AppUI) UI.getCurrent();
+        toastr.remove();
+
 
         if (event.getParameters().length() > 0) {
             toastr.toast(ToastBuilder.success("Event created").build());
 
         }
+        initCalendarEvents();
+        loadInvitationsNotification();
 
-        if (!usersRepository.findByUsername(app.getAccessControl().getUsername()).isEmpty()) {
+
+    }
+
+    private void loadInvitationsNotification() {
+        AppUI app = (AppUI) UI.getCurrent();
+        if (app.getCurrentUsername() != null) {
+            Users thisUser = usersRepository.findByUsername(app.getCurrentUsername()).get(0);
+            int unreadInvitations = 0;
+            for (int i = 0; i < thisUser.getEvents().size(); i++) {
+                if (thisUser.getEvents().get(i).isHasBeenReadOnce() == false) {
+                    unreadInvitations++;
+                }
+            }
+            if (unreadInvitations > 0) {
+                toastr.toast(
+                        ToastBuilder.of(ToastType.valueOf("Info"), unreadInvitations + " unread invitations " + app.getCurrentUsername())
+                                //.caption("Title")
+                                .options(having()
+                                        .closeButton(false)
+                                        .newestOnTop(true)
+                                        .tapToDismiss(true)
+                                        .position(ToastPosition.Top_Right)
+                                        .rightToLeft(false)
+                                        .timeOut(0)
+                                        .extendedTimeOut(0)
+                                        .hideDuration(0)
+                                        .showEasing(ToastEasing.Swing)
+                                        .build())
+                                .build());
+            }
+        }
+
+    }
+
+
+    private void initCalendarEvents() {
+        AppUI app = (AppUI) UI.getCurrent();
+
+        if (!usersRepository.findByUsername(app.getCurrentUsername()).isEmpty()) {
             calendar.clearEvents(true);
-            Users user = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            Users user = usersRepository.findByUsername(app.getCurrentUsername()).get(0);
             List<ScheduleWrapper> schedules = user.getSchedules();
             for (int i = 0; i < schedules.size(); i++) {
                 for (int x = 0; x < schedules.get(i).getDays().size(); x++) {
@@ -116,15 +164,6 @@ public class SchedulerMainView extends VerticalLayout implements View {
                 }
             }
         }
-        /**
-         *  1
-         When you do navigator.addView(Views.USERLIST, UserlistView.class);
-         It creates a StaticViewProvider which is not handled by Spring and creates a view using 'new'. So no spring autowiring happens for 'addView' If you use springViewProvider Autowiring is handled by Spring.
-         So do not do navigator.addView(), instead rely on springViewProvider when using Spring+Vaadin.
-         */
-
-
-
     }
 
     private HorizontalLayout createBottomNav() {
@@ -169,4 +208,26 @@ public class SchedulerMainView extends VerticalLayout implements View {
     }
 
 
+    @Override
+    public void onShown() {
+
+    }
+
+    @Override
+    public void onHidden() {
+
+        AppUI app = (AppUI) UI.getCurrent();
+
+
+    }
+
+    @Override
+    public void onClick() {
+        UI.getCurrent().getNavigator().navigateTo("InvitationsView");
+    }
+
+    @Override
+    public void onCloseButtonClick() {
+
+    }
 }
