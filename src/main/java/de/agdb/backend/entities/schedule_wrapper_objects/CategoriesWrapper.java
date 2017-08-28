@@ -17,10 +17,10 @@ public class CategoriesWrapper {
     @Id
     @Column(name = "CATEGORYSETUP_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private int numberParticipants;
     private String categoryTitle;
-    private long categoryId;
+    private Long categoryId;
 
 
 
@@ -52,9 +52,20 @@ public class CategoriesWrapper {
         }
     }
 
+    public AssignedContact findAssignedContact(String contactEmail) {
+        AssignedContact result = null;
+        for (int i=0;i<assignedContacts.size();i++) {
+            if (contactEmail.equals(assignedContacts.get(i).getContact().getEmail())) {
+                result = assignedContacts.get(i);
+                break;
+            }
+        }
+        return result;
+    }
 
 
-    public CategoriesWrapper(int numberParticipants, String categoryTitle, long categoryId) {
+
+    public CategoriesWrapper(int numberParticipants, String categoryTitle, Long categoryId) {
         this.numberParticipants = numberParticipants;
         this.categoryTitle = categoryTitle;
         this.categoryId = categoryId;
@@ -74,19 +85,19 @@ public class CategoriesWrapper {
         this.categoryTitle = categoryTitle;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

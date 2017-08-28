@@ -21,7 +21,7 @@ public class Categories implements Serializable {
     @Id
     @Column(name = "CATEGORY_ID", updatable=false, nullable=false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NotNull
     @Unique
     private String title;
@@ -67,11 +67,11 @@ public class Categories implements Serializable {
         this.description = description;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

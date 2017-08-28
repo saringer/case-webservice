@@ -13,7 +13,7 @@ public class TimeLocationWrapper {
     @Id
     @Column(name = "TIMELOCATION_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private int startHour;
     private int startMin;
     private int endHour;
@@ -23,6 +23,8 @@ public class TimeLocationWrapper {
     private String location;
     private String street;
     private String streetNumber;
+
+    private boolean isActive = false;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = CategoriesWrapper.class)
     @JoinTable(name = "TIMELOCATION_CATEGORYSETUP", joinColumns = {@JoinColumn(name = "TIMELOCATION_ID")}, inverseJoinColumns = {@JoinColumn(name = "CATEGORYSETUP_ID")})
     List<CategoriesWrapper> categoriesList;
@@ -70,11 +72,11 @@ public class TimeLocationWrapper {
         this.categoriesList = categoriesList;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -140,6 +142,14 @@ public class TimeLocationWrapper {
 
     public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
 

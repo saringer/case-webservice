@@ -10,10 +10,7 @@ import com.vaadin.ui.*;
 import de.agdb.AppUI;
 import de.agdb.backend.entities.DailyEvent;
 import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.DailyEventRepository;
-import de.agdb.backend.entities.repositories.DateWrapperRepository;
-import de.agdb.backend.entities.repositories.TimeLocationWrapperRepository;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.entities.repositories.*;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 import de.agdb.views.scheduler.modal_windows.HandleInvitationsWindow;
@@ -37,6 +34,8 @@ public class InvitationsView extends VerticalLayout implements View {
     private DateWrapperRepository dateWrapperRepository;
     @Autowired
     TimeLocationWrapperRepository timeLocationWrapperRepository;
+    @Autowired
+    CategoriesWrapperRepository categoriesWrapperRepository;
     private List<HorizontalLayout> scheduleItemsList = new ArrayList<>();
 
 
@@ -91,7 +90,6 @@ public class InvitationsView extends VerticalLayout implements View {
 
         schedulesList.addStyleNames("overflow-auto", "schedule-list");
 
-        //initSchedules(schedulesList, app);
 
         scheduleListPanel.setContent(schedulesList);
 
@@ -154,13 +152,13 @@ public class InvitationsView extends VerticalLayout implements View {
         if (!usersRepository.findByUsername(userName).isEmpty()) {
             Users thisUser = usersRepository.findByUsername(userName).get(0);
 
-            List<DailyEvent> events = thisUser.getEvents();
+            List<DailyEvent> dailyEvents = thisUser.getEvents();
 
             /**
              * Load up daily events
              */
-            for (int i = 0; i < events.size(); i++) {
-                schedulesListLayout.addComponent(buildItem(events.get(i)));
+            for (int i = 0; i < dailyEvents.size(); i++) {
+                schedulesListLayout.addComponent(buildItem(dailyEvents.get(i)));
 
             }
 
@@ -191,11 +189,11 @@ public class InvitationsView extends VerticalLayout implements View {
 
 
 //        Label title = new Label(dateWrapperRepository.findOne(events.get(0).getDateWrapperId()).getDay().toString());
-        Label title = new Label("Title");
+        Label title = new Label(dailyEvent.getTitle());
         //title.addStyleNames(ValoTheme.LABEL_H3);
 
         Label description = new Label();
-        description.setValue("Event Description");
+        description.setValue(dailyEvent.getDescription());
         description.setWidth("100%");
 
         textLayout.addComponent(title);
@@ -207,10 +205,11 @@ public class InvitationsView extends VerticalLayout implements View {
              * When the invitation is clicked we set the respective flag in order to remove this event from the notification
              * list for unread invitations.
              */
-           // de.agdb.backend.entities.Event updatedEvent = eventRepository.findOne(event.getId());
-          //  updatedEvent.setHasBeenReadOnce(true);
-           // eventRepository.save(updatedEvent);
-            Window window = new HandleInvitationsWindow(dailyEvent, timeLocationWrapperRepository);
+            DailyEvent updatedEvent = dailyEventRepository.findOne(dailyEvent.getId());
+            updatedEvent.setHasBeenReadOnce(true);
+            dailyEventRepository.save(updatedEvent);
+            updatedEvent = dailyEventRepository.findOne(dailyEvent.getId());
+            Window window = new HandleInvitationsWindow(updatedEvent, timeLocationWrapperRepository, categoriesWrapperRepository, usersRepository, dateWrapperRepository);
             window.setWidth("60%");
             window.setHeight(600, Unit.PIXELS);
 

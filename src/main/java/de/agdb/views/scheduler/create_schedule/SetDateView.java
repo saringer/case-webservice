@@ -180,7 +180,7 @@ public class SetDateView extends VerticalLayout implements View {
         AppUI app = (AppUI) UI.getCurrent();
         List<DateWrapper> days = app.getGlobalScheduleWrapper().getDays();
         for (int i=0; i<days.size();i++) {
-            calendar.addEvent(days.get(i), app.getGlobalScheduleWrapper().getTitle());
+            calendar.addEvent(days.get(i), app.getGlobalScheduleWrapper().getTitle(), app.getGlobalScheduleWrapper().getDescription());
         }
 
 

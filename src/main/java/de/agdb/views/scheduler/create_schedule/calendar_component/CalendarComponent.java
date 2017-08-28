@@ -7,6 +7,7 @@ import de.agdb.AppUI;
 import de.agdb.backend.entities.repositories.*;
 import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 
+import de.agdb.views.scheduler.modal_windows.InvitationWindow;
 import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
 import org.vaadin.addon.calendar.Calendar;
 import org.vaadin.addon.calendar.item.BasicItemProvider;
@@ -14,10 +15,8 @@ import org.vaadin.addon.calendar.handler.BasicWeekClickHandler;
 import org.vaadin.addon.calendar.ui.CalendarComponentEvents;
 
 import java.text.DateFormatSymbols;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class CalendarComponent extends VerticalLayout {
 
@@ -45,6 +44,7 @@ public class CalendarComponent extends VerticalLayout {
     private CategoriesWrapperRepository categoriesWrapperRepository;
     private DailyEventRepository dailyEventRepository;
     private UsersRepository usersRepository;
+    private TimeLocationWrapperRepository timeLocationWrapperRepository;
 
     public CalendarComponent() {
         this.readonly = true;
@@ -64,11 +64,12 @@ public class CalendarComponent extends VerticalLayout {
 
     public CalendarComponent(
             CategoriesWrapperRepository categoriesWrapperRepository,
-            UsersRepository usersRepository, DailyEventRepository dailyEventRepository) {
+            UsersRepository usersRepository, DailyEventRepository dailyEventRepository, TimeLocationWrapperRepository timeLocationWrapperRepository) {
         this.usersRepository = usersRepository;
         this.dailyEventRepository = dailyEventRepository;
         this.readonly = true;
         this.categoriesWrapperRepository = categoriesWrapperRepository;
+        this.timeLocationWrapperRepository = timeLocationWrapperRepository;
         setSizeFull();
         initContent();
     }
@@ -204,6 +205,11 @@ public class CalendarComponent extends VerticalLayout {
         calendar.add(GregorianCalendar.MONTH, 1);
         calendar.add(GregorianCalendar.DATE, -1);
         resetCalendarTime(true);
+
+    }
+
+    public void startsAtDate(ZonedDateTime dateTime) {
+        
     }
 
     private void updateCaptionLabel() {
@@ -268,13 +274,25 @@ public class CalendarComponent extends VerticalLayout {
 
             MeetingItem item = (MeetingItem) event.getCalendarItem();
 
-            final Meeting meeting = item.getMeeting();
+            if (!item.isInvitation()) {
 
-            Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesWrapperRepository, usersRepository, dailyEventRepository);
-            window.setWidth("70%");
-            window.setHeight(700, Unit.PIXELS);
+                final Meeting meeting = item.getMeeting();
 
-            UI.getCurrent().addWindow(window);
+                Window window = new SetParticipantsWindow(meeting.getDayObject(), categoriesWrapperRepository, usersRepository, dailyEventRepository, timeLocationWrapperRepository, meeting.getDetails(), meeting.getName());
+                window.setWidth("70%");
+                window.setHeight(700, Unit.PIXELS);
+
+                UI.getCurrent().addWindow(window);
+            }
+            else {
+                final Meeting meeting = item.getMeeting();
+
+                Window window = new InvitationWindow(meeting.getDayObject(), meeting.getTimeLocationAsHTMLString());
+                window.setWidth("40%");
+                window.setHeight(400, Unit.PIXELS);
+
+                UI.getCurrent().addWindow(window);
+            }
         }
 
     }
@@ -320,18 +338,37 @@ public class CalendarComponent extends VerticalLayout {
         return eventProvider.isEmpty();
     }
 
-    public void addEvent(DateWrapper day, String scheduleTitle) {
+    public void addEvent(DateWrapper day, String scheduleTitle, String scheduleDescription) {
         Meeting meeting = new Meeting();
 
         meeting.setStart(day.getDay());
         meeting.setEnd(day.getDay());
-        meeting.setName("");
+        meeting.setName(scheduleDescription);
         meeting.setDetails(scheduleTitle);
         meeting.setDayObject(day);
 
         MeetingItem item = new MeetingItem(meeting);
         item.setAllDay(true);
         eventProvider.addItem(item);
+    }
+
+
+    public void addInvitationEvent(DateWrapper day, ArrayList<String> timeLocationHTMLString, String eventTitle, String eventDescription) {
+        Meeting meeting = new Meeting();
+
+        meeting.setStart(day.getDay());
+        meeting.setEnd(day.getDay());
+        meeting.setName(eventDescription);
+        meeting.setDetails(eventTitle);
+        meeting.setDayObject(day);
+        meeting.setTimeLocationAsHTMLString(timeLocationHTMLString);
+
+        MeetingItem item = new MeetingItem(meeting);
+        item.setInvitation(true);
+        item.setAllDay(true);
+        item.setStyleName("green");
+        eventProvider.addItem(item);
+
     }
 
     public MeetingDataProvider getEventProvider() {

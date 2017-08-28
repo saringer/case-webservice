@@ -15,6 +15,7 @@ import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarCompon
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,15 @@ public class ManageSchedulesView extends VerticalLayout implements View {
     private CategoriesWrapperRepository categoriesWrapperRepository;
     @Autowired
     private DailyEventRepository dailyEventRepository;
+    @Autowired
+    private TimeLocationWrapperRepository timeLocationWrapperRepository;
     private List<HorizontalLayout> scheduleItemsList = new ArrayList<>();
     private CalendarComponent calendar;
 
+
     @PostConstruct
     void init() {
-        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository);
+        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository, timeLocationWrapperRepository);
         AppUI app = (AppUI) UI.getCurrent();
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
@@ -166,7 +170,7 @@ public class ManageSchedulesView extends VerticalLayout implements View {
         wrapperLayout.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             calendar.clearEvents(true);
             for (int i=0;i<schedule.getDays().size(); i++) {
-                calendar.addEvent(schedule.getDays().get(i), schedule.getTitle());
+                calendar.addEvent(schedule.getDays().get(i), schedule.getTitle(), schedule.getDescription());
             }
             setActiveView(wrapperLayout );
 

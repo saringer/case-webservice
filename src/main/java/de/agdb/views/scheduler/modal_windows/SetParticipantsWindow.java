@@ -10,6 +10,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import de.agdb.AppUI;
+import de.agdb.backend.broadcaster.Broadcaster;
 import de.agdb.backend.entities.DailyEvent;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.*;
@@ -32,19 +33,24 @@ public class SetParticipantsWindow extends Window {
     private CategoriesWrapperRepository categoriesWrapperRepository;
     private UsersRepository usersRepository;
     private DailyEventRepository dailyEventRepository;
-    private List<List<AssignedContact>> gridContacts = new ArrayList<>();
+    private TimeLocationWrapperRepository timeLocationWrapperRepository;
+    private List<List<List<AssignedContact>>> gridContacts = new ArrayList<>();
     private Contact selectedContact;
-
-
+    private GridLayout gridLayout;
+    private String eventTitle;
+    private String eventDescription;
 
 
     public SetParticipantsWindow(DateWrapper day,
                                  CategoriesWrapperRepository categoriesWrapperRepository,
 
-                                 UsersRepository usersRepository, DailyEventRepository dailyEventRepository) {
+                                 UsersRepository usersRepository, DailyEventRepository dailyEventRepository, TimeLocationWrapperRepository timeLocationWrapperRepository, String title, String description) {
         this.categoriesWrapperRepository = categoriesWrapperRepository;
         this.usersRepository = usersRepository;
         this.dailyEventRepository = dailyEventRepository;
+        this.timeLocationWrapperRepository = timeLocationWrapperRepository;
+        this.eventTitle = title;
+        this.eventDescription = description;
 
         this.day = day;
         addStyleName("set-window-style");
@@ -68,7 +74,7 @@ public class SetParticipantsWindow extends Window {
         contentLayout.setHeight("80%");
         contentLayout.setWidth("90%");
 
-        GridLayout gridLayout = setUpGridLayout();
+        gridLayout = setUpGridLayout();
         gridLayout.setSizeUndefined();
         gridLayout.setWidth("100%");
         Label dayLabel = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy")));
@@ -151,6 +157,7 @@ public class SetParticipantsWindow extends Window {
          */
 
         for (int i = 0; i < day.getTimeAndLocationList().size(); i++) {
+            TimeLocationWrapper timeLocationWrapper = day.getTimeAndLocationList().get(i);
 
 
             /**
@@ -173,7 +180,9 @@ public class SetParticipantsWindow extends Window {
             /**
              * Participants
              */
-            gridLayout.addComponent(createParticipantsLayout(day.getTimeAndLocationList().get(i)));
+            gridContacts.add(new ArrayList<>());
+            gridLayout.addComponent(createParticipantsLayout(timeLocationWrapper, i));
+            // gridContacts.add
 
             /**
              * Event status
@@ -195,16 +204,31 @@ public class SetParticipantsWindow extends Window {
             wrapperLayout.setSizeFull();
             wrapperLayout.setSpacing(false);
             wrapperLayout.setMargin(false);
-            OnOffSwitch onOffSwitch = new OnOffSwitch(false);
+            OnOffSwitch onOffSwitch;
+            if (timeLocationWrapper.isActive()) {
+                onOffSwitch = new OnOffSwitch(true);
+                calendarIconLabel.setStyleName("status-green");
+
+            } else {
+                onOffSwitch = new OnOffSwitch(false);
+                calendarIconLabel.setStyleName("status-grey");
+
+            }
             onOffSwitch.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
                 @Override
                 public void valueChange(HasValue.ValueChangeEvent<Boolean> event) {
                     if (event.getValue() == true) {
 
                         calendarIconLabel.setStyleName("status-green");
+                        timeLocationWrapper.setActive(true);
+                        timeLocationWrapperRepository.save(timeLocationWrapper);
+
+
                     } else {
 
                         calendarIconLabel.setStyleName("status-grey");
+                        timeLocationWrapper.setActive(false);
+                        timeLocationWrapperRepository.save(timeLocationWrapper);
                     }
                 }
             });
@@ -219,7 +243,7 @@ public class SetParticipantsWindow extends Window {
 
     }
 
-    private VerticalLayout createParticipantsLayout(TimeLocationWrapper timeLocationWrapper) {
+    private VerticalLayout createParticipantsLayout(TimeLocationWrapper timeLocationWrapper, int timeLocationIndex) {
         VerticalLayout addParticipantsLayout = new VerticalLayout();
         addParticipantsLayout.addStyleName("solid-border-grey");
         addParticipantsLayout.setMargin(true);
@@ -229,9 +253,7 @@ public class SetParticipantsWindow extends Window {
         List<CategoriesWrapper> categoriesWrapperList = timeLocationWrapper.getCategoriesList();
 
         for (int x = 0; x < categoriesWrapperList.size(); x++) {
-            System.out.println("x:" + x);
             int categoriesListIndex = x;
-            System.out.println("categoriesListIndex" + categoriesListIndex);
 
 
             // CategoryLayout
@@ -256,10 +278,10 @@ public class SetParticipantsWindow extends Window {
             participantsLayout.setSizeUndefined();
             participantsLayout.setWidth("100%");
 
-            gridContacts.add(new ArrayList<>());
+            gridContacts.get(timeLocationIndex).add(new ArrayList<>());
             for (int y = 0; y < categoriesWrapperList.get(categoriesListIndex).getNumberParticipants(); y++) {
                 AssignedContact placeHolderObject = null;
-                gridContacts.get(categoriesListIndex).add(placeHolderObject);
+                gridContacts.get(timeLocationIndex).get(categoriesListIndex).add(placeHolderObject);
 //                    gridContacts.get(x).set(y, placeHolderObject);
 
 
@@ -274,20 +296,16 @@ public class SetParticipantsWindow extends Window {
                 /**
                  * init already set users fields from the db
                  */
-                /*System.out.println("AssignedContactsListSize" + categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId()).getAssignedContacts().size());
-                if (categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId()).getAssignedContacts().size() > 0) {
-                    CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(x).getId());
-                    AssignedContact assignedContact = categoriesWrapperObject.getAssignedContacts().get(y);
-                    System.out.println("assignedContact" + assignedContact.getContact().getFirstName());
-                }*/
-
-               // int categoriesListIndex = x;
                 int numberParticipantsIndex = y;
 
                 try {
                     CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(categoriesListIndex).getId());
                     AssignedContact assignedContact = categoriesWrapperObject.getAssignedContacts().get(y);
-                    gridContacts.get(categoriesListIndex).set(y, assignedContact);
+                    gridContacts.get(timeLocationIndex).get(categoriesListIndex).set(y, assignedContact);
+                    if (assignedContact.isParticipating()) {
+                        clickableUserField.removeStyleName("add-participant-field-blue");
+                        clickableUserField.addStyleName("add-participant-field-green");
+                    }
                     userField.setValue(assignedContact.getContact().getFirstName() + "<br>" + assignedContact.getContact().getLastName());
 
                 } catch (Exception e) {
@@ -395,10 +413,10 @@ public class SetParticipantsWindow extends Window {
                                      * If a participant was already picked for this slot we have to remove his
                                      * link to the event.
                                      */
-                                    if (gridContacts.get(categoriesListIndex).get(numberParticipantsIndex) != null) {
-                                        System.out.println("GridContact Name + Assigned ID = " + gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getFirstName() + " " + gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getId());
+                                    if (gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex) != null) {
+                                        System.out.println("GridContact Name + Assigned ID = " + gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex).getContact().getFirstName() + " " + gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex).getId());
 
-                                        Users updatedUserObject = usersRepository.findByEmail(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getEmail());
+                                        Users updatedUserObject = usersRepository.findByEmail(gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex).getContact().getEmail());
                                         DailyEvent dailyEvent = updatedUserObject.findDailyEvent(day.getId());
                                         /**
                                          * When timeLocationList isn't of size 1 user is still added to a meeting at this day
@@ -407,7 +425,7 @@ public class SetParticipantsWindow extends Window {
                                         if (dailyEvent.getTimeLocationList().size() > 1) {
                                             dailyEvent.removeTimeLocationID(timeLocationWrapper.getId());
                                             dailyEvent.removeCategoryID(categoriesWrapperObject.getId());
-                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
+                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
                                             usersRepository.save(updatedUserObject);
 
                                         }
@@ -417,7 +435,7 @@ public class SetParticipantsWindow extends Window {
                                          */
                                         else {
                                             updatedUserObject.removeDailyEvent(dailyEvent.getId());
-                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
+                                            categoriesWrapperObject.removeAssignedContact(gridContacts.get(timeLocationIndex).get(categoriesListIndex).get(numberParticipantsIndex).getContact().getId());
                                             usersRepository.save(updatedUserObject);
                                             dailyEventRepository.delete(dailyEvent.getId());
 
@@ -435,7 +453,7 @@ public class SetParticipantsWindow extends Window {
                                      */
                                     userField.setValue(selectedContact.getFirstName() + "<br>" + selectedContact.getLastName());
                                     System.out.println("CategoryListIndex: " + categoriesListIndex + " NumberParticipantsIndex: " + numberParticipantsIndex);
-                                    gridContacts.get(categoriesListIndex).set(numberParticipantsIndex, newAssignedContact);
+                                    gridContacts.get(timeLocationIndex).get(categoriesListIndex).set(numberParticipantsIndex, newAssignedContact);
                                     /**
                                      * Create the event for the selected user so that he receives the invitation
                                      */
@@ -451,8 +469,11 @@ public class SetParticipantsWindow extends Window {
                                             newDailyEvent.setDateWrapperId(day.getId());
                                             newDailyEvent.addTimeLocationId(timeLocationWrapper.getId());
                                             newDailyEvent.addCategoriesWrapperId(categoriesWrapperObject.getId());
+                                            newDailyEvent.setTitle(eventTitle);
+                                            newDailyEvent.setDescription(eventDescription);
                                             targetUser.addDailyEvent(newDailyEvent);
                                             usersRepository.save(targetUser);
+                                            Broadcaster.broadcast("newevent");
                                         }
 
                                         /**
@@ -461,7 +482,10 @@ public class SetParticipantsWindow extends Window {
                                         else {
                                             dailyEvent.addTimeLocationId(timeLocationWrapper.getId());
                                             dailyEvent.addCategoriesWrapperId(categoriesWrapperObject.getId());
+                                            dailyEvent.setHasBeenReadOnce(false);
                                             usersRepository.save(targetUser);
+                                            Broadcaster.broadcast("newevent");
+
                                         }
                                     }
 

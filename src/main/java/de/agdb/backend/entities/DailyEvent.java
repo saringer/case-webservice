@@ -17,9 +17,9 @@ public class DailyEvent {
     @Id
     @Column(name = "DAILYEVENT_ID", updatable=false, nullable=false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    private long dateWrapperId;
+    private Long dateWrapperId;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
@@ -32,6 +32,26 @@ public class DailyEvent {
 
     private boolean hasBeenReadOnce = false;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String title;
+
+    private String description;
+
 
     public DailyEvent() {
 
@@ -41,15 +61,15 @@ public class DailyEvent {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getDateWrapperId() {
+    public Long getDateWrapperId() {
         return dateWrapperId;
     }
 
-    public void setDateWrapperId(long dateWrapperId) {
+    public void setDateWrapperId(Long dateWrapperId) {
         this.dateWrapperId = dateWrapperId;
     }
 

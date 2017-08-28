@@ -8,6 +8,12 @@ public class MeetingItem extends BasicItem {
 
     private final Meeting meeting;
 
+    public void setInvitation(boolean invitation) {
+        isInvitation = invitation;
+    }
+
+    private boolean isInvitation = false;
+
     /**
      * constructor
      *
@@ -34,6 +40,10 @@ public class MeetingItem extends BasicItem {
 
     public Meeting getMeeting() {
         return meeting;
+    }
+
+    public boolean isInvitation() {
+        return isInvitation;
     }
 
     @Override

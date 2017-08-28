@@ -17,7 +17,7 @@ public class DateWrapper {
     @Id
     @Column(name = "DAY_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private ZonedDateTime day;
     private boolean eventActive = false;
 
@@ -27,11 +27,11 @@ public class DateWrapper {
     private List<TimeLocationWrapper> timeAndLocationList;
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

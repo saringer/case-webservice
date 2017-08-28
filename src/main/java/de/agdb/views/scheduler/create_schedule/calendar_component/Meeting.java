@@ -3,6 +3,7 @@ package de.agdb.views.scheduler.create_schedule.calendar_component;
 import de.agdb.backend.entities.schedule_wrapper_objects.DateWrapper;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
 import static de.agdb.views.scheduler.create_schedule.calendar_component.Meeting.State.empty;
 
@@ -27,6 +28,16 @@ public class Meeting {
 
 
     private DateWrapper dayObject;
+
+    public ArrayList<String> getTimeLocationAsHTMLString() {
+        return timeLocationAsHTMLString;
+    }
+
+    public void setTimeLocationAsHTMLString(ArrayList<String> timeLocationAsHTMLString) {
+        this.timeLocationAsHTMLString = timeLocationAsHTMLString;
+    }
+
+    private ArrayList<String> timeLocationAsHTMLString = new ArrayList<>();
 
     public Meeting() {
 

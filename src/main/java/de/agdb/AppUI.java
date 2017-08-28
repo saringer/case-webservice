@@ -11,6 +11,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.backend.auth.AccessControl;
 import de.agdb.backend.auth.BasicAccessControl;
+import de.agdb.backend.broadcaster.Broadcaster;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.MainScreen;
@@ -18,6 +19,7 @@ import com.vaadin.server.*;
 import de.agdb.views.scheduler.SchedulerMainView;
 import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
 
+import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
@@ -48,7 +50,7 @@ Add @UIScope. That will ensure you get one instance of this class per session
 @Widgetset("WidgetSet")
 @PreserveOnRefresh
 @Push
-public class AppUI extends UI {
+public class AppUI extends UI implements Broadcaster.BroadcastListener {
     /**
      *
      */
@@ -60,6 +62,7 @@ public class AppUI extends UI {
     private Toastr toastr = new Toastr();
     private String currentUsername;
     private ConnectorTracker tracker;
+    private SetParticipantsWindow window;
 
     // we can use either constructor autowiring or field autowiring
     @Autowired
@@ -70,8 +73,7 @@ public class AppUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-
-
+        Broadcaster.register(this);
         Responsive.makeResponsive(this);
 
         WrappedSession session = request.getWrappedSession();
@@ -123,8 +125,6 @@ public class AppUI extends UI {
     }
 
 
-
-
     public void resetGlobalScheduleWrapper() {
         this.globalScheduleWrapper = new ScheduleWrapper();
     }
@@ -154,6 +154,56 @@ public class AppUI extends UI {
         }
 
         return tracker;
+    }
+
+    private void loadInvitationsNotification() {
+        AppUI app = (AppUI) UI.getCurrent();
+        if (app.getCurrentUsername() != null) {
+            Users thisUser = usersRepository.findByUsername(app.getCurrentUsername()).get(0);
+            int unreadInvitations = 0;
+            for (int i = 0; i < thisUser.getEvents().size(); i++) {
+                if (thisUser.getEvents().get(i).isHasBeenReadOnce() == false) {
+                    unreadInvitations++;
+                }
+            }
+            if (unreadInvitations > 0) {
+                toastr.toast(
+                        ToastBuilder.of(ToastType.valueOf("Info"), unreadInvitations + " unread invitations ")
+                                //.caption("Title")
+                                .options(having()
+                                        .closeButton(false)
+                                        .newestOnTop(true)
+                                        .tapToDismiss(true)
+                                        .position(ToastPosition.Top_Right)
+                                        .rightToLeft(false)
+                                        .timeOut(0)
+                                        .extendedTimeOut(0)
+                                        .hideDuration(0)
+                                        .showEasing(ToastEasing.Swing)
+                                        .build())
+                                .build());
+            }
+        }
+
+    }
+
+    @Override
+    public void detach() {
+        Broadcaster.unregister(this);
+        super.detach();
+    }
+
+
+    @Override
+    public void receiveBroadcast(String message) {
+        // Must lock the session to execute logic safely
+        access(new Runnable() {
+            @Override
+            public void run() {
+               toastr.remove();
+               loadInvitationsNotification();
+            }
+        });
     }
 }
 

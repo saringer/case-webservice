@@ -32,11 +32,11 @@ public class AssignedContact {
         this.contact = contact;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -49,6 +49,6 @@ public class AssignedContact {
     @Id
     @Column(name = "ASSIGNEDCONTACT_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
 }

@@ -15,7 +15,7 @@ public class ScheduleWrapper {
     @Id
     @Column(name = "SCHEDULE_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = DateWrapper.class)
     @JoinTable(name = "SCHEDULE_DAY", joinColumns = { @JoinColumn(name = "SCHEDULE_ID") }, inverseJoinColumns = { @JoinColumn(name = "DAY_ID") })
@@ -64,11 +64,11 @@ public class ScheduleWrapper {
         }
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

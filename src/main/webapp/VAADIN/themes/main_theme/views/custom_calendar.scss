@@ -5,6 +5,13 @@
 
 @mixin meetings_calendar {
 
+  .green {
+    .v-calendar-event-month {
+      background: green;
+      color:white;
+    }
+  }
+
   .meetings {
 
     .v-calendar-event-month {

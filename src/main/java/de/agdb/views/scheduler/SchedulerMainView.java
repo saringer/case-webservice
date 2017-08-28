@@ -10,9 +10,11 @@ import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.backend.broadcaster.Broadcaster;
+import de.agdb.backend.entities.DailyEvent;
 import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.*;
-import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
+import de.agdb.backend.entities.schedule_wrapper_objects.*;
 import de.agdb.views.scheduler.create_schedule.calendar_component.CalendarComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,6 +23,7 @@ import org.vaadin.addons.*;
 import org.vaadin.addons.builder.ToastBuilder;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
@@ -43,6 +46,8 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
     TimeLocationWrapperRepository timeLocationWrapperRepository;
     @Autowired
     DailyEventRepository dailyEventRepository;
+    @Autowired
+    DateWrapperRepository dateWrapperRepository;
 
 
     @PostConstruct
@@ -69,10 +74,10 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         form.setSpacing(false);
         //form.addStyleNames("solid-border");
 
-        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository);
+        calendar = new CalendarComponent(categoriesWrapperRepository, usersRepository, dailyEventRepository, timeLocationWrapperRepository);
         calendar.setSizeUndefined();
         calendar.setWidth("100%");
-        calendar.setHeight("90%");
+        calendar.setHeight("95%");
         calendar.setMargin(true);
         calendar.setSpacing(true);
         Panel panel = new Panel();
@@ -131,7 +136,7 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
             }
             if (unreadInvitations > 0) {
                 toastr.toast(
-                        ToastBuilder.of(ToastType.valueOf("Info"), unreadInvitations + " unread invitations " + app.getCurrentUsername())
+                        ToastBuilder.of(ToastType.valueOf("Info"), unreadInvitations + " unread invitations ")
                                 //.caption("Title")
                                 .options(having()
                                         .closeButton(false)
@@ -152,6 +157,7 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
 
 
     private void initCalendarEvents() {
+
         AppUI app = (AppUI) UI.getCurrent();
 
         if (!usersRepository.findByUsername(app.getCurrentUsername()).isEmpty()) {
@@ -160,7 +166,26 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
             List<ScheduleWrapper> schedules = user.getSchedules();
             for (int i = 0; i < schedules.size(); i++) {
                 for (int x = 0; x < schedules.get(i).getDays().size(); x++) {
-                    calendar.addEvent(schedules.get(i).getDays().get(x), schedules.get(i).getTitle());
+                    calendar.addEvent(schedules.get(i).getDays().get(x), schedules.get(i).getTitle(), schedules.get(i).getDescription());
+                }
+            }
+            for (int i = 0; i < user.getEvents().size(); i++) {
+                DailyEvent dailyEvent = user.getEvents().get(i);
+                DateWrapper day = dateWrapperRepository.findOne(dailyEvent.getDateWrapperId());
+                ArrayList<String> timeLocationHTMLStringList = new ArrayList<>();
+                for (int x = 0; x < dailyEvent.getTimeLocationList().size(); x++) {
+                    TimeLocationWrapper timeLocationWrapper = timeLocationWrapperRepository.findOne(dailyEvent.getTimeLocationList().get(x));
+                    CategoriesWrapper categoriesWrapper = categoriesWrapperRepository.findOne(dailyEvent.getCategoriesWrapperList().get(x));
+                    AssignedContact assignedContact = categoriesWrapper.findAssignedContact(user.getEmail());
+                    if (timeLocationWrapper.isActive() && assignedContact.isParticipating()) {
+                        String timeLocation = timeLocationWrapper.getFormattedStartTime() + " - " + timeLocationWrapper.getFormattedEndTime() +
+                                "<br>" + timeLocationWrapper.getLocation();
+                        timeLocationHTMLStringList.add(timeLocation);
+
+                    }
+                }
+                if (timeLocationHTMLStringList.size() > 0) {
+                    calendar.addInvitationEvent(day, timeLocationHTMLStringList, dailyEvent.getTitle(),dailyEvent.getDescription());
                 }
             }
         }
@@ -196,6 +221,7 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         manageSchedulesButton.addComponent(buttonRight);
         manageSchedulesButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             UI.getCurrent().getNavigator().navigateTo("ManageSchedulesView");
+            Broadcaster.broadcast("asd");
         });
 
         nav.addComponent(createSchedulesButton);
@@ -230,4 +256,6 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
     public void onCloseButtonClick() {
 
     }
+
+
 }

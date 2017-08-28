@@ -125,44 +125,10 @@ public class ContactServiceLayout extends HorizontalLayout {
                             ((OAuth2AccessToken) token).getAccessToken();
                             ((OAuth2AccessToken) token).getRefreshToken();
                             ((OAuth2AccessToken) token).getExpiresIn();
+                            OAuth2AccessToken accessToken = (OAuth2AccessToken) token;
                             microsoft.addStyleName("green-button");
                             toastr.toast(ToastBuilder.success("Contacts import successful").build());
-                            final OAuth20Service service = new ServiceBuilder(microsoftClientId)
-                                    .apiSecret(microsoftClientSecret)
-                                    .scope(microsoftScope)
-                                    .callback(redirectUrl)
-                                    .build(LiveApi.instance());
-                            OAuth2AccessToken testtoken = (OAuth2AccessToken) token;
-
-                            final String PROTECTED_RESOURCE_URL = "https://apis.live.net/v5.0/me/contacts";
-                            final OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
-                            service.signRequest((OAuth2AccessToken) token, request);
-                            final Response response;
-                            System.out.println("Got the Access Token!");
-                            System.out.println("(if your curious it looks like this: " + testtoken.getAccessToken());
-                            System.out.println();
-
-                            try {
-                                response = service.execute(request);
-                                System.out.println("Got it! Lets see what we found...");
-                                BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(response.getStream()));
-                                String inputLine;
-                                StringBuffer content = new StringBuffer();
-                                while ((inputLine = in.readLine()) != null) {
-                                    content.append(inputLine);
-                                }
-                                System.out.println(content);
-                                in.close();
-
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            new MicrosoftContactsDBParser().storeContactsInDatabase(accessToken, usersRepository);
 
 
                         } else {
