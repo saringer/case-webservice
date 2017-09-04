@@ -31,10 +31,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import de.agdb.views.login.LoginForm;
-import org.vaadin.addons.ToastEasing;
-import org.vaadin.addons.ToastPosition;
-import org.vaadin.addons.ToastType;
-import org.vaadin.addons.Toastr;
+import org.vaadin.addons.*;
 import org.vaadin.addons.builder.ToastBuilder;
 
 import java.util.logging.Level;
@@ -50,7 +47,7 @@ Add @UIScope. That will ensure you get one instance of this class per session
 @Widgetset("WidgetSet")
 @PreserveOnRefresh
 @Push
-public class AppUI extends UI implements Broadcaster.BroadcastListener {
+public class AppUI extends UI implements Broadcaster.BroadcastListener, ToastrListener {
     /**
      *
      */
@@ -127,6 +124,26 @@ public class AppUI extends UI implements Broadcaster.BroadcastListener {
 
     public void resetGlobalScheduleWrapper() {
         this.globalScheduleWrapper = new ScheduleWrapper();
+    }
+
+    @Override
+    public void onShown() {
+
+    }
+
+    @Override
+    public void onHidden() {
+
+    }
+
+    @Override
+    public void onClick() {
+        getNavigator().navigateTo("InvitationsView");
+    }
+
+    @Override
+    public void onCloseButtonClick() {
+
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)

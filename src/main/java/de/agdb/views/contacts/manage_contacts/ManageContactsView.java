@@ -319,6 +319,7 @@ public class ManageContactsView extends VerticalLayout implements View {
         saveButton.setWidth(115, Unit.PIXELS);
 
         listener = (LayoutEvents.LayoutClickListener) event -> {
+
             Window window = new Window();
             window.setWidth(900, Unit.PIXELS);
             window.setHeight(700, Unit.PIXELS);

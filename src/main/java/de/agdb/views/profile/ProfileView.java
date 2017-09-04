@@ -13,6 +13,7 @@ import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
+import de.agdb.backend.entities.Users;
 import de.agdb.backend.entities.repositories.UsersRepository;
 import de.agdb.views.scheduler.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,6 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
     @Autowired
     UsersRepository usersRepository;
-
 
 
     @PostConstruct
@@ -97,12 +97,15 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
     }
 
     public HorizontalLayout setUpFormLayout() {
+        AppUI app = (AppUI) UI.getCurrent();
+        Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+
         HorizontalLayout wrapperLayout = new HorizontalLayout();
         wrapperLayout.setSizeFull();
 
 
         FormLayout formLayout = new FormLayout();
-       // formLayout.addStyleName("overflow-auto");
+        // formLayout.addStyleName("overflow-auto");
         formLayout.setSizeFull();
 
         VerticalLayout imageLayout = new VerticalLayout();
@@ -125,10 +128,8 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         Button rotateButton = new Button();
         rotateButton.setIcon(VaadinIcons.ROTATE_RIGHT);
         rotateButton.addStyleNames(ValoTheme.BUTTON_BORDERLESS_COLORED);
-        absoluteLayout.addComponent(rotateButton,"right:0px; top:0px");
+        absoluteLayout.addComponent(rotateButton, "right:0px; top:0px");
         imageLayout.addComponents(absoluteLayout, uploader);
-
-
 
 
         wrapperLayout.addComponents(imageLayout, formLayout);
@@ -168,16 +169,26 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         age.setWidth("10%");
         age.setEnabled(false);
         LayoutEvents.LayoutClickListener cancelListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-                personalButtons.setVisible(false);
-                editButton.setVisible(true);
-                firstName.setEnabled(false);
-                lastName.setEnabled(false);
-                age.setEnabled(false);
-        };
-        LayoutEvents.LayoutClickListener okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            personalButtons.setVisible(false);
+            editButton.setVisible(true);
+            firstName.setEnabled(false);
+            lastName.setEnabled(false);
+            age.setEnabled(false);
+            Users updatedUserObject = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            firstName.setValue(updatedUserObject.getFirstname());
+            lastName.setValue(updatedUserObject.getLastname());
+            age.setValue(String.valueOf(updatedUserObject.getAge()));
 
         };
-        personalButtons = setUpFormButtons(cancelListener,okayListener);
+        LayoutEvents.LayoutClickListener okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            Users updatedUserObject = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            updatedUserObject.setFirstname(firstName.getValue());
+            updatedUserObject.setLastname(lastName.getValue());
+            updatedUserObject.setAge(Integer.valueOf(age.getValue()));
+            usersRepository.save(updatedUserObject);
+
+        };
+        personalButtons = setUpFormButtons(cancelListener, okayListener);
         personalButtons.setWidth("100%");
         innerForm.addComponents(firstName, lastName, age);
         personalButtons.setVisible(false);
@@ -246,11 +257,19 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
             email.setEnabled(false);
             location.setEnabled(false);
             homeAddress.setEnabled(false);
+            Users updatedUserObject = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            mobile.setValue(updatedUserObject.getMobile());
+            home.setValue(updatedUserObject.getHome());
+            email.setValue(updatedUserObject.getEmail());
+            location.setValue(updatedUserObject.getLocation());
+            homeAddress.setValue(updatedUserObject.getHomeAddress());
         };
         okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
+            Users updatedUserObject = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+
 
         };
-        contactButtons = setUpFormButtons(cancelListener,okayListener);
+        contactButtons = setUpFormButtons(cancelListener, okayListener);
         contactButtons.setWidth("100%");
         innerForm.addComponents(mobile, home, email, addEmail, location, homeAddress);
         contactButtons.setVisible(false);
@@ -300,7 +319,7 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         okayListener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
 
         };
-        jobButtons = setUpFormButtons(cancelListener,okayListener);
+        jobButtons = setUpFormButtons(cancelListener, okayListener);
         jobButtons.setWidth("100%");
         innerForm.addComponents(organization, function);
         jobButtons.setVisible(false);
@@ -311,7 +330,6 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         personalInformationLayout.setComponentAlignment(editButton3, Alignment.TOP_RIGHT);
         personalInformationLayout.setWidth("100%");
         blockLayoutJobInformation.addComponents(personalInformationLayout, jobButtons);
-
 
 
         formLayout.addComponent(personalSection);
@@ -353,7 +371,6 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         usernameLabel.setValue(userName);
 
 
-
     }
 
 
@@ -376,7 +393,7 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
     private CssLayout setUpFormButtons(LayoutEvents.LayoutClickListener cancelListener, LayoutEvents.LayoutClickListener okayListener) {
         CssLayout buttonLayout = new CssLayout();
         CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), cancelListener);
-        cancelButton.addStyleNames("cancel-button","float-left");
+        cancelButton.addStyleNames("cancel-button", "float-left");
         cancelButton.setHeight(40, Unit.PIXELS);
         cancelButton.setWidth(150, Unit.PIXELS);
 
@@ -385,8 +402,8 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         okayButton.setHeight(40, Unit.PIXELS);
         okayButton.setWidth(150, Unit.PIXELS);
 
-        buttonLayout.addComponents(cancelButton,okayButton);
-        return  buttonLayout;
+        buttonLayout.addComponents(cancelButton, okayButton);
+        return buttonLayout;
     }
 
 
@@ -395,16 +412,16 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
         String contentType = startedEvent.getMIMEType();
         boolean allowed = false;
-        for(int i=0;i<allowedMimeTypes.size();i++){
-            if(contentType.equalsIgnoreCase(allowedMimeTypes.get(i))){
+        for (int i = 0; i < allowedMimeTypes.size(); i++) {
+            if (contentType.equalsIgnoreCase(allowedMimeTypes.get(i))) {
                 allowed = true;
                 break;
             }
         }
-        if(allowed){
+        if (allowed) {
 
-        }else{
-            Notification.show("Error", "\nAllowed MIME: "+allowedMimeTypes, Notification.Type.ERROR_MESSAGE);
+        } else {
+            Notification.show("Error", "\nAllowed MIME: " + allowedMimeTypes, Notification.Type.ERROR_MESSAGE);
             uploader.interruptUpload();
         }
     }

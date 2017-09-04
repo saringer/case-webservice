@@ -544,7 +544,7 @@ public class SetParticipantsWindow extends Window {
         };
 
         CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
-        backButton.addStyleNames("back-button");
+        backButton.addStyleNames("modal-window-back-button");
         //back-button-margin
         return backButton;
     }

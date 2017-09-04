@@ -213,8 +213,8 @@ public class SetCategoriesView extends VerticalLayout implements View {
                     createCategoryButton.setHeight(30, Unit.PIXELS);
                     // createCategoryButton.setWidth(120, Unit.PIXELS);
                     createCategoryButton.setWidth("90%");
-                    selectCategoryLayout.addComponent(createCategoryButton);
-                    selectCategoryLayout.setExpandRatio(selectCategory,1);
+                    //selectCategoryLayout.addComponent(createCategoryButton);
+                    //selectCategoryLayout.setExpandRatio(selectCategory,1);
 
 
                 /*

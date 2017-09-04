@@ -221,7 +221,6 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         manageSchedulesButton.addComponent(buttonRight);
         manageSchedulesButton.addLayoutClickListener((LayoutEvents.LayoutClickListener) layoutClickEvent -> {
             UI.getCurrent().getNavigator().navigateTo("ManageSchedulesView");
-            Broadcaster.broadcast("asd");
         });
 
         nav.addComponent(createSchedulesButton);

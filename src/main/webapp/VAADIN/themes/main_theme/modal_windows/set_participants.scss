@@ -67,6 +67,17 @@
     }
 
   }
+  .modal-window-back-button {
+    border: solid 1px black;
+    background-color: #ffd966;
+    color: black;
+    font-size: 15px;
+    cursor: pointer;
+    &:hover {
+      background-color: #e0b226;
+      color: white;
+    }
+  }
 
 
 
