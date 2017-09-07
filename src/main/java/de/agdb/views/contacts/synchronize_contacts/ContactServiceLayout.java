@@ -2,23 +2,15 @@ package de.agdb.views.contacts.synchronize_contacts;
 
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.apis.LiveApi;
-import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.*;
-import com.github.scribejava.core.oauth.OAuth20Service;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
-import de.agdb.backend.entities.repositories.UsersRepository;
-import de.agdb.backend.oauth2.OAuthListener;
-import de.agdb.backend.oauth2.OAuthPopupButton;
-import de.agdb.backend.oauth2.OAuthPopupConfig;
-import org.springframework.stereotype.Service;
+import de.agdb.backend.data_model.repositories.UsersRepository;
+import de.agdb.custom_components.oauth2.OAuthListener;
+import de.agdb.custom_components.oauth2.OAuthPopupButton;
+import de.agdb.custom_components.oauth2.OAuthPopupConfig;
 import org.vaadin.addons.Toastr;
 import org.vaadin.addons.builder.ToastBuilder;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.concurrent.ExecutionException;
 
 import static de.agdb.Constants.*;
 

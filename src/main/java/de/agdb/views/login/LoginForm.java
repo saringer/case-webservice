@@ -4,7 +4,7 @@ package de.agdb.views.login;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import de.agdb.AppUI;
-import de.agdb.backend.auth.AccessControl;
+import de.agdb.backend.authentication.AccessControl;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
@@ -117,7 +117,7 @@ public class LoginForm extends CssLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
 
-                UI.getCurrent().setContent(new RegisterForm(viewProvider, ui, accessControl));
+                UI.getCurrent().setContent(new RegistrationForm(viewProvider, ui, accessControl));
             }
         });
         register.addStyleName(ValoTheme.BUTTON_LINK);

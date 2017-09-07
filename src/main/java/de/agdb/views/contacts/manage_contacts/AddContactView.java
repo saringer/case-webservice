@@ -1,7 +1,5 @@
 package de.agdb.views.contacts.manage_contacts;
 
-import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -11,10 +9,10 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.UsersRepository;
-import de.agdb.views.scheduler.CustomButton;
+import de.agdb.backend.data_model.Contact;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
+import de.agdb.custom_components.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 

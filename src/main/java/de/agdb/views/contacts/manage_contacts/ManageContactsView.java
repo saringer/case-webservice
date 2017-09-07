@@ -11,20 +11,17 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.CategoriesRepository;
-import de.agdb.backend.entities.repositories.ContactRepository;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Contact;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.CategoriesRepository;
+import de.agdb.backend.data_model.repositories.ContactRepository;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import de.agdb.views.profile.ContactProfile;
-import de.agdb.views.profile.ProfileView;
-import de.agdb.views.scheduler.CustomButton;
+import de.agdb.custom_components.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 
 @UIScope

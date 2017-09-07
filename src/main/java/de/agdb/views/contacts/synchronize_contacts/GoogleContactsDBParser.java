@@ -9,9 +9,9 @@ import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
 import com.vaadin.ui.UI;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Contact;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 
 
 import java.io.IOException;

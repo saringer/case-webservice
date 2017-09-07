@@ -1,19 +1,16 @@
 package de.agdb.views.contacts.synchronize_contacts;
 
-import com.google.api.client.util.store.FileDataStoreFactory;
-
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.vaadin.addons.Toastr;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 
 @UIScope
 @SpringView(name = SynchronizeContactsView.VIEW_NAME)

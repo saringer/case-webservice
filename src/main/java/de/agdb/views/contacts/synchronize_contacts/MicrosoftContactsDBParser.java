@@ -1,6 +1,5 @@
 package de.agdb.views.contacts.synchronize_contacts;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.LiveApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -10,9 +9,9 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.vaadin.ui.UI;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Contact;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,8 +19,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static de.agdb.Constants.*;
@@ -47,7 +44,6 @@ public class MicrosoftContactsDBParser {
 
         try {
             response = service.execute(request);
-            System.out.println("Got it! Lets see what we found...");
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(response.getStream()));
             String inputLine;

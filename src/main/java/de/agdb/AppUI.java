@@ -9,20 +9,19 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import de.agdb.backend.auth.AccessControl;
-import de.agdb.backend.auth.BasicAccessControl;
+import de.agdb.backend.authentication.AccessControl;
+import de.agdb.backend.authentication.BasicAccessControl;
 import de.agdb.backend.broadcaster.Broadcaster;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import de.agdb.views.MainScreen;
 import com.vaadin.server.*;
-import de.agdb.views.scheduler.SchedulerMainView;
-import de.agdb.backend.entities.schedule_wrapper_objects.ScheduleWrapper;
+import de.agdb.views.schedules.SchedulerMainView;
+import de.agdb.backend.data_model.schedule_wrapper_objects.ScheduleWrapper;
 
-import de.agdb.views.scheduler.modal_windows.SetParticipantsWindow;
+import de.agdb.custom_components.modal_windows.SetParticipantsWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.annotation.WebServlet;
@@ -151,27 +150,7 @@ public class AppUI extends UI implements Broadcaster.BroadcastListener, ToastrLi
     public static class MyUIServlet extends SpringVaadinServlet {
     }
 
-    @Override
-    public ConnectorTracker getConnectorTracker() {
-        if (this.tracker == null) {
-            this.tracker = new ConnectorTracker(this) {
 
-                @Override
-                public void registerConnector(ClientConnector connector) {
-                    try {
-                        super.registerConnector(connector);
-                    } catch (RuntimeException e) {
-                        System.out.println("Failed Connector" + connector.getClass().getSimpleName());
-                        Logger.getLogger("").log(Level.SEVERE, "Failed connector: {0}", connector.getClass().getSimpleName());
-                        throw e;
-                    }
-                }
-
-            };
-        }
-
-        return tracker;
-    }
 
     private void loadInvitationsNotification() {
         AppUI app = (AppUI) UI.getCurrent();

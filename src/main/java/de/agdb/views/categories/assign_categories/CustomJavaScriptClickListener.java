@@ -1,16 +1,12 @@
 package de.agdb.views.categories.assign_categories;
 
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
-import com.vaadin.v7.shared.ui.colorpicker.Color;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Contact;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.CategoriesRepository;
-import de.agdb.backend.entities.repositories.ContactRepository;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Categories;
+import de.agdb.backend.data_model.Contact;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import elemental.json.JsonArray;
 import org.vaadin.addons.popupextension.PopupExtension;
 

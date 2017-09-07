@@ -1,13 +1,11 @@
 package de.agdb.views;
 
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
 import de.agdb.AppUI;
 import de.agdb.views.categories.CategoriesMainView;
 import com.vaadin.navigator.Navigator;
@@ -21,22 +19,16 @@ import de.agdb.views.contacts.ContactsMainView;
 import de.agdb.views.contacts.manage_contacts.AddContactView;
 import de.agdb.views.contacts.manage_contacts.ManageContactsView;
 import de.agdb.views.contacts.synchronize_contacts.SynchronizeContactsView;
-import de.agdb.views.scheduler.SchedulerMainView;
+import de.agdb.views.schedules.SchedulerMainView;
 import de.agdb.views.profile.ProfileView;
-import de.agdb.views.scheduler.create_schedule.SetCategoriesView;
-import de.agdb.views.scheduler.create_schedule.SetGeneralView;
-import de.agdb.views.scheduler.create_schedule.SetDateView;
-import de.agdb.views.scheduler.create_schedule.SetTimeLocationView;
-import de.agdb.views.scheduler.manage_schedules.InvitationsView;
-import de.agdb.views.scheduler.manage_schedules.ManageSchedulesView;
+import de.agdb.views.schedules.create_schedule.EventCategoriesView;
+import de.agdb.views.schedules.create_schedule.EventDescriptionView;
+import de.agdb.views.schedules.create_schedule.EventDatesView;
+import de.agdb.views.schedules.create_schedule.EventTimesLocationsView;
+import de.agdb.views.schedules.manage_schedules.InvitationsView;
+import de.agdb.views.schedules.manage_schedules.ManageSchedulesView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.addons.ToastDisplayMethod;
-import org.vaadin.addons.ToastPosition;
-import org.vaadin.addons.ToastType;
 import org.vaadin.addons.Toastr;
-import org.vaadin.addons.builder.ToastBuilder;
-
-import static org.vaadin.addons.builder.ToastOptionsBuilder.having;
 
 /**
  * Content of the UI when the user is logged in.
@@ -111,10 +103,10 @@ public class MainScreen extends HorizontalLayout implements ViewDisplay {
         // SCHEDULE
         menu.addView(new SchedulerMainView(), SchedulerMainView.VIEW_NAME, "Schedule", null);
         menu.addSubView(new ManageSchedulesView(), ManageSchedulesView.VIEW_NAME, "Manage schedules");
-        menu.addSubView(new SetGeneralView(), SetGeneralView.VIEW_NAME, "Add event");
-        menu.addDetailsView(new SetDateView(), SetDateView.VIEW_NAME);
-        menu.addDetailsView(new SetTimeLocationView(), SetTimeLocationView.VIEW_NAME);
-        menu.addDetailsView(new SetCategoriesView(), SetCategoriesView.VIEW_NAME);
+        menu.addSubView(new EventDescriptionView(), EventDescriptionView.VIEW_NAME, "Add event");
+        menu.addDetailsView(new EventDatesView(), EventDatesView.VIEW_NAME);
+        menu.addDetailsView(new EventTimesLocationsView(), EventTimesLocationsView.VIEW_NAME);
+        menu.addDetailsView(new EventCategoriesView(), EventCategoriesView.VIEW_NAME);
         menu.addDetailsView(new InvitationsView(), InvitationsView.VIEW_NAME);
 
         // CATEGORIES

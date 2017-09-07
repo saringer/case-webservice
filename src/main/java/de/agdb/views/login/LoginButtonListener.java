@@ -5,8 +5,7 @@ package de.agdb.views.login;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.UI;
 import de.agdb.AppUI;
-import de.agdb.backend.auth.AccessControl;
-import de.agdb.backend.auth.AuthManager;
+import de.agdb.backend.authentication.AuthManager;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
@@ -16,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 @SpringComponent
 public class LoginButtonListener implements Button.ClickListener {
@@ -49,16 +47,6 @@ public class LoginButtonListener implements Button.ClickListener {
 
                     parent.getAccessControl().signIn(username, password);
 
-
-               /* Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-                for (GrantedAuthority ga : authorities) {
-                    String authority = ga.getAuthority();
-                    if ("ADMIN".equals(authority)) {
-
-                    } else {
-
-                    }
-                }*/
                 } else {
                     showNotification(new Notification("Login failed",
                             "Please check your username and password and try again.",

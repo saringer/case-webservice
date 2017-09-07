@@ -14,11 +14,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.colorpicker.Color;
 import com.vaadin.v7.ui.ColorPicker;
 import de.agdb.AppUI;
-import de.agdb.backend.entities.Categories;
-import de.agdb.backend.entities.Users;
-import de.agdb.backend.entities.repositories.UsersRepository;
+import de.agdb.backend.data_model.Categories;
+import de.agdb.backend.data_model.Users;
+import de.agdb.backend.data_model.repositories.UsersRepository;
 import de.agdb.backend.field_validators.IsAlphabeticalValidator;
-import de.agdb.views.scheduler.CustomButton;
+import de.agdb.custom_components.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.materialicons.MaterialIcons;
 
@@ -221,7 +221,7 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
         detailsForm.addComponent(categoryDescription);
 
 
-        setUpDataBinding();
+        setUpValidationBinding();
 
 
         CssLayout bottomNav = new CssLayout();
@@ -277,7 +277,7 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
     }
 
 
-    private void setUpDataBinding() {
+    private void setUpValidationBinding() {
         binder.setBean(categoryBean);
 
         binder.forField(categoryTitle)
@@ -298,13 +298,6 @@ public class AddCategoryView extends VerticalLayout implements View, ViewChangeL
          * and needs to be evaluated manually before a category will be created.
          * @param shortcutColor
          */
-
-        /**
-         * Settings category tags currently not enabled.
-         * @param categoryTags
-         */
-
-
     }
 
     private void resetDetailFields() {
