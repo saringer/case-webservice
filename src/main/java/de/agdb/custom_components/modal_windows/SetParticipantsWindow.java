@@ -26,6 +26,7 @@ import org.vaadin.addons.popupextension.PopupExtension;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class SetParticipantsWindow extends Window {
@@ -77,7 +78,7 @@ public class SetParticipantsWindow extends Window {
         gridLayout = setUpGridLayout();
         gridLayout.setSizeUndefined();
         gridLayout.setWidth("100%");
-        Label dayLabel = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy")));
+        Label dayLabel = new Label(day.getDay().format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy", Locale.UK)));
         dayLabel.addStyleName("day-header");
         contentLayout.addComponent(dayLabel);
         contentLayout.addComponent(gridLayout);
