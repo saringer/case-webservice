@@ -17,5 +17,17 @@ public class CustomButton extends VerticalLayout {
         addComponent(caption);
         setComponentAlignment(caption, Alignment.MIDDLE_CENTER);
         addLayoutClickListener(listener);
+
     }
+    public CustomButton(String buttonCaption) {
+        setSizeFull();
+        setSpacing(false);
+        setMargin(false);
+        Label caption = new Label(buttonCaption, ContentMode.HTML);
+        caption.setSizeUndefined();
+        addComponent(caption);
+        setComponentAlignment(caption, Alignment.MIDDLE_CENTER);
+
+    }
+
 }

@@ -28,6 +28,7 @@ public class HandleInvitationsWindow extends Window {
     private DailyEvent dailyEvent;
     private DateWrapperRepository dateWrapperRepository;
 
+
     public HandleInvitationsWindow(DailyEvent dailyEvent, TimeLocationWrapperRepository timeLocationWrapperRepository, CategoriesWrapperRepository categoriesWrapperRepository,
                                    UsersRepository usersRepository, DateWrapperRepository dateWrapperRepository) {
         this.timeLocationWrapperRepository = timeLocationWrapperRepository;
@@ -67,7 +68,7 @@ public class HandleInvitationsWindow extends Window {
             Long categoriesWrapperId = dailyEvent.getCategoriesWrapperList().get(i);
             String currentUserEmail = thisUser.getEmail();
             Long dateWrapperId = dailyEvent.getDateWrapperId();
-            contentLayout.addComponent(buildItem(dateWrapperId,currentUserEmail,timeLocationID,categoriesWrapperId));
+            contentLayout.addComponent(buildItem(dateWrapperId, currentUserEmail, timeLocationID, categoriesWrapperId));
         }
 
         wrapperPanel.setContent(contentLayout);
@@ -104,9 +105,6 @@ public class HandleInvitationsWindow extends Window {
 
         TimeLocationWrapper timeLocationWrapper = timeLocationWrapperRepository.findOne(timeLocationWrapperId);
 
-        CustomButton cancelButton = null;
-        CustomButton okayButton = null;
-
 
         HorizontalLayout item = new HorizontalLayout();
         item.setWidth("100%");
@@ -114,16 +112,25 @@ public class HandleInvitationsWindow extends Window {
         item.setMargin(false);
         item.addStyleNames("solid-border", "invitation-item-layout");
 
-        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickListener) layoutClickEvent -> {
-            CategoriesWrapper categoriesWrapper = categoriesWrapperRepository.findOne(categoriesWrapperId);
-            AssignedContact assignedContact = categoriesWrapper.findAssignedContact(currentUserEmail);
-            assignedContact.setParticipating(false);
-            categoriesWrapperRepository.save(categoriesWrapper);
-            //Broadcaster.broadcast("Test2");
+        final CustomButton cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml());
+
+        final CustomButton okayButton = new CustomButton(VaadinIcons.CHECK.getHtml());
 
 
+        LayoutEvents.LayoutClickListener listener = new LayoutEvents.LayoutClickListener() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                CategoriesWrapper categoriesWrapper = categoriesWrapperRepository.findOne(categoriesWrapperId);
+                AssignedContact assignedContact = categoriesWrapper.findAssignedContact(currentUserEmail);
+                assignedContact.setParticipating(false);
+                categoriesWrapperRepository.save(categoriesWrapper);
+                cancelButton.setStyleName("grey-button");
+                okayButton.setStyleName("next-button");
+
+            }
         };
-        cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
+        // cancelButton = new CustomButton(VaadinIcons.CLOSE.getHtml(), listener);
+        cancelButton.addLayoutClickListener(listener);
         cancelButton.addStyleName("cancel-button");
         //cancelButton.setHeight(40, Unit.PIXELS);
         cancelButton.setWidth("100%");
@@ -135,10 +142,12 @@ public class HandleInvitationsWindow extends Window {
             AssignedContact assignedContact = categoriesWrapper.findAssignedContact(currentUserEmail);
             assignedContact.setParticipating(true);
             categoriesWrapperRepository.save(categoriesWrapper);
-           // Broadcaster.broadcast("test");
+            okayButton.setStyleName("grey-button");
+            cancelButton.setStyleName("cancel-button");
 
         };
-        okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
+       // okayButton = new CustomButton(VaadinIcons.CHECK.getHtml(), listener);
+        okayButton.addLayoutClickListener(listener);
         okayButton.addStyleName("next-button");
         //okayButton.setHeight(40, Unit.PIXELS);
         okayButton.setWidth("100%");
@@ -164,6 +173,15 @@ public class HandleInvitationsWindow extends Window {
         item.setExpandRatio(verticalLayout, 0.5f);
         item.setExpandRatio(cancelButton, 0.25f);
 
+        CategoriesWrapper categoriesWrapper = categoriesWrapperRepository.findOne(categoriesWrapperId);
+        AssignedContact assignedContact = categoriesWrapper.findAssignedContact(currentUserEmail);
+        if (assignedContact.isParticipating()) {
+            okayButton.setStyleName("grey-button");
+        }
+        else {
+            cancelButton.setStyleName("grey-button");
+        }
+
         return item;
     }
 
@@ -186,5 +204,10 @@ public class HandleInvitationsWindow extends Window {
         CustomButton backButton = new CustomButton(VaadinIcons.ARROW_CIRCLE_LEFT_O.getHtml() + " " + "BACK", listener);
         backButton.addStyleNames("modal-window-back-button");
         return backButton;
+    }
+
+    private void setButtonState(CustomButton button) {
+        button.setStyleName("grey-button");
+
     }
 }

@@ -64,7 +64,6 @@
 
   .cancel-button {
     border: solid 1px black;
-   // background-color: #cf2a27;
     background-color: rgba(207,42,39,0.8);
     color: white;
     font-size: 15px;
@@ -73,6 +72,14 @@
       background-color: #a30906;
 
     }
+  }
+
+  .grey-button {
+    border: solid 1px black;
+    background-color: grey;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
   }
 
   .solid-border {

@@ -1,6 +1,7 @@
 package de.agdb.backend.data_model.schedule_wrapper_objects;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,33 @@ public class ScheduleWrapper {
     private List<DateWrapper> days;
     private String title;
     private String description;
+    private ZonedDateTime finalDate;
+    private boolean recurrentEvent = false;
+    private String recurrentMode;
+
+    public String getRecurrentMode() {
+        return recurrentMode;
+    }
+
+    public void setRecurrentMode(String recurrentMode) {
+        this.recurrentMode = recurrentMode;
+    }
+
+
+    public void setRecurrentEvent(boolean bool ) {
+        recurrentEvent = bool;
+    }
+    public boolean isRecurrentEvent() {
+        return recurrentEvent;
+    }
+
+    public ZonedDateTime getFinalDate() {
+        return finalDate;
+    }
+
+    public void setFinalDate(ZonedDateTime finalDate) {
+        this.finalDate = finalDate;
+    }
 
     public void setDays(List<DateWrapper> days) {
         this.days = days;

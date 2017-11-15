@@ -4,10 +4,12 @@ package de.agdb.backend.data_model;
 import de.agdb.backend.data_model.schedule_wrapper_objects.ScheduleWrapper;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,19 @@ public class Users implements Serializable {
     private String homeAddress;
     private String organization;
     private String function;
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    
+    private byte[] image;
+
+
 
     @NotNull
     @Column(name = "USERNAME")

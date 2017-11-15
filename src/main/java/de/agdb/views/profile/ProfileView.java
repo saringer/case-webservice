@@ -23,6 +23,7 @@ import org.vaadin.alump.scaleimage.css.*;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 @UIScope
@@ -98,7 +99,7 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
 
     public HorizontalLayout setUpFormLayout() {
         AppUI app = (AppUI) UI.getCurrent();
-        Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+        //Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
 
         HorizontalLayout wrapperLayout = new HorizontalLayout();
         wrapperLayout.setSizeFull();
@@ -369,7 +370,69 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
         AppUI app = (AppUI) UI.getCurrent();
         String userName = app.getAccessControl().getUsername();
         usernameLabel.setValue(userName);
+        initFields();
 
+    }
+
+    private void initFields() {
+
+        AppUI app = (AppUI) UI.getCurrent();
+        if (!usersRepository.findByUsername(app.getAccessControl().getUsername()).isEmpty()) {
+            Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            firstName.setValue("");
+            if (thisUser.getFirstname() != null) {
+                firstName.setValue(thisUser.getFirstname());
+            }
+            lastName.setValue("");
+            if (thisUser.getLastname() != null) {
+                lastName.setValue(thisUser.getLastname());
+            }
+            age.setValue("");
+            if (thisUser.getAge() != null) {
+                age.setValue(Integer.toString(thisUser.getAge()));
+            }
+            mobile.setValue("");
+            if (thisUser.getMobile() != null) {
+                mobile.setValue(thisUser.getMobile());
+            }
+            home.setValue("");
+            if (thisUser.getHome() != null) {
+                home.setValue(thisUser.getHome());
+            }
+            email.setValue(thisUser.getEmail());
+            //TextField location;
+            homeAddress.setValue("");
+            if (thisUser.getHomeAddress() != null) {
+                homeAddress.setValue(thisUser.getHomeAddress());
+            }
+            organization.setValue("");
+            if (thisUser.getOrganization() != null) {
+                organization.setValue(thisUser.getOrganization());
+            }
+            function.setValue("");
+            if (thisUser.getFunction() != null) {
+                function.setValue(thisUser.getFunction());
+            }
+            if (thisUser.getImage() != null) {
+
+
+                try {
+                    File tempFile = File.createTempFile("image", "jpg", null);
+                    FileOutputStream fos = new FileOutputStream(tempFile);
+                    fos.write(thisUser.getImage());
+                    fos.close();
+                    image.setSource(new FileResource(tempFile));
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                }
+
+
+            }
+        }
 
     }
 
@@ -378,15 +441,31 @@ public class ProfileView extends VerticalLayout implements View, Upload.Receiver
     public OutputStream receiveUpload(String fileName, String mimeType) {
 
         outputBuffer = new ByteArrayOutputStream();
+
+
+
         return outputBuffer;
     }
 
     @Override
     public void uploadSucceeded(Upload.SucceededEvent succeededEvent) {
-        File file = new File("C:\\Users\\Riva\\Desktop\\" + succeededEvent.getFilename());
-
+        String path = "C:\\Users\\Riva\\Desktop\\" + succeededEvent.getFilename();
+        File file = new File(path);
         image.setSource(new FileResource(file));
-        //image.
+        try {
+            byte[] array = Files.readAllBytes(new File(path).toPath());
+            AppUI app = (AppUI) UI.getCurrent();
+            if (usersRepository.findByUsername(app.getAccessControl().getUsername()) != null) {
+                Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+                thisUser.setImage(array);
+                usersRepository.save(thisUser);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

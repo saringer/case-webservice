@@ -15,6 +15,7 @@ import de.agdb.custom_components.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.time.ZoneOffset;
 
 @UIScope
 @SpringView(name = EventDescriptionView.VIEW_NAME)
@@ -24,6 +25,7 @@ public class EventDescriptionView extends VerticalLayout implements View {
     private TextArea scheduleDescription;
     private DateField dateField;
     private CheckBox activateRecurrency;
+    private ComboBox<String> dropDownMenu;
     @Autowired
     private GeneralViewPresenter generalViewPresenter;
 
@@ -33,13 +35,7 @@ public class EventDescriptionView extends VerticalLayout implements View {
         setSizeFull();
         setSpacing(false);
         setMargin(false);
-        CssLayout breadCrumbs = createBreadCrumbs();
-        breadCrumbs.setSizeUndefined();
-        breadCrumbs.setWidth(1150, Unit.PIXELS);
-        breadCrumbs.setStyleName("breadcrumbs");
-        //breadCrumbs.setHeight(50, Unit.PIXELS);
-        addComponent(breadCrumbs);
-        setComponentAlignment(breadCrumbs, Alignment.MIDDLE_CENTER);
+
 
 
         VerticalLayout formWrapper = new VerticalLayout();
@@ -48,8 +44,7 @@ public class EventDescriptionView extends VerticalLayout implements View {
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
 
-        setExpandRatio(breadCrumbs, 0.05f);
-        setExpandRatio(formWrapper, 0.95f);
+        setExpandRatio(formWrapper, 1);
 
 
         FormLayout content = buildContent();
@@ -98,6 +93,11 @@ public class EventDescriptionView extends VerticalLayout implements View {
         }
         if (app.getGlobalScheduleWrapper().getDescription() != null) {
             scheduleDescription.setValue(app.getGlobalScheduleWrapper().getDescription());
+        }
+        if (app.getGlobalScheduleWrapper().isRecurrentEvent() == false) {
+            dateField.setEnabled(false);
+            dropDownMenu.setEnabled(false);
+            activateRecurrency.setValue(false);
         }
 
 
@@ -176,10 +176,10 @@ public class EventDescriptionView extends VerticalLayout implements View {
         section.addStyleName("colored");
         HorizontalLayout recurrencyOptions = new HorizontalLayout();
 
-        ComboBox<String> dropDownMenu = new ComboBox<>();
+        dropDownMenu = new ComboBox<>();
         dropDownMenu.setTextInputAllowed(false);
         dropDownMenu.setEmptySelectionAllowed(false);
-        dropDownMenu.setItems("weekly", "montly");
+        dropDownMenu.setItems("weekly", "monthly");
         dropDownMenu.setSelectedItem("monthly");
         dropDownMenu.setEnabled(false);
 
@@ -206,6 +206,7 @@ public class EventDescriptionView extends VerticalLayout implements View {
         form.addComponent(section);
         form.addComponent(recurrencyOptions);
         form.addComponent(activateRecurrency);
+
 
         section = new Label("Description");
         section.addStyleName("h3");
@@ -243,6 +244,17 @@ public class EventDescriptionView extends VerticalLayout implements View {
                     AppUI app = (AppUI) UI.getCurrent();
                     app.getGlobalScheduleWrapper().setTitle(scheduleTitle.getValue());
                     app.getGlobalScheduleWrapper().setDescription(scheduleDescription.getValue());
+                    if (activateRecurrency.getValue() == true) {
+                        app.getGlobalScheduleWrapper().setRecurrentEvent(true);
+                        System.out.println(dropDownMenu.getValue());
+                        app.getGlobalScheduleWrapper().setRecurrentMode(dropDownMenu.getValue());
+                        app.getGlobalScheduleWrapper().setFinalDate(dateField.getValue().atStartOfDay(ZoneOffset.UTC));
+                        System.out.println(dateField.getValue().atStartOfDay(ZoneOffset.UTC).toString());
+                    }
+                    else {
+                        app.getGlobalScheduleWrapper().setRecurrentEvent(false);
+
+                    }
 
                     app.getNavigator().navigateTo("DateView");
                 }

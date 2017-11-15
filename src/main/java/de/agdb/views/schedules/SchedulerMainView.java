@@ -55,19 +55,13 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         AppUI app = (AppUI) UI.getCurrent();
         this.toastr = app.getGlobalToastr();
 
-        CssLayout breadCrumbs = createBreadCrumbs();
-        breadCrumbs.setSizeUndefined();
-        breadCrumbs.setWidth("80%");
-        breadCrumbs.setStyleName("breadcrumbs");
-        addComponent(breadCrumbs);
-        setComponentAlignment(breadCrumbs, Alignment.MIDDLE_CENTER);
+
 
         setSizeFull();
         VerticalLayout formWrapper = new VerticalLayout();
         formWrapper.setSizeFull();
         addComponent(formWrapper);
         setComponentAlignment(formWrapper, Alignment.MIDDLE_CENTER);
-        setExpandRatio(formWrapper, 0.95f);
 
 
         HorizontalLayout bottomNav = createBottomNav();
@@ -104,15 +98,15 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         formWrapper.setMargin(false);
         formWrapper.setSpacing(false);
         formWrapper.addComponent(form);
-        formWrapper.setComponentAlignment(form, Alignment.TOP_CENTER);
+        formWrapper.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
         setExpandRatio(formWrapper, 1);
 
         toastr.registerToastrListener(this);
 
         form.addComponent(toastr);
 
-        //initCalendarEvents();
-        initPresenter(schedulerMainViewPresenter);
+        initCalendarEvents();
+        //initPresenter(schedulerMainViewPresenter);
 
 
     }
@@ -124,8 +118,10 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
         if (event.getParameters().length() > 0) {
             toastr.toast(ToastBuilder.success("Event created").build());
         }
-        schedulerMainViewPresenter.loadInvitationsNotification();
-        schedulerMainViewPresenter.initCalendarEvents();
+        //schedulerMainViewPresenter.loadInvitationsNotification();
+        //schedulerMainViewPresenter.initCalendarEvents();
+        loadInvitationsNotification();
+        initCalendarEvents();
     }
 
 
@@ -202,18 +198,73 @@ public class SchedulerMainView extends VerticalLayout implements View, ToastrLis
     public void onCloseButtonClick() {
 
     }
-    private CssLayout createBreadCrumbs() {
-        CssLayout wrapperLayout = new CssLayout();
-        Button topNavButton =  new Button("Schedule");
-        topNavButton.addStyleName(ValoTheme.BUTTON_LINK);
-        topNavButton.addClickListener((Button.ClickListener) event -> {
-            UI.getCurrent().getNavigator().navigateTo("");
-        });
-        wrapperLayout.addComponent(topNavButton);
-        Button placeHolder = new Button("> ...");
-        placeHolder.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        wrapperLayout.addComponent(placeHolder);
-        return wrapperLayout;
+    private void initPolling() {
+    }
+
+    public void loadInvitationsNotification() {
+        AppUI app = (AppUI) UI.getCurrent();
+        if (app.getCurrentUsername() != null) {
+            Users thisUser = repositoryService.getUsersRepository().findByUsername(app.getCurrentUsername()).get(0);
+            int unreadInvitations = 0;
+            for (int i = 0; i < thisUser.getEvents().size(); i++) {
+                if (thisUser.getEvents().get(i).isHasBeenReadOnce() == false) {
+                    unreadInvitations++;
+                }
+            }
+            if (unreadInvitations > 0) {
+                toastr.toast(
+                        ToastBuilder.of(ToastType.valueOf("Info"), unreadInvitations + " unread invitations ")
+                                //.caption("Title")
+                                .options(having()
+                                        .closeButton(false)
+                                        .newestOnTop(true)
+                                        .tapToDismiss(true)
+                                        .position(ToastPosition.Top_Right)
+                                        .rightToLeft(false)
+                                        .timeOut(0)
+                                        .extendedTimeOut(0)
+                                        .hideDuration(0)
+                                        .showEasing(ToastEasing.Swing)
+                                        .build())
+                                .build());
+            }
+        }
+
+    }
+
+    public void initCalendarEvents() {
+
+        AppUI app = (AppUI) UI.getCurrent();
+
+        if (!repositoryService.getUsersRepository().findByUsername(app.getCurrentUsername()).isEmpty()) {
+            calendar.clearEvents(true);
+            Users user = repositoryService.getUsersRepository().findByUsername(app.getCurrentUsername()).get(0);
+            List<ScheduleWrapper> schedules = user.getSchedules();
+            for (int i = 0; i < schedules.size(); i++) {
+                for (int x = 0; x < schedules.get(i).getDays().size(); x++) {
+                    calendar.addEvent(schedules.get(i).getDays().get(x), schedules.get(i).getTitle(), schedules.get(i).getDescription());
+                }
+            }
+            for (int i = 0; i < user.getEvents().size(); i++) {
+                DailyEvent dailyEvent = user.getEvents().get(i);
+                DateWrapper day = repositoryService.getDateWrapperRepository().findOne(dailyEvent.getDateWrapperId());
+                ArrayList<String> timeLocationHTMLStringList = new ArrayList<>();
+                for (int x = 0; x < dailyEvent.getTimeLocationList().size(); x++) {
+                    TimeLocationWrapper timeLocationWrapper = repositoryService.getTimeLocationWrapperRepository().findOne(dailyEvent.getTimeLocationList().get(x));
+                    CategoriesWrapper categoriesWrapper = repositoryService.getCategoriesWrapperRepository().findOne(dailyEvent.getCategoriesWrapperList().get(x));
+                    AssignedContact assignedContact = categoriesWrapper.findAssignedContact(user.getEmail());
+                    if (timeLocationWrapper.isActive() && assignedContact.isParticipating()) {
+                        String timeLocation = timeLocationWrapper.getFormattedStartTime() + " - " + timeLocationWrapper.getFormattedEndTime() +
+                                "<br>" + timeLocationWrapper.getLocation();
+                        timeLocationHTMLStringList.add(timeLocation);
+
+                    }
+                }
+                if (timeLocationHTMLStringList.size() > 0) {
+                    calendar.addInvitationEvent(day, timeLocationHTMLStringList, dailyEvent.getTitle(),dailyEvent.getDescription());
+                }
+            }
+        }
     }
 
 

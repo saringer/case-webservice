@@ -35,7 +35,6 @@ public class EventCategoriesView extends VerticalLayout implements View {
     private FormLayout content;
 
 
-
     @Autowired
     private UsersRepository usersRepository;
 
@@ -277,12 +276,10 @@ public class EventCategoriesView extends VerticalLayout implements View {
                     okayButton.setWidth("100%");
 
 
-
-
                     buttonLayout.addComponents(cancelButton, okayButton);
-                  //  buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
-                   // buttonLayout.setComponentAlignment(createCategoryButton, Alignment.MIDDLE_CENTER);
-                   // buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
+                    //  buttonLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
+                    // buttonLayout.setComponentAlignment(createCategoryButton, Alignment.MIDDLE_CENTER);
+                    // buttonLayout.setComponentAlignment(okayButton, Alignment.MIDDLE_RIGHT);
                     buttonLayout.addStyleNames("modal-window-margin");
 
                 /*
@@ -341,14 +338,13 @@ public class EventCategoriesView extends VerticalLayout implements View {
             timeLocationHeader.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 
 
-
             itemLayout.addComponent(plusButtonLayout);
 
 
             horizontalWrapperLayout.addComponent(timeLocationHeader);
-           // horizontalWrapperLayout.addComponents(wrapperLayout);
+            // horizontalWrapperLayout.addComponents(wrapperLayout);
             horizontalWrapperLayout.addComponent(itemLayout);
-            horizontalWrapperLayout.setExpandRatio(itemLayout,1);
+            horizontalWrapperLayout.setExpandRatio(itemLayout, 1);
             //  formLayout.addComponent(wrapperLayout);
             formLayout.addComponent(horizontalWrapperLayout);
 
@@ -386,7 +382,7 @@ public class EventCategoriesView extends VerticalLayout implements View {
         cssLayout.setStyleName("item-box");
         cssLayout.setHeight(54, Unit.PIXELS);
         //cssLayout.setHeight("100%");
-        cssLayout.setWidth(239,Unit.PIXELS);
+        cssLayout.setWidth(239, Unit.PIXELS);
 
         CssLayout customDeleteButton = new CssLayout();
         customDeleteButton.setWidth(20, Unit.PIXELS);
@@ -460,6 +456,48 @@ public class EventCategoriesView extends VerticalLayout implements View {
         return horizontalLayout;
     }
 
+    private void loadRecurrentSchedules() {
+        AppUI app = (AppUI) UI.getCurrent();
+        ScheduleWrapper schedule = app.getGlobalScheduleWrapper();
+        long tobeAddedDays = 0;
+        if (schedule.getRecurrentMode().equals("weekly")) {
+            tobeAddedDays = 7;
+        } else {
+            tobeAddedDays = 28;
+        }
+        boolean running = true;
+
+
+        List<DateWrapper> days = schedule.getDays();
+
+        while (running) {
+
+            for (int i = 0; i < days.size(); i++) {
+                if (days.get(i).getDay().plusDays(tobeAddedDays).isBefore(schedule.getFinalDate()) || days.get(i).getDay().plusDays(tobeAddedDays).isEqual(schedule.getFinalDate())) {
+                    days.get(i).setDay(days.get(i).getDay().plusDays(tobeAddedDays));
+
+                    //DateWrapper day = days.get(i);
+                    //day.setDay(days.get(i).getDay().plusDays(tobeAddedDays));
+                    //updateddDays.add(day);
+
+                } else {
+                    running = false;
+                    break;
+                }
+            }
+
+            app.getGlobalScheduleWrapper().setDays(days);
+            String userName = app.getAccessControl().getUsername();
+            Users thisUser = usersRepository.findByUsername(userName).get(0);
+            thisUser.addSchedule(app.getGlobalScheduleWrapper());
+            usersRepository.save(thisUser);
+        }
+
+
+
+
+    }
+
     public HorizontalLayout createBottomNav() {
         HorizontalLayout nav = new HorizontalLayout();
         nav.setWidth("100%");
@@ -486,14 +524,20 @@ public class EventCategoriesView extends VerticalLayout implements View {
             }
 
             if (flag) {
+
+
                 String userName = app.getAccessControl().getUsername();
                 Users thisUser = usersRepository.findByUsername(userName).get(0);
                 thisUser.addSchedule(app.getGlobalScheduleWrapper());
                 usersRepository.save(thisUser);
 
+                if (app.getGlobalScheduleWrapper().isRecurrentEvent()) {
+                    loadRecurrentSchedules();
+                }
+
                 // Clear the ScheduleWrapper
                 app.resetGlobalScheduleWrapper();
-                app.getNavigator().navigateTo(""+ '/' + "true");
+                app.getNavigator().navigateTo("" + '/' + "true");
             }
         };
 
@@ -521,9 +565,6 @@ public class EventCategoriesView extends VerticalLayout implements View {
         return nav;
 
     }
-
-
-
 
 
 }
