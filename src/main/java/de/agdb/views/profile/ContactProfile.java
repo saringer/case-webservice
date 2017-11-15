@@ -2,15 +2,18 @@ package de.agdb.views.profile;
 
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import de.agdb.AppUI;
+import de.agdb.backend.data_model.Users;
 import de.agdb.backend.data_model.repositories.UsersRepository;
 import de.agdb.custom_components.CustomButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.alump.scaleimage.ScaleImage;
 import org.vaadin.alump.scaleimage.css.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+
+import java.io.*;
 import java.util.*;
 
 
@@ -231,6 +234,7 @@ public class ContactProfile extends VerticalLayout {
         formLayout.addComponent(jobSection);
         formLayout.addComponent(blockLayoutJobInformation);
 
+        initFields();
         return wrapperLayout;
 
     }
@@ -254,6 +258,67 @@ public class ContactProfile extends VerticalLayout {
 
     }
 
+    private void initFields() {
+
+        AppUI app = (AppUI) UI.getCurrent();
+        if (!usersRepository.findByUsername(app.getAccessControl().getUsername()).isEmpty()) {
+            Users thisUser = usersRepository.findByUsername(app.getAccessControl().getUsername()).get(0);
+            firstName.setValue("");
+            if (thisUser.getFirstname() != null) {
+                firstName.setValue(thisUser.getFirstname());
+            }
+            lastName.setValue("");
+            if (thisUser.getLastname() != null) {
+                lastName.setValue(thisUser.getLastname());
+            }
+            age.setValue("");
+            if (thisUser.getAge() != null) {
+                age.setValue(Integer.toString(thisUser.getAge()));
+            }
+            mobile.setValue("");
+            if (thisUser.getMobile() != null) {
+                mobile.setValue(thisUser.getMobile());
+            }
+            home.setValue("");
+            if (thisUser.getHome() != null) {
+                home.setValue(thisUser.getHome());
+            }
+            email.setValue(thisUser.getEmail());
+            //TextField location;
+            homeAddress.setValue("");
+            if (thisUser.getHomeAddress() != null) {
+                homeAddress.setValue(thisUser.getHomeAddress());
+            }
+            organization.setValue("");
+            if (thisUser.getOrganization() != null) {
+                organization.setValue(thisUser.getOrganization());
+            }
+            function.setValue("");
+            if (thisUser.getFunction() != null) {
+                function.setValue(thisUser.getFunction());
+            }
+            if (thisUser.getImage() != null) {
+
+
+                try {
+                    File tempFile = File.createTempFile("image", "jpg", null);
+                    FileOutputStream fos = new FileOutputStream(tempFile);
+                    fos.write(thisUser.getImage());
+                    fos.close();
+                    image.setSource(new FileResource(tempFile));
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                }
+
+
+            }
+        }
+
+    }
 
 
 

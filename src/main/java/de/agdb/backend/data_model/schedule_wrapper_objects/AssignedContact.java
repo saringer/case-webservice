@@ -41,6 +41,16 @@ public class AssignedContact {
     }
 
     private boolean isParticipating = false;
+
+    public boolean hasRejectedInvitation() {
+        return rejectedInvitation;
+    }
+
+    public void setRejectedInvitation(boolean rejectedInvitation) {
+        this.rejectedInvitation = rejectedInvitation;
+    }
+
+    private boolean rejectedInvitation = false;
     private Contact contact;
 
 

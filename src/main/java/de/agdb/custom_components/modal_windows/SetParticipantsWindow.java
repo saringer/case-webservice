@@ -303,9 +303,15 @@ public class SetParticipantsWindow extends Window {
                     CategoriesWrapper categoriesWrapperObject = categoriesWrapperRepository.findOne(categoriesWrapperList.get(categoriesListIndex).getId());
                     AssignedContact assignedContact = categoriesWrapperObject.getAssignedContacts().get(y);
                     gridContacts.get(timeLocationIndex).get(categoriesListIndex).set(y, assignedContact);
-                    if (assignedContact.isParticipating()) {
-                        clickableUserField.removeStyleName("add-participant-field-blue");
-                        clickableUserField.addStyleName("add-participant-field-green");
+                    if (!assignedContact.hasRejectedInvitation()) {
+                        if (assignedContact.isParticipating()) {
+                            clickableUserField.removeStyleName("add-participant-field-blue");
+                            clickableUserField.addStyleName("add-participant-field-green");
+                        }
+                    }
+                    else {
+                        //clickableUserField.removeStyleName("add-participant-field-blue");
+                        clickableUserField.setStyleName("add-participant-field-red");
                     }
                     userField.setValue(assignedContact.getContact().getFirstName() + "<br>" + assignedContact.getContact().getLastName());
 
